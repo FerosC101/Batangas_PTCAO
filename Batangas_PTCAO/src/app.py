@@ -15,6 +15,7 @@ def home():
 
 
 # needs test case for incorrect password input
+# need to add file handling if wrong password input
 @app.route('/login', methods=['GET', 'POST'])
 def login():
    if request.method == 'POST':
@@ -30,6 +31,7 @@ def login():
    return render_template('Login.html')
 
 # Ready for testing
+#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
