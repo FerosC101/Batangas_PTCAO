@@ -11,7 +11,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background: url('../static/img/BackgroundImage.png') no-repeat center center fixed;
+            background: url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
             background-size: cover;
             color: #333;
             max-height: 100vh; /* Limit the height */
@@ -105,15 +105,81 @@
         .form-footer a:hover {
             text-decoration: underline;
         }
+
+        #flash-messages {
+            position: relative;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .flash-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .flash-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .flash-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            display: inline-block;
+        }
+        .close-btn:hover {
+            color: #000;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="registration-panel">
             <div class="logo">
-                <img src="../static/img/Batangas_Logo.png" alt="Office Logo">
+                <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Office Logo">
             </div>
             <h2>AE REGISTRATION</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div id="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                <span>{{ message }}</span>
+                                <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
             <div class="steps">
                 <span class="active"><i class="fas fa-info-circle"></i> Details</span>
@@ -121,45 +187,45 @@
                 <span><i class="fas fa-user-lock"></i> Login Credentials</span>
             </div>
 
-            <form action="{{ url_for('business_registration') }}" method="POST">
+            <form action="{{ url_for('business_registration') }}" method="POST" class="registration-form">
                 <div class="form-group">
                     <label for="business-registration">Business Registration No</label>
-                    <input type="text" class="form-control" id="business-registration" placeholder="Enter business registration no" required>
+                    <input type="text" class="form-control" name="business-registration" id="business-registration" placeholder="Enter business registration no" required>
                 </div>
 
                 <div class="form-group">
                     <label for="business-name">Business Name</label>
-                    <input type="text" class="form-control" id="business-name" placeholder="Enter business name" required>
+                    <input type="text" class="form-control" name="business-name" id="business-name" placeholder="Enter business name" required>
                 </div>
 
                 <div class="form-group">
                     <label for="official-contact">Official Contact No</label>
-                    <input type="text" class="form-control" id="official-contact" placeholder="Enter official contact no" required>
+                    <input type="text" class="form-control" name="official-contact" id="official-contact" placeholder="Enter official contact no" required>
                 </div>
 
                 <div class="form-group">
                     <label for="business-address">Business Address</label>
-                    <input type="text" class="form-control" id="business-address" placeholder="Enter Business Address" required>
+                    <input type="text" class="form-control" name="business-address" id="business-address" placeholder="Enter Business Address" required>
                 </div>
 
                 <div class="form-group">
                     <label for="taxpayer-name">Tax Payer Name</label>
-                    <input type="text" class="form-control" id="taxpayer-name" placeholder="Enter Tax Payer Name" required>
+                    <input type="text" class="form-control" name="taxpayer-name" id="taxpayer-name" placeholder="Enter Tax Payer Name" required>
                 </div>
 
                 <div class="form-group">
                     <label for="total-employees">No. of Employees</label>
-                    <input type="number" class="form-control" id="total-employees" placeholder="Enter total no. of employees" required>
+                    <input type="number" class="form-control" name="total-employees" id="total-employees" placeholder="Enter total no. of employees" required>
                 </div>
 
                 <div class="form-group">
                     <label for="total-rooms">Total No. of Rooms</label>
-                    <input type="number" class="form-control" id="total-rooms" placeholder="Enter total no. of rooms" required>
+                    <input type="number" class="form-control" name="total-rooms" id="total-rooms" placeholder="Enter total no. of rooms" required>
                 </div>
 
                 <div class="form-group">
                     <label for="total-beds">Total No. of Beds</label>
-                    <input type="number" class="form-control" id="total-beds" placeholder="Enter total no. of beds" required>
+                    <input type="number" class="form-control" name="total-beds" id="total-beds" placeholder="Enter total no. of beds" required>
                 </div>
 
                 <div class="form-actions">

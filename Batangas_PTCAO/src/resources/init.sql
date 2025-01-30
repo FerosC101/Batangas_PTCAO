@@ -1,9 +1,10 @@
-CREATE DATABASE PTCAO;
 
 CREATE TABLE users (
-    account_id SERIAL PRIMARY KEY,
-    user_email VARCHAR(255) NOT NULL,
-    password VARCHAR(50) NOT NULL
+    user_id SERIAL PRIMARY KEY,
+    user_email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    account_status VARCHAR(20) DEFAULT 'active',
+    failed_login_attempts INTEGER DEFAULT 0
 );
 
 CREATE TABLE BusinessRegistration (
@@ -17,11 +18,35 @@ CREATE TABLE BusinessRegistration (
     total_employees INTEGER NOT NULL,
     total_rooms INTEGER NOT NULL,
     total_beds INTEGER NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES users(account_id)
+    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES users(user_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE special_services (
+    service_id SERIAL PRIMARY KEY,
+    business_id INTEGER NOT NULL,
+    accreditation_type VARCHAR(100) NOT NULL,
+    ae_classification VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
 
-INSERT INTO users (user_email, password) VALUES
-('user1@example.com', 'password123'),
-('user2@example.com', 'securepass456');
+CREATE TABLE rooms (
+    room_id SERIAL PRIMARY KEY,
+    business_id INTEGER NOT NULL,
+    room_type VARCHAR(100) NOT NULL,
+    total_number INTEGER NOT NULL,
+    capacity INTEGER NOT NULL,
+    CONSTRAINT fk_business_room FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE event_facilities (
+    facility_id SERIAL PRIMARY KEY,
+    business_id INTEGER NOT NULL,
+    room_name VARCHAR(255) NOT NULL,
+    capacity INTEGER NOT NULL,
+    facilities VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_business_facility FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);

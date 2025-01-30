@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Black">
+<<<<<<< HEAD
+    <option name="sdkName" value="Python 3.12 (Python_VEN)" />
+  </component>
+=======
+    <option name="sdkName" value="Python 3.11 (DjangoProject) (2)" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (Python_VEN)" project-jdk-type="Python SDK" />
+>>>>>>> 797144b6db06548f646186563d977ea2545a5ee9
+</project>
