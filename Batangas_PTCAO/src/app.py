@@ -1,9 +1,9 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User, BusinessRegistration, Room, EventFacility, SpecialServices, RegistrationStep
-from Batangas_PTCAO.src.config import Config
+from extension import db
+from model import User, BusinessRegistration, Room, EventFacility, SpecialServices, RegistrationStep
+from config import Config
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
@@ -39,7 +39,7 @@ def login():
             flash('Email and password are required', 'error')
             return render_template('Login.html')
 
-        user = User.query.filter_by(user_email=user_email).first()
+        user = User.query.filter_by(user_email=user_email).first() 
 
         if not user:
             flash('User not found', 'error')
