@@ -325,6 +325,44 @@
                     </div>
                 </div>
 
+                <!-- Amenities Section -->
+                <div class="section-header">
+                    <h3 class="section-title">Amenities</h3>
+                    <button type="button" class="btn btn-primary" id="addAmenityBtn">Add Amenity</button>
+                </div>
+
+                <!-- Custom Amenity Input -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="customAmenityInput" placeholder="Enter custom amenity">
+                            <button class="btn btn-success" type="button" id="addCustomAmenityBtn">Add Custom</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="amenitiesContainer">
+                    <div class="row amenity-entry mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Amenities</label>
+                            <select class="form-select" name="amenity" required>
+                                <option value="">Select Amenity</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Elevator">Elevator</option>
+                                <option value="Parking">Parking</option>
+                                <option value="Security">Security</option>
+                                <option value="Gym">Gym</option>
+                                <option value="Swimming Pool">Swimming Pool</option>
+                                <option value="WiFi">WiFi</option>
+                                <option value="Laundry">Laundry</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger remove-facility">Remove</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Photo Section -->
                 <div class="section-card">
                     <div class="section-header">
