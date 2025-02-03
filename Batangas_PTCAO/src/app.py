@@ -14,7 +14,7 @@ class AccountStatus(Enum):
     SUSPENDED = 'suspended'
     MAINTENANCE = 'maintenance'
 
-app = Flask(__name__, template_folder='routes', static_folder='static')
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config.from_object(Config)
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'fallback-secret-key')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
@@ -275,6 +275,30 @@ def special_services():
         return redirect(url_for('login_credentials'))
 
     return render_template('Special_Service.html')
+
+
+# Homapage Routing
+
+"""
+Needs testing and Needs price data and ratings
+
+Route needs testing after competition and html for homepage needs modification
+"""
+
+@app.route('homepage', methods=['GET', 'POST'])
+def homepage():
+    try:
+        businesses = BusinessRegistration.query.join(Room).join(EventFacility).all()
+
+        hotel_data = []
+        for business in businesses:
+            amenities = []
+            for facility in business.event_facilities:
+                amenities.append(facility.facilities.split(','))
+
+    except Exception as e:
+        flash('Unable to load hotels', 'error')
+        return redirect(url_for('Login'))
 
 @app.route('/logout')
 def logout():
