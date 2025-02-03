@@ -60,6 +60,7 @@ class SpecialServices(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
     accreditation_type = db.Column(db.String(100), nullable=False)
     ae_classification = db.Column(db.String(100), nullable=False)
+    amenities = db.Column(db.String(255), nullable=False)
 
 class Room(db.Model):
     __tablename__ = 'rooms'

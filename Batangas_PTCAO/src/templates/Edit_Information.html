@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resort Profile - Batangas Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Existing styles from the second template */
+        .top-header {
+            background-color: #003366;
+            padding: 1rem;
+            color: white;
+        }
+        .search-container {
+            max-width: 500px;
+        }
+        .search-input {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            border: none;
+            width: 100%;
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .sidebar {
+            height: calc(100vh - 70px);
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .nav-link {
+            color: #333;
+            padding: 0.8rem 1rem;
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+
+        /* Styles from the first template */
+        .section-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            padding: 2rem;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            color: #003366;
+            font-weight: bold;
+            margin: 0;
+        }
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-item .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .add-image-btn {
+            aspect-ratio: 16/9;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .add-image-btn:hover {
+            border-color: #003366;
+            background: #e9ecef;
+        }
+        .amenity-item { margin-bottom: 1rem; }
+        .room-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .room-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text d-flex align-items-center">
+                    <img src="../static/img/Batangas_Logo.png" alt="Logo" height="40" class="me-2">
+                    Batangas Explorer
+                </a>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search...">
+                </div>
+                <div class="dropdown">
+                    <i class="fas fa-bars menu-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="edit-ae-info.html">
+                            <i class="fas fa-edit me-2"></i>Edit AE Information
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 col-lg-2 px-0 sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-home"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-building"></i>Properties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-file-alt"></i>Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-exchange-alt"></i>Transactions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-map-marked-alt"></i>Mapping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-chart-bar"></i>Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"><i class="fas fa-bullhorn"></i>Announcement</a>
+                    </li>
+                    <li class="nav-item mt-auto">
+                        <a href="#" class="nav-link text-danger"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-10 col-lg-10 main-content">
+                <!-- Basic Information Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Basic Information</h3>
+                    </div>
+                    <form id="basicInfoForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Business Registration No.</label>
+                                    <input type="text" class="form-control" id="business_registration_no" name="business_registration_no" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Business Name</label>
+                                    <input type="text" class="form-control" id="business_name" name="business_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Official Contact No.</label>
+                                    <input type="text" class="form-control" id="official_contact_no" name="official_contact_no" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Business Address</label>
+                                    <input type="text" class="form-control" id="business_address" name="business_address" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Taxpayer Name</label>
+                                    <input type="text" class="form-control" id="taxpayer_name" name="taxpayer_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Total Employees</label>
+                                    <input type="number" class="form-control" id="total_employees" name="total_employees" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Total Rooms</label>
+                                    <input type="number" class="form-control" id="total_rooms" name="total_rooms" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Total Beds</label>
+                                    <input type="number" class="form-control" id="total_beds" name="total_beds" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Special Services Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Special Services</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Accreditation Type</label>
+                                <select class="form-select" id="accreditation_type" name="accreditation_type" required>
+                                    <option value="">Select Accreditation Type</option>
+                                    <option value="DOT Accredited">DOT Accredited</option>
+                                    <option value="Non-DOT Accredited">Non-DOT Accredited</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">AE Classification</label>
+                                <select class="form-select" id="ae_classification" name="ae_classification" required>
+                                    <option value="">Select Classification</option>
+                                    <option value="5-Star">5-Star</option>
+                                    <option value="4-Star">4-Star</option>
+                                    <option value="3-Star">3-Star</option>
+                                    <option value="2-Star">2-Star</option>
+                                    <option value="1-Star">1-Star</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rooms Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Rooms</h3>
+                        <button type="button" class="btn btn-primary" id="addRoomBtn">Add Room</button>
+                    </div>
+                    <div id="roomsContainer">
+                        <div class="row room-entry mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Room Type</label>
+                                <input type="text" class="form-control" name="room_type[]" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Total Number</label>
+                                <input type="number" class="form-control" name="total_number[]" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Capacity</label>
+                                <input type="number" class="form-control" name="capacity[]" required>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger remove-room">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Facilities Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Event Facilities</h3>
+                        <button type="button" class="btn btn-primary" id="addFacilityBtn">Add Facility</button>
+                    </div>
+                    <div id="facilitiesContainer">
+                        <div class="row facility-entry mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Room Name</label>
+                                <input type="text" class="form-control" name="room_name[]" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Capacity</label>
+                                <input type="number" class="form-control" name="facility_capacity[]" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Facilities</label>
+                                <input type="text" class="form-control" name="facilities[]" required>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger remove-facility">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amenities Section -->
+                <div class="section-header">
+                    <h3 class="section-title">Amenities</h3>
+                    <button type="button" class="btn btn-primary" id="addAmenityBtn">Add Amenity</button>
+                </div>
+
+                <!-- Custom Amenity Input -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="customAmenityInput" placeholder="Enter custom amenity">
+                            <button class="btn btn-success" type="button" id="addCustomAmenityBtn">Add Custom</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="amenitiesContainer">
+                    <div class="row amenity-entry mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Amenities</label>
+                            <select class="form-select" name="amenity" required>
+                                <option value="">Select Amenity</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Elevator">Elevator</option>
+                                <option value="Parking">Parking</option>
+                                <option value="Security">Security</option>
+                                <option value="Gym">Gym</option>
+                                <option value="Swimming Pool">Swimming Pool</option>
+                                <option value="WiFi">WiFi</option>
+                                <option value="Laundry">Laundry</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger remove-facility">Remove</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Photo Gallery</h3>
+                    </div>
+                    <div class="gallery-container">
+                        <div class="gallery-item">
+                            <img src="/api/placeholder/400/300" alt="Resort View">
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="/api/placeholder/400/300" alt="Pool Area">
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <label class="add-image-btn">
+                            <input type="file" accept="image/*" style="display: none" id="galleryUpload">
+                            <div class="text-center">
+                                <i class="fas fa-plus fa-2x mb-2"></i>
+                                <p class="mb-0">Add Image</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="section-card">
+                    <button type="submit" class="btn btn-primary" id="saveAllChanges">Save All Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById('galleryUpload').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const galleryContainer = document.querySelector('.gallery-container');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'gallery-item';
+                    newItem.innerHTML = `
+                        <img src="${e.target.result}" alt="New Image">
+                        <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                    `;
+                    galleryContainer.insertBefore(newItem, document.querySelector('.add-image-btn'));
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        document.querySelector('.gallery-container').addEventListener('click', function(e) {
+            if (e.target.closest('.delete-btn')) {
+                e.target.closest('.gallery-item').remove();
+            }
+        });
+
+        document.getElementById('addRoomBtn').addEventListener('click', function() {
+            const roomsContainer = document.getElementById('roomsContainer');
+            const newRoom = document.createElement('div');
+            newRoom.className = 'col-md-4';
+            newRoom.innerHTML = `
+                <div class="room-card">
+                    <img src="/api/placeholder/400/300" alt="Room" class="room-image">
+                    <input type="text" class="form-control mb-2" placeholder="Room Type">
+                    <input type="text" class="form-control mb-2" placeholder="Bed Configuration">
+                    <input type="number" class="form-control mb-2" placeholder="Max Capacity">
+                    <input type="number" class="form-control mb-2" placeholder="Total Units">
+                    <button class="btn btn-danger btn-sm">Delete Room</button>
+                </div>
+            `;
+            roomsContainer.appendChild(newRoom);
+        });
+
+        document.getElementById('addAmenityBtn').addEventListener('click', function() {
+            const amenitiesContainer = document.getElementById('amenitiesContainer');
+            const newAmenity = document.createElement('div');
+            newAmenity.className = 'col-md-4';
+            newAmenity.innerHTML = `
+                <div class="amenity-item">
+                    <select class="form-select mb-2">
+                        <option value="swimming-pool">Swimming Pool</option>
+                        <option value="wifi">Wi-Fi</option>
+                        <option value="parking">Parking</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="spa">Spa</option>
+                    </select>
+                    <button class="btn btn-danger btn-sm">Remove</button>
+                </div>
+            `;
+            amenitiesContainer.appendChild(newAmenity);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-danger')) {
+                e.target.closest('.col-md-4').remove();
+            }
+        });
+
+        document.getElementById('basicInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Changes saved successfully!');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
