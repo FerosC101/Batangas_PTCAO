@@ -51,5 +51,10 @@ CREATE TABLE event_facilities (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE special_services
-ADD COLUMN amenities VARCHAR(255);
+CREATE TABLE amenities (
+    amenity_id SERIAL PRIMARY KEY,
+    business_id INTEGER NOT NULL,
+    amenity VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_business_amenity FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);

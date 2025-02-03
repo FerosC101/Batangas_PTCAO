@@ -80,4 +80,11 @@ class EventFacility(db.Model):
     capacity = db.Column(db.Integer, nullable=False)
     facilities = db.Column(db.String(255), nullable=False)
 
+class Amenity(db.Model):
+    __tablename__ = 'amenities'
+
+    amenity_id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
+    amenity = db.Column(db.String(255), nullable=False)
+
 
