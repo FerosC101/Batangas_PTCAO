@@ -12,10 +12,14 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     rel="stylesheet"
   >
+
+<script>src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/semantic.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/semantic.min.css">
+</head>
   <style>
     .sidebar {
       height: 100vh;
-      background-color: #f8f9fa;
+      background-color: #ffffff;
       padding-top: 20px;
     }
     .main-content {
@@ -33,16 +37,84 @@
     .icon-box.bed { background-color: #fdeef2; color: #d6336c; }
     .icon-box.foreign { background-color: #e8f8f5; color: #20c997; }
     .icon-box.followers { background-color: #f5f5ff; color: #6f42c1; }
+    .nav-link {
+      display: block;
+      padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+      font-size: var(--bs-nav-link-font-size);
+      font-weight: var(--bs-nav-link-font-weight);
+      color: #202122;
+      text-decoration: none;
+      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+  }
+/* header css */
+  body {
+    background-color: #FFFFFF;
+  }
+  .ui.menu .item img.logo {
+    margin-right: 1.5em;
+  }
+  .main.container {
+    margin-top: 7em;
+  }
+  .wireframe {
+    margin-top: 2em;
+  }
+  .ui.footer.segment {
+    margin: 5em 0em 0em;
+    padding: 5em 0em;
+  }
   </style>
 </head>
+
+<div class="ui fixed inverted menu">
+  <div class="ui container">
+    <a href="#" class="header item">
+      <img class="logo" src="http://placeimg.com/30/25/any"> 
+       Project Name 
+     </a>
+    <a href="#" class="item"><i class="home icon"></i>Home</a>
+    <a href="#" class="item"><i class="mail icon"></i> Contact</a>
+    <div class="ui simple dropdown item">
+      Dropdown <i class="dropdown icon"></i>
+      <div class="menu">
+        <a class="item" href="#">Link Item</a>
+        <a class="item" href="#">Link Item</a>
+        <div class="divider"></div>
+        <div class="header">Header Item</div>
+        <div class="item">
+          <i class="dropdown icon"></i>
+          Sub Menu
+          <div class="menu">
+            <a class="item" href="#">Link Item</a>
+            <a class="item" href="#">Link Item</a>
+          </div>
+        </div>
+        <a class="item" href="#">Link Item</a>
+      </div>
+    </div>
+    <div class="right menu">
+      <div class="item">
+        
+     <a class="ui basic teal button" href="#"><i class="sign in icon"></i>Log in</a>
+      </div>
+      <div class="item">
+      <a class="ui basic blue button" href="#"><i class="add user icon"></i>Sign up</a>
+      </div>
+      </div>
+  </div>
+</div>
+
+
 <body>
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
       <div class="col-md-2 sidebar">
         <div class="text-center mb-4">
-            <img src="PTCAO_Logo.png" alt="Logo" class="img-fluid mb-2" />
-          <h4>Batangas Explorer</h4>
+          <div class="logo">
+            <img src="D:\Capstone Files\Batangas Explorer\Batangas_PTCAO\Batangas_PTCAO\src\static\img\PTCAO_Logo.png"alt="Logo" class="img-fluid mb-2" />
+          </div>
+            <h4>Batangas Explorer</h4>
         
         </div>
         <ul class="nav flex-column">
