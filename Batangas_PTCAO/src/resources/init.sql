@@ -37,6 +37,7 @@ CREATE TABLE rooms (
     room_type VARCHAR(100) NOT NULL,
     total_number INTEGER NOT NULL,
     capacity INTEGER NOT NULL,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     CONSTRAINT fk_business_room FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -58,3 +59,5 @@ CREATE TABLE amenities (
     CONSTRAINT fk_business_amenity FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+ALTER TABLE rooms ADD COLUMN price DECIMAL(10,2) NOT NULL default 0.00 ;

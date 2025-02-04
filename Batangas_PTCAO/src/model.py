@@ -70,6 +70,7 @@ class Room(db.Model):
     room_type = db.Column(db.String(100), nullable=False)
     total_number = db.Column(db.Integer, nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Double, nullable=False, default=0.00)
 
 class EventFacility(db.Model):
     __tablename__ = 'event_facilities'
