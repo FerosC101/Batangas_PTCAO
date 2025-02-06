@@ -56,8 +56,9 @@ CREATE TABLE amenities (
     amenity_id SERIAL PRIMARY KEY,
     business_id INTEGER NOT NULL,
     amenity VARCHAR(255) NOT NULL,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
     CONSTRAINT fk_business_amenity FOREIGN KEY (business_id) REFERENCES BusinessRegistration(business_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE rooms ADD COLUMN price DECIMAL(10,2) NOT NULL default 0.00 ;
+ALTER TABLE amenities ADD COLUMN rating INTEGER CHECK (rating >= 1 AND rating <= 5);

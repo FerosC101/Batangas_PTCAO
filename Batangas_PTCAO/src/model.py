@@ -1,3 +1,5 @@
+from sqlalchemy import CheckConstraint
+
 from extension import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum
@@ -87,5 +89,8 @@ class Amenity(db.Model):
     amenity_id = db.Column(db.Integer, primary_key=True)
     business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
     amenity = db.Column(db.String(255), nullable=False)
+    rating = db.Column(db.Integer, nullable=True)
 
-
+    __table_args__ = (
+        CheckConstraint('rating >= 1 AND rating <= 5', name='check_rating'),
+    )

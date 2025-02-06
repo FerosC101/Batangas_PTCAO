@@ -7,24 +7,34 @@
     <title>AE Registration</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+
         function addRoom() {
             const roomSection = document.querySelector('#rooms-section');
             const newRoom = document.createElement('div');
-            newRoom.className = "grid grid-cols-3 gap-4 mt-4";
+            newRoom.className = "grid grid-cols-4 gap-4 mt-4";
             newRoom.innerHTML = `
                 <div>
                     <label class="block font-medium">Types</label>
-                    <select class="w-full border rounded-lg p-2">
+                    <select name="room_type[]" class="w-full border rounded-lg p-2">
                         <option value="">Select the Type of Room</option>
+                        <option value="AC">AC Rooms</option>
+                        <option value="NON_AC">Non AC Rooms</option>
+                        <option value="KUBO">Kubo Rooms</option>
+                        <option value="OPEN">Open Cottages</option>
+                        <option value="CABANA">Cabana</option>
                     </select>
                 </div>
                 <div>
                     <label class="block font-medium">Total No.</label>
-                    <input type="number" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2">
+                    <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2">
                 </div>
                 <div>
                     <label class="block font-medium">Capacity</label>
-                    <input type="number" placeholder="No. of people" class="w-full border rounded-lg p-2">
+                    <input type="number" name="room_capacity[]" placeholder="No. of people" class="w-full border rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block font-medium">Price</label>
+                    <input type="number" step="0.01" name="room_price[]" placeholder="Room price" class="w-full border rounded-lg p-2">
                 </div>`;
             roomSection.appendChild(newRoom);
         }
@@ -227,29 +237,29 @@
 
             <div id="rooms-section" class="mb-4">
                 <h2 class="font-semibold text-lg">ROOMS</h2>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-4 gap-4">
                     <div>
                         <label class="block font-medium">Types</label>
-                        <label>
-                            <select name="room_type[]" class="w-full border rounded-lg p-2" required>
-                                <option value="">Select the Type of Room</option>
-                                <option value="AC">AC Rooms</option>
-                                <option value="NON_AC">Non AC Rooms</option>
-                                <option value="KUBO">Kubo Rooms</option>
-                                <option value="OPEN">Open Cottages</option>
-                                <option value="CABANA">Cabana</option>
-                            </select>
-                        </label>
+                        <select name="room_type[]" class="w-full border rounded-lg p-2" required>
+                            <option value="">Select the Type of Room</option>
+                            <option value="AC">AC Rooms</option>
+                            <option value="NON_AC">Non AC Rooms</option>
+                            <option value="KUBO">Kubo Rooms</option>
+                            <option value="OPEN">Open Cottages</option>
+                            <option value="CABANA">Cabana</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block font-medium">Total No.</label>
-                        <label>
-                            <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2" required>
-                        </label>
+                        <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2" required>
                     </div>
                     <div>
                         <label class="block font-medium">Capacity</label>
                         <input type="number" name="room_capacity[]" placeholder="No. of people" class="w-full border rounded-lg p-2" required>
+                    </div>
+                    <div>
+                        <label class="block font-medium">Price</label>
+                        <input type="number" step="0.01" name="room_price[]" placeholder="Room price" class="w-full border rounded-lg p-2" required>
                     </div>
                 </div>
                 <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addRoom()">Add</button>
