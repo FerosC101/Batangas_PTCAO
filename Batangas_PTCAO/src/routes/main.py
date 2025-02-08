@@ -1,8 +1,8 @@
 import os
-
 from flask import render_template, request, flash, redirect, url_for, send_from_directory
 from flask_jwt_extended import jwt_required
 
+from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import BusinessRegistration, Room, EventFacility
 
 
@@ -11,36 +11,48 @@ def init_main_routes(app):
     @jwt_required()
     def homepage():
         try:
-            businesses = BusinessRegistration.query.join(Room).join(EventFacility).all()
+            # Optimize query with eager loading
+            businesses = BusinessRegistration.query \
+                .join(Room) \
+                .join(EventFacility) \
+                .options(
+                db.joinedload(BusinessRegistration.rooms),
+                db.joinedload(BusinessRegistration.event_facilities)
+            ) \
+                .all()
 
             hotel_data = []
             for business in businesses:
-                has_image = any(facility.facilities for facility in business.event_facilities)
-
-                # If no facilities, use white placeholder
-                first_facility_image = "/api/placeholder/400/200" if has_image else ""
-
+                # Calculate room statistics
                 rooms = business.rooms
-                avg_room_price = sum(room.capacity * 1000 for room in rooms) / len(rooms) if rooms else 5000
+                if rooms:
+                    room_prices = [room.capacity * 1000 for room in rooms]
+                    avg_room_price = sum(room_prices) / len(rooms)
+                else:
+                    avg_room_price = 5000
 
-                amenities = []
+                # Process facilities and amenities
+                amenities = set()
+                has_image = False
+
                 for facility in business.event_facilities:
                     if facility.facilities:
-                        amenities.extend(facility.facilities.split(','))
+                        has_image = True
+                        facility_amenities = [
+                            amenity.strip()
+                            for amenity in facility.facilities.split(',')
+                            if amenity.strip()
+                        ]
+                        amenities.update(facility_amenities)
 
-                amenities = list(set(amenities))[:3]
-
-                # Placeholder rating (future: implement actual rating system)
-                rating = "★★★★☆"
-
-                # Prepare business details
+                # Format business data
                 business_info = {
                     'name': business.business_name,
                     'location': business.business_address,
-                    'image': first_facility_image,
-                    'rating': rating,
+                    'image': "/api/placeholder/400/200" if has_image else "",
+                    'rating': "★★★★☆",  # Placeholder rating
                     'price': f"₱{int(avg_room_price):,} / night",
-                    'amenities': amenities
+                    'amenities': list(amenities)[:3]  # Take first 3 unique amenities
                 }
 
                 hotel_data.append(business_info)
@@ -49,7 +61,7 @@ def init_main_routes(app):
 
         except Exception as e:
             # Log the error for debugging
-            print(f"Homepage error: {str(e)}")
+            app.logger.error(f"Homepage error: {str(e)}")
             flash('Unable to load hotels', 'error')
             return redirect(url_for('login'))
 
@@ -57,9 +69,10 @@ def init_main_routes(app):
     def serve_static_file(filename):
         if allowed_file(filename):
             return send_from_directory(os.path.join(app.root_path, 'static'), filename)
-        else:
-            return 'File type not allowed', 400
+        return 'File type not allowed', 400
 
     def allowed_file(filename):
-        ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Changed to set for faster lookup
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    return app

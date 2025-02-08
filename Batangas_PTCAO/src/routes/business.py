@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User, BusinessRegistration, Room, EventFacility, SpecialServices
+from Batangas_PTCAO.src.model import User, BusinessRegistration, Room, EventFacility, SpecialServices, Amenity
 from Batangas_PTCAO.src.model import RegistrationStep
 
 def init_business_routes(app):
@@ -106,7 +106,8 @@ def init_business_routes(app):
                         business_id=new_business.business_id,
                         room_type=room_data['type'],
                         total_number=room_data['number'],
-                        capacity=room_data['capacity']
+                        capacity=room_data['capacity'],
+                        price=0.0
                     )
                     db.session.add(new_room)
 

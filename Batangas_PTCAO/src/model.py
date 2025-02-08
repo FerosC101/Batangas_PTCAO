@@ -1,8 +1,9 @@
 from sqlalchemy import CheckConstraint
 
-from extension import db
+from Batangas_PTCAO.src.extension import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum
+import bcrypt
 
 
 class AccountStatus(str, Enum):
@@ -26,11 +27,11 @@ class User(db.Model):
     business_registration = db.relationship('BusinessRegistration', backref='user', lazy=True)
 
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    def set_password(self, password: str):
+        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    def check_password(self, password:str) -> tuple[bool, bytes]:
+        return bcrypt.checkpw('utf-8'), self.password_hash.encode('utf-8')
 
     def is_suspended(self):
         return self.account_status == AccountStatus.SUSPENDED
@@ -52,7 +53,12 @@ class BusinessRegistration(db.Model):
     total_employees = db.Column(db.Integer, nullable=False)
     total_rooms = db.Column(db.Integer, nullable=False)
     total_beds = db.Column(db.Integer, nullable=False)
+
+
     special_services = db.relationship('SpecialServices', backref='business', lazy=True)
+    rooms = db.relationship('Room', backref='business', lazy=True)
+    event_facilities = db.relationship('EventFacility', backref='business', lazy=True)
+    amenities = db.relationship('Amenity', backref='business', lazy=True)
 
 
 class SpecialServices(db.Model):
@@ -62,7 +68,6 @@ class SpecialServices(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
     accreditation_type = db.Column(db.String(100), nullable=False)
     ae_classification = db.Column(db.String(100), nullable=False)
-    amenities = db.Column(db.String(255), nullable=False)
 
 class Room(db.Model):
     __tablename__ = 'rooms'
@@ -73,6 +78,14 @@ class Room(db.Model):
     total_number = db.Column(db.Integer, nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Double, nullable=False, default=0.00)
+
+    @property
+    def calculated_price(self):
+        """
+        Hypothetically calculated price
+        Note: For revisions
+        """
+        return self.capacity * 1000
 
 class EventFacility(db.Model):
     __tablename__ = 'event_facilities'
