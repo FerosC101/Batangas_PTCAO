@@ -55,6 +55,7 @@
         .hotel-img {
             height: 200px;
             object-fit: cover;
+            background-color: #f8f9fa;
         }
         .filters {
             background: white;
@@ -150,7 +151,7 @@
                         <a href="#" class="nav-link"><i class="fas fa-bullhorn me-2"></i>Announcement</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link text-danger"><i class="fas fa-sign-out-alt me-2"></i>Log Out</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link text-danger"><i class="fas fa-sign-out-alt me-2"></i>Log Out</a>
                     </li>
                 </ul>
             </div>
@@ -182,56 +183,37 @@
 
                 <!-- Hotel Cards, for modification hehe -->
                 <div class="row g-4">
+                    {% for hotel in hotels %}
                     <div class="col-md-4">
                         <div class="card">
-                            <img src="/api/placeholder/400/200" alt="Luxury Beach Resort" class="hotel-img">
+                            {% if hotel.image %}
+                                <img src="{{ hotel.image }}" alt="{{ hotel.name }}" class="hotel-img">
+                            {% else %}
+                                <div class="hotel-img bg-white"></div>
+                            {% endif %}
                             <div class="card-body">
-                                <h5 class="card-title">Luxury Beach Resort</h5>
-                                <div><i class="fas fa-map-marker-alt me-2"></i>Nasugbu, Batangas</div>
-                                <div class="rating my-2">★★★★★</div>
-                                <div class="price">₱8,500 / night</div>
+                                <h5 class="card-title">{{ hotel.name }}</h5>
+                                <div><i class="fas fa-map-marker-alt me-2"></i>{{ hotel.location }}</div>
+                                <div class="rating my-2">{{ hotel.rating }}</div>
+                                <div class="price">{{ hotel.price }}</div>
                                 <div class="amenities">
-                                    <span class="me-3"><i class="fas fa-wifi"></i> WiFi</span>
-                                    <span class="me-3"><i class="fas fa-swimming-pool"></i> Pool</span>
-                                    <span><i class="fas fa-parking"></i> Parking</span>
+                                    {% for amenity in hotel.amenities %}
+                                        <span class="me-3">
+                                            {% if amenity == 'WiFi' %}<i class="fas fa-wifi"></i>{% endif %}
+                                            {% if amenity == 'Pool' %}<i class="fas fa-swimming-pool"></i>{% endif %}
+                                            {% if amenity == 'Parking' %}<i class="fas fa-parking"></i>{% endif %}
+                                            {% if amenity == 'Restaurant' %}<i class="fas fa-utensils"></i>{% endif %}
+                                            {% if amenity == 'Spa' %}<i class="fas fa-spa"></i>{% endif %}
+                                            {% if amenity == 'Gym' %}<i class="fas fa-dumbbell"></i>{% endif %}
+                                            {% if amenity == 'Breakfast' %}<i class="fas fa-coffee"></i>{% endif %}
+                                            {{ amenity }}
+                                        </span>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="/api/placeholder/400/200" alt="Mountain View Hotel" class="hotel-img">
-                            <div class="card-body">
-                                <h5 class="card-title">Mountain View Hotel</h5>
-                                <div><i class="fas fa-map-marker-alt me-2"></i>Lipa City, Batangas</div>
-                                <div class="rating my-2">★★★★☆</div>
-                                <div class="price">₱6,200 / night</div>
-                                <div class="amenities">
-                                    <span class="me-3"><i class="fas fa-wifi"></i> WiFi</span>
-                                    <span class="me-3"><i class="fas fa-utensils"></i> Restaurant</span>
-                                    <span><i class="fas fa-spa"></i> Spa</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="/api/placeholder/400/200" alt="City Center Suite" class="hotel-img">
-                            <div class="card-body">
-                                <h5 class="card-title">City Center Suite</h5>
-                                <div><i class="fas fa-map-marker-alt me-2"></i>Batangas City</div>
-                                <div class="rating my-2">★★★★★</div>
-                                <div class="price">₱7,800 / night</div>
-                                <div class="amenities">
-                                    <span class="me-3"><i class="fas fa-wifi"></i> WiFi</span>
-                                    <span class="me-3"><i class="fas fa-dumbbell"></i> Gym</span>
-                                    <span><i class="fas fa-coffee"></i> Breakfast</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

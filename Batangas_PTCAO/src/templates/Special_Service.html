@@ -7,24 +7,34 @@
     <title>AE Registration</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+
         function addRoom() {
             const roomSection = document.querySelector('#rooms-section');
             const newRoom = document.createElement('div');
-            newRoom.className = "grid grid-cols-3 gap-4 mt-4";
+            newRoom.className = "grid grid-cols-4 gap-4 mt-4";
             newRoom.innerHTML = `
                 <div>
                     <label class="block font-medium">Types</label>
-                    <select class="w-full border rounded-lg p-2">
+                    <select name="room_type[]" class="w-full border rounded-lg p-2">
                         <option value="">Select the Type of Room</option>
+                        <option value="AC">AC Rooms</option>
+                        <option value="NON_AC">Non AC Rooms</option>
+                        <option value="KUBO">Kubo Rooms</option>
+                        <option value="OPEN">Open Cottages</option>
+                        <option value="CABANA">Cabana</option>
                     </select>
                 </div>
                 <div>
                     <label class="block font-medium">Total No.</label>
-                    <input type="number" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2">
+                    <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2">
                 </div>
                 <div>
                     <label class="block font-medium">Capacity</label>
-                    <input type="number" placeholder="No. of people" class="w-full border rounded-lg p-2">
+                    <input type="number" name="room_capacity[]" placeholder="No. of people" class="w-full border rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block font-medium">Price</label>
+                    <input type="number" step="0.01" name="room_price[]" placeholder="Room price" class="w-full border rounded-lg p-2">
                 </div>`;
             roomSection.appendChild(newRoom);
         }
@@ -45,10 +55,55 @@
                 <div>
                     <label class="block font-medium">Facilities & Amenities</label>
                     <select class="w-full border rounded-lg p-2">
-                        <option value="">Select Facilities</option>
+                                <option value="Select Facility">Select Facility</option>
+                                <option value="conference">Conference Room</option>
+                                <option value="ballroom">Ballroom</option>
+                                <option value="meeting">Meeting Room</option>
+                                <option value="business">Business Center</option>
+                                <option value="fitness">Fitness Center/Gym</option>
+                                <option value="spa">Spa & Wellness Center</option>
+                                <option value="pool">Swimming Pool</option>
+                                <option value="restaurant">Restaurant</option>
+                                <option value="bar">Bar/Lounge</option>
+                                <option value="wifi">WiFi</option>
+                                <option value="parking">Parking</option>
+                                <option value="laundry">Laundry Service</option>
                     </select>
                 </div>`;
             eventSection.appendChild(newEvent);
+        }
+
+        function addAmenity() {
+            const amenitySection = document.querySelector('#amenity-section');
+            const newAmenity = document.createElement('div');
+            newAmenity.className = "grid grid-cols-3 gap-4 mt-4";
+            newAmenity.innerHTML = `
+                <div>
+                    <label class="block font-medium">Amenity</label>
+                    <select name="amenity[]" class="w-full border rounded-lg p-2" required>
+                        <option value="">Select Amenity</option>
+                        <option value="air_conditioning">Air Conditioning</option>
+                        <option value="wifi">WiFi</option>
+                        <option value="tv">TV</option>
+                        <option value="mini_bar">Mini Bar</option>
+                        <option value="safe">Safe</option>
+                        <option value="coffee_maker">Coffee Maker</option>
+                        <option value="hair_dryer">Hair Dryer</option>
+                        <option value="iron">Iron</option>
+                        <option value="desk">Work Desk</option>
+                        <option value="balcony">Balcony</option>
+                        <option value="room_service">Room Service</option>
+                        <option value="laundry">Laundry Service</option>
+                        <option value="refrigerator">Refrigerator</option>
+                        <option value="telephone">Telephone</option>
+                        <option value="bathroom_amenities">Bathroom Amenities</option>
+                        <option value="shower">Shower</option>
+                        <option value="bathtub">Bathtub</option>
+                        <option value="toiletries">Toiletries</option>
+                        <option value="wardrobe">Wardrobe/Closet</option>
+                    </select>
+                </div>`;
+            amenitySection.appendChild(newAmenity);
         }
     </script>
 </head>
@@ -227,29 +282,29 @@
 
             <div id="rooms-section" class="mb-4">
                 <h2 class="font-semibold text-lg">ROOMS</h2>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-4 gap-4">
                     <div>
                         <label class="block font-medium">Types</label>
-                        <label>
-                            <select name="room_type[]" class="w-full border rounded-lg p-2" required>
-                                <option value="">Select the Type of Room</option>
-                                <option value="AC">AC Rooms</option>
-                                <option value="NON_AC">Non AC Rooms</option>
-                                <option value="KUBO">Kubo Rooms</option>
-                                <option value="OPEN">Open Cottages</option>
-                                <option value="CABANA">Cabana</option>
-                            </select>
-                        </label>
+                        <select name="room_type[]" class="w-full border rounded-lg p-2" required>
+                            <option value="">Select the Type of Room</option>
+                            <option value="AC">AC Rooms</option>
+                            <option value="NON_AC">Non AC Rooms</option>
+                            <option value="KUBO">Kubo Rooms</option>
+                            <option value="OPEN">Open Cottages</option>
+                            <option value="CABANA">Cabana</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block font-medium">Total No.</label>
-                        <label>
-                            <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2" required>
-                        </label>
+                        <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2" required>
                     </div>
                     <div>
                         <label class="block font-medium">Capacity</label>
                         <input type="number" name="room_capacity[]" placeholder="No. of people" class="w-full border rounded-lg p-2" required>
+                    </div>
+                    <div>
+                        <label class="block font-medium">Price</label>
+                        <input type="number" step="0.01" name="room_price[]" placeholder="Room price" class="w-full border rounded-lg p-2" required>
                     </div>
                 </div>
                 <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addRoom()">Add</button>
@@ -274,7 +329,7 @@
                         <label class="block font-medium">Facilities & Amenities</label>
                         <label>
                             <select name="facility_amenities[]" class="w-full border rounded-lg p-2" required>
-                                <option value="">Select Facilities</option>
+                                <option value="Select Facility">Select Facility</option>
                                 <option value="conference">Conference Room</option>
                                 <option value="ballroom">Ballroom</option>
                                 <option value="meeting">Meeting Room</option>
@@ -292,6 +347,38 @@
                     </div>
                 </div>
                 <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addEventFacility()">Add</button>
+            </div>
+
+            <div id="amenities-section" class="mb-4">
+                <h2 class="font-semibold text-lg">ROOM AMENITIES</h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-medium">Amenity</label>
+                        <select name="amenity[]" class="w-full border rounded-lg p-2" required>
+                            <option value="">Select Amenity</option>
+                            <option value="air_conditioning">Air Conditioning</option>
+                            <option value="wifi">WiFi</option>
+                            <option value="tv">TV</option>
+                            <option value="mini_bar">Mini Bar</option>
+                            <option value="safe">Safe</option>
+                            <option value="coffee_maker">Coffee Maker</option>
+                            <option value="hair_dryer">Hair Dryer</option>
+                            <option value="iron">Iron</option>
+                            <option value="desk">Work Desk</option>
+                            <option value="balcony">Balcony</option>
+                            <option value="room_service">Room Service</option>
+                            <option value="laundry">Laundry Service</option>
+                            <option value="refrigerator">Refrigerator</option>
+                            <option value="telephone">Telephone</option>
+                            <option value="bathroom_amenities">Bathroom Amenities</option>
+                            <option value="shower">Shower</option>
+                            <option value="bathtub">Bathtub</option>
+                            <option value="toiletries">Toiletries</option>
+                            <option value="wardrobe">Wardrobe/Closet</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addAmenity()">Add</button>
             </div>
 
             <div class="flex justify-between mt-6">
