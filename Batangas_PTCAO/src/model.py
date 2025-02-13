@@ -1,6 +1,6 @@
 from sqlalchemy import CheckConstraint
 
-from Batangas_PTCAO.src.extension import db
+from extension import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum
 import bcrypt

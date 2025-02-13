@@ -1,14 +1,14 @@
 import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.config import Config
+from extension import db
+from config import Config
 from datetime import timedelta
 
-from Batangas_PTCAO.src.routes.auth import init_auth_routes
-from Batangas_PTCAO.src.routes.business import init_business_routes
-from Batangas_PTCAO.src.routes.services import init_services_routes
-from Batangas_PTCAO.src.routes.main import init_main_routes
+from routes.auth import init_auth_routes
+from routes.business import init_business_routes
+from routes.services import init_services_routes
+from routes.main import init_main_routes
 
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')

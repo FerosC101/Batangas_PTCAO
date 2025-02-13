@@ -1,8 +1,8 @@
 import bcrypt
 from flask import render_template, request, redirect, url_for, session, flash
 from flask_jwt_extended import create_access_token
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User
+from extension import db
+from model import User
 from enum import Enum
 
 class AccountStatus(Enum):

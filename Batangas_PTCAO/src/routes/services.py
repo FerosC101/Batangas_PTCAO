@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, session, flash
-from Batangas_PTCAO.src.model import RegistrationStep
+from model import RegistrationStep
 
 def init_services_routes(app):
     @app.route('/special_services', methods=['GET', 'POST'])

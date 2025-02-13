@@ -1,8 +1,8 @@
 import os
 from flask import render_template, request, flash, redirect, url_for, send_from_directory
 from sqlalchemy.orm import joinedload
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import BusinessRegistration, Room, EventFacility
+from extension import db
+from model import BusinessRegistration, Room, EventFacility
 
 def init_main_routes(app):
     @app.route('/homepage', methods=['GET', 'POST'])

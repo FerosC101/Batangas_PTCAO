@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, session, flash
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User, BusinessRegistration, Room, EventFacility, SpecialServices, Amenity
-from Batangas_PTCAO.src.model import RegistrationStep
+from extension import db
+from model import User, BusinessRegistration, Room, EventFacility, SpecialServices, Amenity
+from model import RegistrationStep
 
 def init_business_routes(app):
     @app.route('/register', methods=['GET', 'POST'])
