@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+
+        .logo-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .nav-link {
+            color: #333;
+            padding: 0.8rem 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-link i {
+            width: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .trend-indicator {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up {
+            background-color: #d4edda;
+            color: #198754;
+        }
+
+        .trend-down {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-section">
+            <h4 class="mb-0">Batangas Explorer</h4>
+        </div>
+        <ul class="nav flex-column mt-3">
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-building"></i> Properties</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Documents</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-map-marked-alt"></i> Mapping</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-bullhorn"></i> Announcement</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">281</h3>
+                            <span class="text-muted">Total Users</span>
+                        </div>
+                    </div>
+                    <div class="trend-indicator trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+55% than last week</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-danger bg-opacity-10 text-danger me-3">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">2,300</h3>
+                            <span class="text-muted">Properties</span>
+                        </div>
+                    </div>
+                    <div class="trend-indicator trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+3% than last week</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">34k</h3>
+                            <span class="text-muted">Site Visits</span>
+                        </div>
+                    </div>
+                    <div class="trend-indicator trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+1% than yesterday</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-info bg-opacity-10 text-info me-3">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">+91</h3>
+                            <span class="text-muted">New Users</span>
+                        </div>
+                    </div>
+                    <span class="text-muted">Just updated</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Customer Feedback</h5>
+                        <select class="form-select" style="width: auto;">
+                            <option>This Year</option>
+                            <option>Last Year</option>
+                        </select>
+                    </div>
+                    <img src="/api/placeholder/600/300" alt="Customer Feedback Chart" style="width: 100%; height: 300px; object-fit: cover;">
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between text-muted">
+                            <span>Q1: 20</span>
+                            <span>Q2: 25</span>
+                            <span>Q3: 30</span>
+                            <span>Q4: 35</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Company Performance</h5>
+                        <select class="form-select" style="width: auto;">
+                            <option>2013-2016</option>
+                            <option>2017-2020</option>
+                        </select>
+                    </div>
+                    <img src="/api/placeholder/600/300" alt="Company Performance Chart" style="width: 100%; height: 300px; object-fit: cover;">
+                    <div class="mt-3">
+                        <div class="d-flex gap-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary rounded-circle me-2" style="width: 10px; height: 10px;"></div>
+                                <span>Sales</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-danger rounded-circle me-2" style="width: 10px; height: 10px;"></div>
+                                <span>Expenses</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Metrics -->
+        <div class="row g-3">
+            <div class="col-md-8">
+                <div class="chart-card">
+                    <h5 class="mb-4">Recent Transactions</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Location</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Modern House</td>
+                                    <td>Batangas City</td>
+                                    <td>₱2.5M</td>
+                                    <td><span class="status-badge bg-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Commercial Space</td>
+                                    <td>Lipa City</td>
+                                    <td>₱4.8M</td>
+                                    <td><span class="status-badge bg-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Farm Lot</td>
+                                    <td>Tanauan</td>
+                                    <td>₱1.8M</td>
+                                    <td><span class="status-badge bg-info">In Progress</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-card">
+                    <h5 class="mb-4">Quick Stats</h5>
+                    <div class="mb-3">
+                        <label class="text-muted mb-2">Monthly Revenue Target</label>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small>₱3.75M / ₱5M</small>
+                            <small>75%</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted mb-2">Property Listings</label>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: 60%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small>180 / 300</small>
+                            <small>60%</small>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-muted mb-2">Customer Satisfaction</label>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-info" style="width: 90%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small>4.5 / 5.0</small>
+                            <small>90%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
