@@ -25,13 +25,13 @@ def init_auth_routes(app):
                 flash('Email and password are required', 'error')
                 return render_template('Login.html')
 
-            print(f"🔍 Checking for user with email: {user_email}")  # Debugging output
+            print(f"Checking for user with email: {user_email}")  # Debugging output
 
             # Check if any users exist before querying
             with app.app_context():
                 users_exist = User.query.count()
                 if users_exist == 0:
-                    print("🚨 No users found in the database! Check if the database is populated.")
+                    print("No users found in the database! Check if the database is populated.")
                     flash('No users found in the database', 'error')
                     return render_template('Login.html')
 
@@ -41,15 +41,15 @@ def init_auth_routes(app):
 
             if not user:
                 flash('User not found', 'error')
-                print(f"🚨 No user found with email: {user_email}")  # Debugging output
+                print(f"No user found with email: {user_email}")  # Debugging output
                 return render_template('Login.html')
 
-            print(f"✅ Found user: {user.user_email}, Account Status: {user.account_status}")
+            print(f"Found user: {user.user_email}, Account Status: {user.account_status}")
 
             # Fix Enum Comparison (ensure correct attribute usage)
             if user.account_status in [AccountStatus.SUSPENDED.value, AccountStatus.MAINTENANCE.value]:
                 flash(f'Account is {user.account_status}. Contact support.', 'error')
-                print(f"🚨 Account is {user.account_status}, login blocked.")
+                print(f" Account is {user.account_status}, login blocked.")
                 return render_template('Login.html')
 
             # Check password hash correctly

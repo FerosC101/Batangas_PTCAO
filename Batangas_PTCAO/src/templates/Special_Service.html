@@ -4,169 +4,123 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AE Registration</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-
-        function addRoom() {
-            const roomSection = document.querySelector('#rooms-section');
-            const newRoom = document.createElement('div');
-            newRoom.className = "grid grid-cols-4 gap-4 mt-4";
-            newRoom.innerHTML = `
-                <div>
-                    <label class="block font-medium">Types</label>
-                    <select name="room_type[]" class="w-full border rounded-lg p-2">
-                        <option value="">Select the Type of Room</option>
-                        <option value="AC">AC Rooms</option>
-                        <option value="NON_AC">Non AC Rooms</option>
-                        <option value="KUBO">Kubo Rooms</option>
-                        <option value="OPEN">Open Cottages</option>
-                        <option value="CABANA">Cabana</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-medium">Total No.</label>
-                    <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2">
-                </div>
-                <div>
-                    <label class="block font-medium">Capacity</label>
-                    <input type="number" name="room_capacity[]" placeholder="No. of people" class="w-full border rounded-lg p-2">
-                </div>
-                <div>
-                    <label class="block font-medium">Price</label>
-                    <input type="number" step="0.01" name="room_price[]" placeholder="Room price" class="w-full border rounded-lg p-2">
-                </div>`;
-            roomSection.appendChild(newRoom);
+    <title>PTCAO Registration</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            max-height: 100vh;
+            overflow-y: auto;
         }
 
-        function addEventFacility() {
-            const eventSection = document.querySelector('#event-section');
-            const newEvent = document.createElement('div');
-            newEvent.className = "grid grid-cols-3 gap-4 mt-4";
-            newEvent.innerHTML = `
-                <div>
-                    <label class="block font-medium">Function Room's Name</label>
-                    <input type="text" placeholder="Enter function room's name" class="w-full border rounded-lg p-2">
-                </div>
-                <div>
-                    <label class="block font-medium">Room Capacity</label>
-                    <input type="number" placeholder="Enter room capacity" class="w-full border rounded-lg p-2">
-                </div>
-                <div>
-                    <label class="block font-medium">Facilities & Amenities</label>
-                    <select class="w-full border rounded-lg p-2">
-                                <option value="Select Facility">Select Facility</option>
-                                <option value="conference">Conference Room</option>
-                                <option value="ballroom">Ballroom</option>
-                                <option value="meeting">Meeting Room</option>
-                                <option value="business">Business Center</option>
-                                <option value="fitness">Fitness Center/Gym</option>
-                                <option value="spa">Spa & Wellness Center</option>
-                                <option value="pool">Swimming Pool</option>
-                                <option value="restaurant">Restaurant</option>
-                                <option value="bar">Bar/Lounge</option>
-                                <option value="wifi">WiFi</option>
-                                <option value="parking">Parking</option>
-                                <option value="laundry">Laundry Service</option>
-                    </select>
-                </div>`;
-            eventSection.appendChild(newEvent);
-        }
-
-        function addAmenity() {
-            const amenitySection = document.querySelector('#amenity-section');
-            const newAmenity = document.createElement('div');
-            newAmenity.className = "grid grid-cols-3 gap-4 mt-4";
-            newAmenity.innerHTML = `
-                <div>
-                    <label class="block font-medium">Amenity</label>
-                    <select name="amenity[]" class="w-full border rounded-lg p-2" required>
-                        <option value="">Select Amenity</option>
-                        <option value="air_conditioning">Air Conditioning</option>
-                        <option value="wifi">WiFi</option>
-                        <option value="tv">TV</option>
-                        <option value="mini_bar">Mini Bar</option>
-                        <option value="safe">Safe</option>
-                        <option value="coffee_maker">Coffee Maker</option>
-                        <option value="hair_dryer">Hair Dryer</option>
-                        <option value="iron">Iron</option>
-                        <option value="desk">Work Desk</option>
-                        <option value="balcony">Balcony</option>
-                        <option value="room_service">Room Service</option>
-                        <option value="laundry">Laundry Service</option>
-                        <option value="refrigerator">Refrigerator</option>
-                        <option value="telephone">Telephone</option>
-                        <option value="bathroom_amenities">Bathroom Amenities</option>
-                        <option value="shower">Shower</option>
-                        <option value="bathtub">Bathtub</option>
-                        <option value="toiletries">Toiletries</option>
-                        <option value="wardrobe">Wardrobe/Closet</option>
-                    </select>
-                </div>`;
-            amenitySection.appendChild(newAmenity);
-        }
-    </script>
-</head>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
-        background-size: cover;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-   /* .logo {
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .logo img {
-        width: 250px;
-        height: auto;
-    }
-        */
-        .logo {
-            margin-bottom: .5rem;
-            text-align: center;
+        .container {
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-        
-        .logo img {
-            max-width: 210px;
+            flex-direction: column;
+            padding: 1rem;
             height: auto;
         }
-    .steps {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-    }
 
-    .steps span {
-        font-size: 1rem;
-        color: #333;
-        flex: 1;
-        text-align: center;
-    }
+        .logo {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
 
-    .steps .active {
-        color: #007BFF;
-    }
-    .registration-container {
-        background-color: white;
-        width: 500px;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
+        .logo img {
+            width: 250px;
+            height: auto;
+        }
 
-    #flash-messages {
+        .registration-panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .registration-panel h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #007BFF;
+            font-size: 1.8rem;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps span {
+            font-size: 1rem;
+            color: #888;
+            flex: 1;
+            text-align: center;
+        }
+
+        .steps .active {
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .form-section h3 {
+            color: #007BFF;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .form-actions button {
+            padding: 0.8rem 2rem;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .form-actions button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .form-footer a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        #flash-messages {
             position: relative;
             max-width: 400px;
             margin: 20px auto;
@@ -193,18 +147,6 @@
             border: 1px solid #c3e6cb;
         }
 
-        .flash-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .flash-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-
         .close-btn {
             background: none;
             border: none;
@@ -213,31 +155,21 @@
             cursor: pointer;
             padding: 0;
             line-height: 1;
-            display: inline-block;
         }
         .close-btn:hover {
             color: #000;
         }
-    
-</style>
-
-<body class="bg-blue-100">
-    <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg mt-10 p-8 overflow-y-auto h-screen">
-        <div class="text-center mb-6">
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="registration-panel">
             <div class="logo">
-                <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Office Logo">
+                <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="PTCAO Logo">
             </div>
-        
-            <h1 class="text-2xl font-bold">AE REGISTRATION</h1>
-        </div>
+            <h2>PROVINCIAL TOURISM AND CULTURAL AFFAIRS OFFICE REGISTRATION</h2>
 
-        <div class="steps">
-            <span ><i class="fas fa-info-circle"></i> Details</span>
-            <span class="active"><i class="fas fa-cogs"></i> Special Services</span>
-            <span ><i class="fas fa-user-lock"></i> Login Credentials</span>
-        </div>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div id="flash-messages">
                         {% for category, message in messages %}
@@ -250,143 +182,301 @@
                 {% endif %}
             {% endwith %}
 
-        <form action="{{ url_for('special_services') }}" method="POST">
-            <div class="mb-4">
-                <label for="accreditation" class="block font-medium">Type of Accreditation</label>
-                <select id="accreditation" name="accreditation" class="w-full border rounded-lg p-2" required>
-                    <option value="">Select the Type of Accreditation</option>
-                    <option value="star">Star Rating Accreditation</option>
-                    <option value="premium">Premium Accreditation</option>
-                    <option value="regular">Regular Accreditation</option>
-                    <option value="basic">Basic Accreditation</option>
-                    <option value="mabuhay">Mabuhay Accreditation</option>
-                </select>
+            <div class="steps">
+                <span class="active"><i class="fas fa-info-circle"></i> Details</span>
+                <span><i class="fas fa-cogs"></i> Special Services</span>
+                <span><i class="fas fa-user-lock"></i> Login Credentials</span>
             </div>
 
-            <div class="mb-4">
-                <label for="classification" class="block font-medium">AE Classification</label>
-                <select id="classification" name="classification" class="w-full border rounded-lg p-2" required>
-                    <option value="">Select the AE Classification</option>
-                    <option value="HTL">HTL Hotel</option>
-                    <option value="CON">CON Condotel</option>
-                    <option value="SER">SER Service Residence</option>
-                    <option value="RES">RES Resort</option>
-                    <option value="APA">APA Apartelle</option>
-                    <option value="MOT">MOT Motel</option>
-                    <option value="PEN">PEN Pension House</option>
-                    <option value="HSS">HSS Home Stay Site</option>
-                    <option value="TIN">TIN Tourist Inn</option>
-                    <option value="OTH">OTH Other</option>
-                </select>
-            </div>
+            <form action="{{ url_for('business_registration') }}" method="POST" class="registration-form">
 
-            <div id="rooms-section" class="mb-4">
-                <h2 class="font-semibold text-lg">ROOMS</h2>
-                <div class="grid grid-cols-4 gap-4">
-                    <div>
-                        <label class="block font-medium">Types</label>
-                        <select name="room_type[]" class="w-full border rounded-lg p-2" required>
-                            <option value="">Select the Type of Room</option>
-                            <option value="AC">AC Rooms</option>
-                            <option value="NON_AC">Non AC Rooms</option>
-                            <option value="KUBO">Kubo Rooms</option>
-                            <option value="OPEN">Open Cottages</option>
-                            <option value="CABANA">Cabana</option>
-                        </select>
+                <!-- Basic Establishment Information -->
+                <div class="form-section">
+                    <h3>Establishment Information</h3>
+
+                    <div class="form-group">
+                        <label for="name">Name of Establishment</label>
+                        <input type="text" class="form-control" name="name" id="name" placeholder="Enter establishment name" required>
                     </div>
-                    <div>
-                        <label class="block font-medium">Total No.</label>
-                        <input type="number" name="room_number[]" placeholder="Enter no. of beds" class="w-full border rounded-lg p-2" required>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" name="address" id="address" placeholder="Enter complete address" required>
                     </div>
-                    <div>
-                        <label class="block font-medium">Capacity</label>
-                        <input type="number" name="room_capacity[]" placeholder="No. of people" class="w-full border rounded-lg p-2" required>
+
+                    <div class="form-group">
+                        <label>Type of Establishment</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="establishment_type" id="type-accommodation" value="Accommodation" required>
+                            <label class="form-check-label" for="type-accommodation">
+                                Accommodation (Hotel, Resort, Motel Hotel, Inn, Pension House)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="establishment_type" id="type-travel" value="Travel Agency">
+                            <label class="form-check-label" for="type-travel">
+                                Travel Agency/Tour Operator
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="establishment_type" id="type-restaurant" value="Restaurant">
+                            <label class="form-check-label" for="type-restaurant">
+                                Restaurant
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="establishment_type" id="type-sports" value="Sports Club">
+                            <label class="form-check-label" for="type-sports">
+                                Sports and/or Recreational Club
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="establishment_type" id="type-others" value="Others">
+                            <label class="form-check-label" for="type-others">
+                                Others
+                            </label>
+                            <input type="text" class="form-control mt-2" name="other_type_details" id="other_type_details" placeholder="Please specify">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-medium">Price</label>
-                        <input type="number" step="0.01" name="room_price[]" placeholder="Room price" class="w-full border rounded-lg p-2" required>
+
+                    <div class="form-group">
+                        <label for="date_established">Date Established</label>
+                        <input type="date" class="form-control" name="date_established" id="date_established" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tin">Tax Identification Number (TIN)</label>
+                        <input type="text" class="form-control" name="tin" id="tin" placeholder="Enter TIN" required>
                     </div>
                 </div>
-                <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addRoom()">Add</button>
-            </div>
 
-            <div id="event-section" class="mb-4">
-                <h2 class="font-semibold text-lg">EVENT AND FACILITIES</h2>
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block font-medium">Function Room's Name</label>
-                        <label>
-                            <input type="text" name="facility_name[]" placeholder="Enter function room's name" class="w-full border rounded-lg p-2" required>
-                        </label>
+                <!-- Contact Details -->
+                <div class="form-section">
+                    <h3>Contact Details</h3>
+
+                    <div class="form-group">
+                        <label for="landline">Landline</label>
+                        <input type="text" class="form-control" name="landline" id="landline" placeholder="Enter landline number">
                     </div>
-                    <div>
-                        <label class="block font-medium">Room Capacity</label>
-                        <label>
-                            <input type="number" name="facility_capacity[]" placeholder="Enter room capacity" class="w-full border rounded-lg p-2" required>
-                        </label>
+
+                    <div class="form-group">
+                        <label for="mobile_number">Mobile Number</label>
+                        <input type="text" class="form-control" name="mobile_number" id="mobile_number" placeholder="Enter mobile number" required>
                     </div>
-                    <div>
-                        <label class="block font-medium">Facilities & Amenities</label>
-                        <label>
-                            <select name="facility_amenities[]" class="w-full border rounded-lg p-2" required>
-                                <option value="Select Facility">Select Facility</option>
-                                <option value="conference">Conference Room</option>
-                                <option value="ballroom">Ballroom</option>
-                                <option value="meeting">Meeting Room</option>
-                                <option value="business">Business Center</option>
-                                <option value="fitness">Fitness Center/Gym</option>
-                                <option value="spa">Spa & Wellness Center</option>
-                                <option value="pool">Swimming Pool</option>
-                                <option value="restaurant">Restaurant</option>
-                                <option value="bar">Bar/Lounge</option>
-                                <option value="wifi">WiFi</option>
-                                <option value="parking">Parking</option>
-                                <option value="laundry">Laundry Service</option>
+
+                    <div class="form-group">
+                        <label for="email_address">Email Address</label>
+                        <input type="email" class="form-control" name="email_address" id="email_address" placeholder="Enter email address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="website">Website</label>
+                        <input type="url" class="form-control" name="website" id="website" placeholder="Enter website URL">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="social_media">Social Media Accounts</label>
+                        <textarea class="form-control" name="social_media" id="social_media" rows="2" placeholder="Enter social media accounts"></textarea>
+                    </div>
+                </div>
+
+                <!-- DOT Accreditation -->
+                <div class="form-section">
+                    <h3>Department of Tourism (DOT) Accreditation</h3>
+
+                    <div class="form-group">
+                        <label>Is your establishment accredited by the Department of Tourism (DOT)?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="is_accredited" id="is-accredited-yes" value="yes">
+                            <label class="form-check-label" for="is-accredited-yes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="is_accredited" id="is-accredited-no" value="no" checked>
+                            <label class="form-check-label" for="is-accredited-no">No</label>
+                        </div>
+                    </div>
+
+                    <div id="accreditation-details" style="display: none;">
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <input type="text" class="form-control" name="category" id="category" placeholder="Enter category">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="star_rating">Star Rating (if applicable)</label>
+                            <select class="form-control" name="star_rating" id="star_rating">
+                                <option value="">Select rating</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
                             </select>
-                        </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Accreditation Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="accreditation_type" id="accreditation-regular" value="Regular">
+                                <label class="form-check-label" for="accreditation-regular">Regular</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="accreditation_type" id="accreditation-basic" value="Basic Registration">
+                                <label class="form-check-label" for="accreditation-basic">Basic Registration</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addEventFacility()">Add</button>
-            </div>
 
-            <div id="amenities-section" class="mb-4">
-                <h2 class="font-semibold text-lg">ROOM AMENITIES</h2>
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block font-medium">Amenity</label>
-                        <select name="amenity[]" class="w-full border rounded-lg p-2" required>
-                            <option value="">Select Amenity</option>
-                            <option value="air_conditioning">Air Conditioning</option>
-                            <option value="wifi">WiFi</option>
-                            <option value="tv">TV</option>
-                            <option value="mini_bar">Mini Bar</option>
-                            <option value="safe">Safe</option>
-                            <option value="coffee_maker">Coffee Maker</option>
-                            <option value="hair_dryer">Hair Dryer</option>
-                            <option value="iron">Iron</option>
-                            <option value="desk">Work Desk</option>
-                            <option value="balcony">Balcony</option>
-                            <option value="room_service">Room Service</option>
-                            <option value="laundry">Laundry Service</option>
-                            <option value="refrigerator">Refrigerator</option>
-                            <option value="telephone">Telephone</option>
-                            <option value="bathroom_amenities">Bathroom Amenities</option>
-                            <option value="shower">Shower</option>
-                            <option value="bathtub">Bathtub</option>
-                            <option value="toiletries">Toiletries</option>
-                            <option value="wardrobe">Wardrobe/Closet</option>
+                <!-- Management Details -->
+                <div class="form-section">
+                    <h3>Management Details</h3>
+
+                    <div class="form-group">
+                        <label>Is your establishment managed by a Managing Company?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="has_managing_company" id="has-company-yes" value="yes">
+                            <label class="form-check-label" for="has-company-yes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="has_managing_company" id="has-company-no" value="no" checked>
+                            <label class="form-check-label" for="has-company-no">No</label>
+                        </div>
+                    </div>
+
+                    <div id="company-details" style="display: none;">
+                        <div class="form-group">
+                            <label for="managing_company_name">Managing Company Name</label>
+                            <input type="text" class="form-control" name="managing_company_name" id="managing_company_name" placeholder="Enter company name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="managing_company_address">Managing Company Address</label>
+                            <input type="text" class="form-control" name="managing_company_address" id="managing_company_address" placeholder="Enter company address">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="owner_manager_name">Name of Owner/Manager</label>
+                        <input type="text" class="form-control" name="owner_manager_name" id="owner_manager_name" placeholder="Enter name of owner/manager" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Type of Organization</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="organization_type" id="org-sole" value="Sole Proprietorship" required>
+                            <label class="form-check-label" for="org-sole">Sole Proprietorship</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="organization_type" id="org-partnership" value="Partnership">
+                            <label class="form-check-label" for="org-partnership">Partnership</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="organization_type" id="org-corporation" value="Corporation">
+                            <label class="form-check-label" for="org-corporation">Corporation</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Details -->
+                <div class="form-section">
+                    <h3>Employee Information</h3>
+
+                    <div class="form-group">
+                        <label for="male_count">Number of Male Employees</label>
+                        <input type="number" class="form-control" name="male_count" id="male_count" min="0" value="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="female_count">Number of Female Employees</label>
+                        <input type="number" class="form-control" name="female_count" id="female_count" min="0" value="0" required>
+                    </div>
+                </div>
+
+                <!-- AE Classification (if accommodation is selected) -->
+                <div id="ae-classification-section" class="form-section" style="display: none;">
+                    <h3>AE Classification</h3>
+
+                    <div class="form-group">
+                        <label for="ae_classification">Select AE Classification</label>
+                        <select class="form-control" name="ae_classification" id="ae_classification">
+                            <option value="">Select classification</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Business">Business</option>
+                            <option value="Resort">Resort</option>
+                            <option value="Boutique">Boutique</option>
                         </select>
                     </div>
                 </div>
-                <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="addAmenity()">Add</button>
-            </div>
 
-            <div class="flex justify-between mt-6">
-                <a href="{{ url_for('business_registration') }}" class="bg-gray-400 text-white px-6 py-2 rounded-lg">Prev</a>
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg">Next</button>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Next</button>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p>By proceeding with this registration, you consent to the <a href="#">Data Privacy Notice</a> of this system.</p>
             </div>
-        </form>
+        </div>
     </div>
-   
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Toggle accreditation details section
+        document.querySelectorAll('input[name="is_accredited"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'yes') {
+                    document.getElementById('accreditation-details').style.display = 'block';
+                } else {
+                    document.getElementById('accreditation-details').style.display = 'none';
+                }
+            });
+        });
+
+        // Toggle managing company details section
+        document.querySelectorAll('input[name="has_managing_company"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'yes') {
+                    document.getElementById('company-details').style.display = 'block';
+                } else {
+                    document.getElementById('company-details').style.display = 'none';
+                }
+            });
+        });
+
+        // Show AE classification if accommodation is selected
+        document.querySelectorAll('input[name="establishment_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'Accommodation') {
+                    document.getElementById('ae-classification-section').style.display = 'block';
+                } else {
+                    document.getElementById('ae-classification-section').style.display = 'none';
+                }
+            });
+        });
+
+        // Show other type details input only when "Others" is selected
+        document.getElementById('type-others').addEventListener('change', function() {
+            const otherDetails = document.getElementById('other_type_details');
+            if (this.checked) {
+                otherDetails.required = true;
+                otherDetails.parentElement.style.display = 'block';
+            } else {
+                otherDetails.required = false;
+                otherDetails.parentElement.style.display = 'none';
+            }
+        });
+
+        // Initialize the form
+        window.addEventListener('load', function() {
+            // Hide other type details initially
+            const otherDetails = document.getElementById('other_type_details');
+            otherDetails.parentElement.style.display = 'none';
+        });
+    </script>
 </body>
 </html>

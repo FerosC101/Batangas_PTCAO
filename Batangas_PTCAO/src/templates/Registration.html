@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AE Registration</title>
+    <title>PTCAO Registration</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -14,8 +14,8 @@
             background: url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
             background-size: cover;
             color: #333;
-            max-height: 100vh; /* Limit the height */
-            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 100vh;
+            overflow-y: auto;
         }
 
         .container {
@@ -24,7 +24,7 @@
             align-items: center;
             flex-direction: column;
             padding: 1rem;
-            height: auto; /* Allow the container to grow */
+            height: auto;
         }
 
         .logo {
@@ -76,6 +76,7 @@
 
         .form-actions {
             text-align: center;
+            margin-top: 20px;
         }
 
         .form-actions button {
@@ -166,7 +167,7 @@
             <div class="logo">
                 <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Office Logo">
             </div>
-            <h2>AE REGISTRATION</h2>
+            <h2>PTCAO REGISTRATION</h2>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -182,50 +183,102 @@
             {% endwith %}
 
             <div class="steps">
-                <span class="active"><i class="fas fa-info-circle"></i> Details</span>
-                <span><i class="fas fa-cogs"></i> Special Services</span>
-                <span><i class="fas fa-user-lock"></i> Login Credentials</span>
+                <span class="active"><i class="fas fa-building"></i> Establishment</span>
+                <span><i class="fas fa-address-card"></i> Contact Info</span>
+                <span><i class="fas fa-certificate"></i> Accreditation</span>
+                <span><i class="fas fa-cogs"></i> Facilities</span>
             </div>
 
-            <form action="{{ url_for('business_registration') }}" method="POST" class="registration-form">
+            <form action="{{ url_for('establishment_registration') }}" method="POST" class="registration-form">
+                <!-- Establishment Details -->
+                <h4 class="mb-3">Establishment Information</h4>
+
                 <div class="form-group">
-                    <label for="business-registration">Business Registration No</label>
-                    <input type="text" class="form-control" name="business-registration" id="business-registration" placeholder="Enter business registration no" required>
+                    <label for="name">Name of Establishment</label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Enter establishment name" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="business-name">Business Name</label>
-                    <input type="text" class="form-control" name="business-name" id="business-name" placeholder="Enter business name" required>
+                    <label for="address">Address</label>
+                    <input type="text" class="form-control" name="address" id="address" placeholder="Enter complete address" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="official-contact">Official Contact No</label>
-                    <input type="text" class="form-control" name="official-contact" id="official-contact" placeholder="Enter official contact no" required>
+                    <label for="establishment_type">Type</label>
+                    <select class="form-control" name="establishment_type" id="establishment_type" required>
+                        <option value="">Select type of establishment</option>
+                        <option value="Accommodation">Accommodation (Hotel, Resort, Motel Hotel, Inn, Pension House)</option>
+                        <option value="Travel Agency">Travel Agency/Tour Operator</option>
+                        <option value="Restaurant">Restaurant</option>
+                        <option value="Sports Club">Sports and/or Recreational Club</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="other_type_div" style="display: none;">
+                    <label for="other_type_details">Please specify</label>
+                    <input type="text" class="form-control" name="other_type_details" id="other_type_details" placeholder="Enter other establishment type">
                 </div>
 
                 <div class="form-group">
-                    <label for="business-address">Business Address</label>
-                    <input type="text" class="form-control" name="business-address" id="business-address" placeholder="Enter Business Address" required>
+                    <label for="date_established">Date Established</label>
+                    <input type="date" class="form-control" name="date_established" id="date_established" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="taxpayer-name">Tax Payer Name</label>
-                    <input type="text" class="form-control" name="taxpayer-name" id="taxpayer-name" placeholder="Enter Tax Payer Name" required>
+                    <label for="tin">Tax Identification Number (TIN)</label>
+                    <input type="text" class="form-control" name="tin" id="tin" placeholder="Enter TIN" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="male_count">Male Employees</label>
+                        <input type="number" class="form-control" name="male_count" id="male_count" min="0" value="0" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="female_count">Female Employees</label>
+                        <input type="number" class="form-control" name="female_count" id="female_count" min="0" value="0" required>
+                    </div>
+                </div>
+
+                <h4 class="mb-3 mt-4">Management Details</h4>
+
+                <div class="form-group">
+                    <label>Is your establishment managed by a Managing Company?</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="has_managing_company" id="has_managing_company_yes" value="true">
+                        <label class="form-check-label" for="has_managing_company_yes">Yes</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="has_managing_company" id="has_managing_company_no" value="false" checked>
+                        <label class="form-check-label" for="has_managing_company_no">No</label>
+                    </div>
+                </div>
+
+                <div id="managing_company_details" style="display: none;">
+                    <div class="form-group">
+                        <label for="managing_company_name">Managing Company Name</label>
+                        <input type="text" class="form-control" name="managing_company_name" id="managing_company_name" placeholder="Enter managing company name">
+                    </div>
+                    <div class="form-group">
+                        <label for="managing_company_address">Managing Company Address</label>
+                        <input type="text" class="form-control" name="managing_company_address" id="managing_company_address" placeholder="Enter managing company address">
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="total-employees">No. of Employees</label>
-                    <input type="number" class="form-control" name="total-employees" id="total-employees" placeholder="Enter total no. of employees" required>
+                    <label for="owner_manager_name">Name of Owner/Manager</label>
+                    <input type="text" class="form-control" name="owner_manager_name" id="owner_manager_name" placeholder="Enter owner/manager name" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="total-rooms">Total No. of Rooms</label>
-                    <input type="number" class="form-control" name="total-rooms" id="total-rooms" placeholder="Enter total no. of rooms" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="total-beds">Total No. of Beds</label>
-                    <input type="number" class="form-control" name="total-beds" id="total-beds" placeholder="Enter total no. of beds" required>
+                    <label for="organization_type">Type of Organization</label>
+                    <select class="form-control" name="organization_type" id="organization_type" required>
+                        <option value="">Select organization type</option>
+                        <option value="Sole Proprietorship">Sole Proprietorship</option>
+                        <option value="Partnership">Partnership</option>
+                        <option value="Corporation">Corporation</option>
+                    </select>
                 </div>
 
                 <div class="form-actions">
@@ -239,9 +292,33 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies (optional) -->
+    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Show/hide other type details field
+        document.getElementById('establishment_type').addEventListener('change', function() {
+            const otherTypeDiv = document.getElementById('other_type_div');
+            if (this.value === 'Others') {
+                otherTypeDiv.style.display = 'block';
+            } else {
+                otherTypeDiv.style.display = 'none';
+            }
+        });
+
+        // Show/hide managing company details
+        document.getElementsByName('has_managing_company').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                const managingCompanyDetails = document.getElementById('managing_company_details');
+                if (this.value === 'true') {
+                    managingCompanyDetails.style.display = 'block';
+                } else {
+                    managingCompanyDetails.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,135 +1,211 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User, BusinessRegistration, Room, EventFacility, SpecialServices, Amenity
-from Batangas_PTCAO.src.model import RegistrationStep
+from Batangas_PTCAO.src.model import (
+    RegistrationStep, Establishment, ContactDetails,
+    ManagementDetails, EmployeeCount, DotAccreditation
+)
+from datetime import datetime
 
-def init_business_routes(app):
-    @app.route('/register', methods=['GET', 'POST'])
-    def register():
+
+def init_establishment_routes(app):
+    @app.route('/establishment_registration', methods=['GET', 'POST'])
+    def establishment_registration():
         if request.method == 'POST':
-            return redirect(url_for('business_registration'))
+            # Collect establishment data
+            try:
+                # Convert string date to Date object
+                date_established = datetime.strptime(request.form.get('date_established'), '%Y-%m-%d').date()
 
-        session['registration_step'] = RegistrationStep.BUSINESS_DETAILS
+                establishment_data = {
+                    'name': request.form.get('name'),
+                    'address': request.form.get('address'),
+                    'establishment_type': request.form.get('establishment_type'),
+                    'date_established': date_established,
+                    'tin': request.form.get('tin'),
+                    'male_count': int(request.form.get('male_count', 0)),
+                    'female_count': int(request.form.get('female_count', 0)),
+                }
+
+                # Handle "Others" type
+                if establishment_data['establishment_type'] == 'Others':
+                    establishment_data['other_type_details'] = request.form.get('other_type_details')
+                    if not establishment_data['other_type_details']:
+                        flash('Please specify the establishment type', 'error')
+                        return render_template('establishment_registration.html')
+
+                # Management details
+                has_managing_company = request.form.get('has_managing_company') == 'true'
+                management_data = {
+                    'has_managing_company': has_managing_company,
+                    'owner_manager_name': request.form.get('owner_manager_name'),
+                    'organization_type': request.form.get('organization_type')
+                }
+
+                if has_managing_company:
+                    management_data['managing_company_name'] = request.form.get('managing_company_name')
+                    management_data['managing_company_address'] = request.form.get('managing_company_address')
+
+                    if not management_data['managing_company_name'] or not management_data['managing_company_address']:
+                        flash('Managing company details are required', 'error')
+                        return render_template('establishment_registration.html')
+
+                # Validate required fields
+                if not all([
+                    establishment_data['name'],
+                    establishment_data['address'],
+                    establishment_data['establishment_type'],
+                    establishment_data['date_established'],
+                    establishment_data['tin'],
+                    management_data['owner_manager_name'],
+                    management_data['organization_type']
+                ]):
+                    flash('All required fields must be filled', 'error')
+                    return render_template('establishment_registration.html')
+
+                # Store data in session for next steps
+                session['registration_data'] = session.get('registration_data', {})
+                session['registration_data']['establishment'] = establishment_data
+                session['registration_data']['management'] = management_data
+
+                # Update registration step to move to contact info
+                session['registration_step'] = RegistrationStep.CONTACT_INFO
+
+                # Proceed to next step
+                return redirect(url_for('contact_info_registration'))
+
+            except ValueError as e:
+                flash(f'Invalid input: {str(e)}', 'error')
+                return render_template('establishment_registration.html')
+
+        # GET request - display the form
+        session['registration_step'] = RegistrationStep.BUSINESS_DETAILS  # Using the existing enum value
         session['registration_data'] = {}
-        return render_template('Registration.html')
+        return render_template('establishment_registration.html')
 
-    @app.route('/business_registration', methods=['GET', 'POST'])
-    def business_registration():
+    @app.route('/contact_info_registration', methods=['GET', 'POST'])
+    def contact_info_registration():
+        # Check if establishment data exists in session
+        if 'registration_data' not in session or 'establishment' not in session['registration_data']:
+            flash('Please complete establishment information first', 'error')
+            return redirect(url_for('establishment_registration'))
+
         if request.method == 'POST':
-            business_data = {
-                'business_registration_no': request.form.get('business-registration'),
-                'business_name': request.form.get('business-name'),
-                'official_contact_no': request.form.get('official-contact'),
-                'business_address': request.form.get('business-address'),
-                'taxpayer_name': request.form.get('taxpayer-name'),
-                'total_employees': request.form.get('total-employees'),
-                'total_rooms': request.form.get('total-rooms'),
-                'total_beds': request.form.get('total-beds')
+            # Collect contact information
+            contact_data = {
+                'landline': request.form.get('landline'),
+                'mobile_number': request.form.get('mobile_number'),
+                'email_address': request.form.get('email_address'),
+                'website': request.form.get('website'),
+                'social_media_accounts': request.form.get('social_media_accounts')
             }
 
-            if not all(business_data.values()):
-                flash('All fields are required', 'error')
-                return render_template('Registration.html')
+            # Validate that at least one contact method is provided
+            if not any([contact_data['landline'], contact_data['mobile_number'], contact_data['email_address']]):
+                flash('At least one contact method (landline, mobile, or email) is required', 'error')
+                return render_template('contact_info_registration.html')
 
-            try:
-                business_data['total_employees'] = int(business_data['total_employees'])
-                business_data['total_rooms'] = int(business_data['total_rooms'])
-                business_data['total_beds'] = int(business_data['total_beds'])
-            except ValueError:
-                flash('Invalid numeric values provided', 'error')
-                return render_template('Registration.html')
+            # Store contact data in session
+            session['registration_data']['contact'] = contact_data
 
-            session['registration_data'] = session.get('registration_data', {})
-            session['registration_data']['business'] = business_data
-            session['registration_step'] = RegistrationStep.SPECIAL_SERVICES
+            # Move to next step (DOT Accreditation)
+            session['registration_step'] = RegistrationStep.SPECIAL_SERVICES  # Using the existing enum
 
-            return redirect(url_for('special_services'))
+            return redirect(url_for('accreditation_registration'))
 
-        return render_template('Registration.html')
+        return render_template('contact_info_registration.html')
 
-    @app.route('/login_credentials', methods=['GET', 'POST'])
-    def login_credentials():
-        if 'registration_data' not in session or 'services' not in session['registration_data']:
-            flash('Please complete special services first', 'error')
-            return redirect(url_for('special_services'))
+    @app.route('/save_establishment_data', methods=['POST'])
+    def save_establishment_data():
+        """
+        Save all establishment data to the database after completing all registration steps
+        """
+        if 'registration_data' not in session:
+            flash('Registration data is missing', 'error')
+            return redirect(url_for('establishment_registration'))
 
-        if request.method == 'POST':
-            username = request.form.get('username')
-            password = request.form.get('password')
-            confirm_password = request.form.get('confirm-password')
+        try:
+            # Begin database transaction
+            db.session.begin_nested()
 
-            if not username or not password or not confirm_password:
-                flash('All fields are required', 'error')
-                return render_template('LoginCredentials.html')
+            # Extract data from session
+            establishment_data = session['registration_data']['establishment']
+            management_data = session['registration_data']['management']
+            contact_data = session['registration_data'].get('contact', {})
+            accreditation_data = session['registration_data'].get('accreditation', {})
 
-            if password != confirm_password:
-                flash('Passwords do not match', 'error')
-                return render_template('LoginCredentials.html')
+            # Create new establishment
+            new_establishment = Establishment(
+                name=establishment_data['name'],
+                address=establishment_data['address'],
+                establishment_type=establishment_data['establishment_type'],
+                date_established=establishment_data['date_established'],
+                tin=establishment_data['tin']
+            )
 
-            if User.query.filter_by(user_email=username).first():
-                flash('Username already exists', 'error')
-                return render_template('LoginCredentials.html')
+            # Handle "Other" establishment type
+            if establishment_data['establishment_type'] == 'Others' and 'other_type_details' in establishment_data:
+                new_establishment.other_type_details = establishment_data['other_type_details']
 
-            try:
-                db.session.begin_nested()
+            db.session.add(new_establishment)
+            db.session.flush()  # Get the establishment_id without committing
 
-                new_user = User(user_email=username)
-                new_user.set_password(password)
-                db.session.add(new_user)
-                db.session.flush()
+            # Create employee count record
+            employee_count = EmployeeCount(
+                establishment_id=new_establishment.establishment_id,
+                male_count=establishment_data['male_count'],
+                female_count=establishment_data['female_count']
+            )
+            db.session.add(employee_count)
 
-                business_data = session['registration_data']['business']
-                new_business = BusinessRegistration(
-                    account_id=new_user.user_id,
-                    business_registration_no=business_data['business_registration_no'],
-                    business_name=business_data['business_name'],
-                    official_contact_no=business_data['official_contact_no'],
-                    business_address=business_data['business_address'],
-                    taxpayer_name=business_data['taxpayer_name'],
-                    total_employees=business_data['total_employees'],
-                    total_rooms=business_data['total_rooms'],
-                    total_beds=business_data['total_beds']
+            # Create management details
+            management_details = ManagementDetails(
+                establishment_id=new_establishment.establishment_id,
+                has_managing_company=management_data['has_managing_company'],
+                owner_manager_name=management_data['owner_manager_name'],
+                organization_type=management_data['organization_type']
+            )
+
+            if management_data['has_managing_company']:
+                management_details.managing_company_name = management_data['managing_company_name']
+                management_details.managing_company_address = management_data['managing_company_address']
+
+            db.session.add(management_details)
+
+            # Create contact details if provided
+            if contact_data:
+                contact = ContactDetails(
+                    establishment_id=new_establishment.establishment_id,
+                    landline=contact_data.get('landline'),
+                    mobile_number=contact_data.get('mobile_number'),
+                    email_address=contact_data.get('email_address'),
+                    website=contact_data.get('website'),
+                    social_media_accounts=contact_data.get('social_media_accounts')
                 )
-                db.session.add(new_business)
-                db.session.flush()
+                db.session.add(contact)
 
-                services_data = session['registration_data']['services']
-                new_services = SpecialServices(
-                    business_id=new_business.business_id,
-                    accreditation_type=services_data['accreditation'],
-                    ae_classification=services_data['classification']
+            # Create DOT accreditation details if provided
+            if accreditation_data:
+                accreditation = DotAccreditation(
+                    establishment_id=new_establishment.establishment_id,
+                    is_accredited=accreditation_data.get('is_accredited', False),
+                    category=accreditation_data.get('category'),
+                    star_rating=accreditation_data.get('star_rating'),
+                    accreditation_type=accreditation_data.get('accreditation_type')
                 )
-                db.session.add(new_services)
+                db.session.add(accreditation)
 
-                for room_data in services_data['rooms']:
-                    new_room = Room(
-                        business_id=new_business.business_id,
-                        room_type=room_data['type'],
-                        total_number=room_data['number'],
-                        capacity=room_data['capacity'],
-                        price=0.0
-                    )
-                    db.session.add(new_room)
+            # Commit all changes
+            db.session.commit()
 
-                for facility_data in services_data['facilities']:
-                    new_facility = EventFacility(
-                        business_id=new_business.business_id,
-                        room_name=facility_data['name'],
-                        capacity=facility_data['capacity'],
-                        facilities=facility_data['amenities']
-                    )
-                    db.session.add(new_facility)
+            # Clear registration data from session
+            session.pop('registration_data', None)
+            session.pop('registration_step', None)
 
-                db.session.commit()
-                session.pop('registration_data', None)
-                session.pop('registration_step', None)
+            flash('Registration completed successfully!', 'success')
+            return redirect(url_for('registration_success'))
 
-                return render_template('Success_Template.html')
-
-            except Exception as e:
-                db.session.rollback()
-                print(f"Registration error: {str(e)}")
-                flash('Registration failed. Please try again.', 'error')
-                return render_template('LoginCredentials.html')
-
-        return render_template('LoginCredentials.html')
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error saving establishment data: {str(e)}")
+            flash(f"Registration failed: {str(e)}", 'error')
+            return redirect(url_for('establishment_registration'))

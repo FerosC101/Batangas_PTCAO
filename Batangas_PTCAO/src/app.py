@@ -6,7 +6,7 @@ from Batangas_PTCAO.src.config import Config
 from datetime import timedelta
 
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
-from Batangas_PTCAO.src.routes.business import init_business_routes
+from Batangas_PTCAO.src.routes.business import init_establishment_routes
 from Batangas_PTCAO.src.routes.services import init_services_routes
 from Batangas_PTCAO.src.routes.main import init_main_routes
 
@@ -26,7 +26,7 @@ def create_app():
 
     # Initialize routes
     init_auth_routes(app)
-    init_business_routes(app)
+    init_establishment_routes(app)
     init_services_routes(app)
     init_main_routes(app)
 
