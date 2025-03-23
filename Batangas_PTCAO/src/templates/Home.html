@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --memo-color: #0d6efd;
+            --destinations-color: #198754;
+            --updates-color: #0dcaf0;
+            --about-color: #6c757d;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .hero-section {
+            background-image: url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}");
+            background-size: cover;
+            height: 500px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; /* Add this line to center horizontally */
+            padding: 0 5%;
+            color: white;
+            text-align: center; /* Add this line to center text */
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        .hero-search {
+            max-width: 500px;
+            position: relative;
+        }
+        .hero-search input {
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: none;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .hero-search button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            border-radius: 25px;
+            padding: 7px 15px;
+            background-color: var(--accent);
+            border: none;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .section-container {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .destination-card .card-img-top {
+            height: 220px;
+            object-fit: cover;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .destination-card .card-body {
+            padding: 1.5rem;
+        }
+        .destination-card .location {
+            display: flex;
+            align-items: center;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+        .destination-card .location i {
+            margin-right: 5px;
+        }
+        .badge-custom {
+            background-color: rgba(255, 126, 0, 0.1);
+            color: var(--accent);
+            font-weight: 500;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            margin-right: 5px;
+            font-size: 0.75rem;
+        }
+        .memo-card {
+            border-left: 4px solid var(--memo-color);
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .update-item {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        .update-icon {
+            background-color: rgba(13, 202, 240, 0.1);
+            color: var(--updates-color);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .update-content h6 {
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+        .announcement-date {
+            color: #666;
+            font-size: 0.85rem;
+            margin: 0;
+            margin-bottom: 0.5rem;
+        }
+        .quick-links {
+            margin-top: 3rem;
+        }
+        .quick-link-card {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        .quick-link-card:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateX(5px);
+        }
+        .quick-link-card:hover .quick-link-icon {
+            background-color: white;
+            color: var(--primary);
+        }
+        .quick-link-card:hover h6 {
+            color: white;
+        }
+        .quick-link-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 51, 102, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 15px;
+            transition: all 0.3s;
+        }
+        .quick-link-card h6 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        .about-section {
+            background-color: var(--light-bg);
+            padding: 3rem 0;
+            border-radius: 10px;
+        }
+        .about-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+        }
+        .btn-explore {
+            background-color: var(--accent);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        .btn-explore:hover {
+            background-color: #e06e00;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 126, 0, 0.3);
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 3rem 0 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 3rem;
+        }
+        .footer-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .social-icons {
+            display: flex;
+            margin-top: 1rem;
+        }
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        .social-icon:hover {
+            background-color: var(--accent);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text">
+                    <img src="../static/img/Batangas_Logo.png" alt="Logo" class="me-2" width="40" height="40">
+                    Batangas Explorer
+                </a>
+
+                <ul class="navbar-nav flex-row d-none d-md-flex">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+
+                <div class="user-profile dropdown">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="d-none d-md-inline">Admin User</span>
+                    <i class="fas fa-chevron-down ms-2"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay">
+            <h1 class="hero-title">Discover Batangas</h1>
+            <p class="hero-subtitle">Explore the beautiful beaches, rich cultural heritage, and diverse tourism offerings of the Philippines' most visited province.</p>
+            <div class="hero-search">
+                <input type="text" placeholder="Search destinations, attractions, or activities...">
+                <button class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Featured Destinations -->
+        <section class="section-container">
+            <h2 class="section-title">Featured Destinations</h2>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card destination-card">
+                        <img src="../static/img/taalprofile.jpeg" alt="Taal Volcano" class="card-img-top" weight="400" height="300">
+                        <div class="card-body">
+                            <div class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Talisay, Batangas</span>
+                            </div>
+                            <h5 class="card-title">Taal Volcano</h5>
+                            <p class="card-text">One of the most iconic landmarks in the Philippines and the world's smallest active volcano.</p>
+                            <div class="d-flex mt-3 mb-3">
+                                <span class="badge-custom">Hiking</span>
+                                <span class="badge-custom">Nature</span>
+                                <span class="badge-custom">Adventure</span>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary">Explore</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="card destination-card">
+                        <img src="../static/img/Tingloy-Beach.jpg" alt="Taal Volcano" class="card-img-top" weight="400" height="300">
+                        <div class="card-body">
+                            <div class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Mabini, Batangas</span>
+                            </div>
+                            <h5 class="card-title">Anilao Beach</h5>
+                            <p class="card-text">A world-renowned diving spot known for its rich marine biodiversity and crystal clear waters.</p>
+                            <div class="d-flex mt-3 mb-3">
+                                <span class="badge-custom">Diving</span>
+                                <span class="badge-custom">Beach</span>
+                                <span class="badge-custom">Snorkeling</span>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary">Explore</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="card destination-card">
+                        <img src="../static/img/Fortune-Island.jpg" alt="Taal Volcano" class="card-img-top" weight="400" height="300">
+                        <div class="card-body">
+                            <div class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Nasugbu, Batangas</span>
+                            </div>
+                            <h5 class="card-title">Fortune Island</h5>
+                            <p class="card-text">Famous for its Grecian pillars and ruins overlooking the stunning blue waters of the West Philippine Sea.</p>
+                            <div class="d-flex mt-3 mb-3">
+                                <span class="badge-custom">Island</span>
+                                <span class="badge-custom">Swimming</span>
+                                <span class="badge-custom">History</span>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary">Explore</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn-explore">View All Destinations</a>
+            </div>
+        </section>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Recent Updates -->
+                <section class="section-container">
+                    <h2 class="section-title">Recent Updates</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="update-item">
+                                <div class="update-icon">
+                                    <i class="fas fa-code-branch"></i>
+                                </div>
+                                <div class="update-content">
+                                    <h6>Version 2.1.0</h6>
+                                    <p class="announcement-date">February 12, 2025</p>
+                                    <ul class="mb-0">
+                                        <li>Added new destination mapping feature</li>
+                                        <li>Improved search functionality</li>
+                                        <li>Bug fixes and performance improvements</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="update-item">
+                                <div class="update-icon">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="update-content">
+                                    <h6>Updated Travel Guidelines</h6>
+                                    <p class="announcement-date">February 10, 2025</p>
+                                    <p class="mb-0">New travel guidelines and protocols for tourists visiting Batangas have been implemented to ensure safe and enjoyable experiences.</p>
+                                </div>
+                            </div>
+                            <div class="update-item mb-0">
+                                <div class="update-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="update-content">
+                                    <h6>Tourism Recovery Program Implementation</h6>
+                                    <p class="announcement-date">February 15, 2025</p>
+                                    <p class="mb-0">Guidelines for the implementation of tourism recovery programs in various municipalities have been finalized.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- About Batangas Section -->
+                <section class="section-container about-section">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h2 class="section-title">About Batangas</h2>
+                                <p>Batangas is a province in the Philippines located in the CALABARZON region in Luzon. Its capital is Batangas City and it is bordered by the provinces of Cavite and Laguna to the north and Quezon to the east.</p>
+                                <p>Known for its beautiful beaches, rich cultural heritage, and diverse tourism offerings, Batangas continues to be one of the Philippines' most visited provinces.</p>
+                                <div class="stats-container">
+                                    <div class="stat-item">
+                                        <div class="stat-number">31</div>
+                                        <div class="stat-label">Municipalities</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">3</div>
+                                        <div class="stat-label">Cities</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">1,200+</div>
+                                        <div class="stat-label">Tourism Sites</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn btn-explore mt-3">Learn More</a>
+                            </div>
+                            <div class="col-md-6 mt-4 mt-md-0">
+                                <img src="/api/placeholder/600/400" alt="About Batangas" class="about-image">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Memo Section -->
+                <section class="section-container">
+                    <h2 class="section-title">Memo from PTCAO</h2>
+                    <div class="memo-card">
+                        <h6 class="fw-bold">Tourism Recovery Program Implementation</h6>
+                        <p class="announcement-date">February 15, 2025</p>
+                        <p class="mb-0">Guidelines for the implementation of tourism recovery programs in various municipalities...</p>
+                    </div>
+                    <div class="memo-card">
+                        <h6 class="fw-bold">Updated Travel Guidelines</h6>
+                        <p class="announcement-date">February 10, 2025</p>
+                        <p class="mb-0">New travel guidelines and protocols for tourists visiting Batangas...</p>
+                    </div>
+                    <div class="memo-card mb-0">
+                        <h6 class="fw-bold">Destination Management Workshop</h6>
+                        <p class="announcement-date">February 5, 2025</p>
+                        <p class="mb-0">Invitation to attend the upcoming destination management workshop for tourism officers...</p>
+                    </div>
+                </section>
+
+                <!-- Quick Links -->
+                <section class="quick-links">
+                    <h2 class="section-title">Quick Access</h2>
+                    <a href="#" class="quick-link-card text-decoration-none">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h6>Dashboard</h6>
+                    </a>
+                    <a href="#" class="quick-link-card text-decoration-none">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h6>Properties</h6>
+                    </a>
+                    <a href="#" class="quick-link-card text-decoration-none">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h6>Documents</h6>
+                    </a>
+                    <a href="#" class="quick-link-card text-decoration-none">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h6>Transactions</h6>
+                    </a>
+                    <a href="#" class="quick-link-card text-decoration-none">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h6>Mapping</h6>
+                    </a>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-title">Batangas Explorer</h5>
+                    <p>The official tourism platform for exploring the wonders of Batangas Province, Philippines.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Explore</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Destinations</a></li>
+                        <li><a href="#">Activities</a></li>
+                        <li><a href="#">Accommodations</a></li>
+                        <li><a href="#">Events</a></li>
+                        <li><a href="#">Itineraries</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Gallery</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="footer-title">Contact Us</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Provincial Capitol, Batangas City</li>
+                        <li><i class="fas fa-phone me-2"></i> (043) 980-2020</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@batangasexplorer.gov.ph</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2025 Batangas Explorer. All rights reserved. | Provincial Tourism and Cultural Affairs Office</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

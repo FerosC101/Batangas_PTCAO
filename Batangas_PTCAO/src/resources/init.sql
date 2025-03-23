@@ -61,4 +61,3 @@ CREATE TABLE amenities (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE amenities ADD COLUMN rating INTEGER CHECK (rating >= 1 AND rating <= 5);
