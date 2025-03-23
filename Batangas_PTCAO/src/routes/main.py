@@ -50,7 +50,7 @@ def init_main_routes(app):
 
                 hotel_data.append(business_info)
 
-            return render_template('User_Homepage.html', hotels=hotel_data)
+            return render_template('Home.html', hotels=hotel_data)
 
         except Exception as e:
             app.logger.error(f"Homepage error: {str(e)}", exc_info=True)
