@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --memo-color: #0d6efd;
+            --destinations-color: #198754;
+            --updates-color: #0dcaf0;
+            --about-color: #6c757d;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .dashboard-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .dashboard-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-label {
+            color: #666;
+            font-size: 1rem;
+        }
+        .destinations-icon {
+            color: var(--destinations-color);
+        }
+        .visitors-icon {
+            color: var(--memo-color);
+        }
+        .properties-icon {
+            color: var(--updates-color);
+        }
+        .tasks-icon {
+            color: var(--accent);
+        }
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: calc(100vh - 70px);
+            position: sticky;
+            top: 70px;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .recent-activity {
+            margin-top: 2rem;
+        }
+        .activity-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .activity-content h6 {
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+        .activity-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        .task-checkbox {
+            margin-right: 10px;
+        }
+        .task-label {
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+        .task-date {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 10px;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        .btn-action {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        .small-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        .small-stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (max-width: 992px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text">
+                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    Batangas Explorer
+                </a>
+
+                <ul class="navbar-nav flex-row d-none d-md-flex">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">Dashboard</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="position-relative me-3">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile dropdown">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-md-inline">Admin User</span>
+                        <i class="fas fa-chevron-down ms-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 px-0">
+                <div class="sidebar">
+                    <a href="#" class="sidebar-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <span>Destinations</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-hotel"></i>
+                        <span>Properties</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Events</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Announcements</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Documents</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 py-4">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <h1 class="section-title mb-0">Dashboard</h1>
+                    <div>
+                        <button class="btn btn-outline-primary me-2">
+                            <i class="fas fa-download me-1"></i> Export
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Add New
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card dashboard-card">
+                            <div class="destinations-icon dashboard-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="dashboard-number">1,254</div>
+                            <div class="dashboard-label">Total Destinations</div>
+                            <div class="small-stats">
+                                <div class="small-stat-item">
+                                    <div class="stat-number">31</div>
+                                    <div class="stat-label">Active</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">2</div>
+                                    <div class="stat-label">Draft</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card dashboard-card">
+                            <div class="visitors-icon dashboard-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="dashboard-number">25,478</div>
+                            <div class="dashboard-label">Monthly Visitors</div>
+                            <div class="small-stats">
+                                <div class="small-stat-item">
+                                    <div class="stat-number">+12%</div>
+                                    <div class="stat-label">Growth</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">43%</div>
+                                    <div class="stat-label">Domestic</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">57%</div>
+                                    <div class="stat-label">Foreign</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card dashboard-card">
+                            <div class="properties-icon dashboard-icon">
+                                <i class="fas fa-hotel"></i>
+                            </div>
+                            <div class="dashboard-number">324</div>
+                            <div class="dashboard-label">Properties</div>
+                            <div class="small-stats">
+                                <div class="small-stat-item">
+                                    <div class="stat-number">153</div>
+                                    <div class="stat-label">Hotels</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">98</div>
+                                    <div class="stat-label">Resorts</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">73</div>
+                                    <div class="stat-label">Others</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card dashboard-card">
+                            <div class="tasks-icon dashboard-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="dashboard-number">16</div>
+                            <div class="dashboard-label">Active Tasks</div>
+                            <div class="small-stats">
+                                <div class="small-stat-item">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">Urgent</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">8</div>
+                                    <div class="stat-label">Normal</div>
+                                </div>
+                                <div class="small-stat-item">
+                                    <div class="stat-number">3</div>
+                                    <div class="stat-label">Low</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and Tasks Section -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Visitor Stats Chart -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="card-title">Visitor Statistics</h5>
+                                    <div>
+                                        <select class="form-select form-select-sm">
+                                            <option>Last 7 Days</option>
+                                            <option>Last 30 Days</option>
+                                            <option>Last Quarter</option>
+                                            <option selected>This Year</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <img src="/api/placeholder/800/300" alt="Visitor Statistics Chart" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="card-title">Recent Activity</h5>
+                                    <a href="#" class="text-primary">View All</a>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-primary text-white">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>New destination added</h6>
+                                        <p class="mb-0">Masasa Beach in Tingloy has been added to the destinations list</p>
+                                        <span class="activity-time">Today, 10:30 AM</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-success text-white">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>Property information updated</h6>
+                                        <p class="mb-0">Acacia Resort & Hotel information has been updated</p>
+                                        <span class="activity-time">Yesterday, 3:45 PM</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-info text-white">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>New user registered</h6>
+                                        <p class="mb-0">Tourism Officer from San Juan has been added to the system</p>
+                                        <span class="activity-time">Yesterday, 11:20 AM</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-warning text-white">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>New announcement published</h6>
+                                        <p class="mb-0">Tourism Recovery Program guidelines have been published</p>
+                                        <span class="activity-time">Feb 15, 2025</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-danger text-white">
+                                        <i class="fas fa-trash"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>Destination removed</h6>
+                                        <p class="mb-0">Outdated destination entry has been removed from the database</p>
+                                        <span class="activity-time">Feb 14, 2025</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Pending Tasks -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="card-title">Pending Tasks</h5>
+                                    <a href="#" class="text-primary">View All</a>
+                                </div>
+                                <ul class="task-list">
+                                    <li class="task-item">
+                                        <input type="checkbox" class="form-check-input task-checkbox" id="task1">
+                                        <label class="task-label" for="task1">Review new destination submissions</label>
+                                        <span class="task-date">Today</span>
+                                    </li>
+                                    <li class="task-item">
+                                        <input type="checkbox" class="form-check-input task-checkbox" id="task2">
+                                        <label class="task-label" for="task2">Update travel guidelines on homepage</label>
+                                        <span class="task-date">Today</span>
+                                    </li>
+                                    <li class="task-item">
+                                        <input type="checkbox" class="form-check-input task-checkbox" id="task3">
+                                        <label class="task-label" for="task3">Publish Tourism Recovery Program memo</label>
+                                        <span class="task-date">Feb 25</span>
+                                    </li>
+                                    <li class="task-item">
+                                        <input type="checkbox" class="form-check-input task-checkbox" id="task4">
+                                        <label class="task-label" for="task4">Prepare quarterly tourism report</label>
+                                        <span class="task-date">Mar 1</span>
+                                    </li>
+                                    <li class="task-item">
+                                        <input type="checkbox" class="form-check-input task-checkbox" id="task5">
+                                        <label class="task-label" for="task5">Schedule destination management workshop</label>
+                                        <span class="task-date">Mar 5</span>
+                                    </li>
+                                </ul>
+                                <div class="mt-3">
+                                    <button class="btn btn-primary btn-sm w-100">
+                                        <i class="fas fa-plus me-1"></i> Add Task
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Destinations -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="card-title">Top Destinations</h5>
+                                    <select class="form-select form-select-sm" style="width: auto;">
+                                        <option>This Week</option>
+                                        <option selected>This Month</option>
+                                        <option>This Year</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Taal Volcano</span>
+                                        <span class="fw-bold">78%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Anilao Beach</span>
+                                        <span class="fw-bold">65%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Fortune Island</span>
+                                        <span class="fw-bold">59%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 59%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Masasa Beach</span>
+                                        <span class="fw-bold">45%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Laiya Beach</span>
+                                        <span class="fw-bold">32%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 32%; background-color: var(--accent);"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button class="btn btn-outline-primary btn-sm w-100">Detailed Report</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Additions -->
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="section-title mb-0">Recent Additions</h2>
+                        <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <img src="/api/placeholder/400/240" class="card-img-top" alt="Masasa Beach">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2 text-success">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <span>Tingloy, Batangas</span>
+                                    </div>
+                                    <h5 class="card-title">Masasa Beach</h5>
+                                    <p class="card-text small">Added today by Admin User</p>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <img src="/api/placeholder/400/240" class="card-img-top" alt="Verde Island">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2 text-success">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <span>Batangas City</span>
+                                    </div>
+                                    <h5 class="card-title">Verde Island</h5>
+                                    <p class="card-text small">Added yesterday by Tourism Officer</p>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <img src="/api/placeholder/400/240" class="card-img-top" alt="Acacia Resort">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2 text-info">
+                                        <div class="d-flex align-items-center mb-2 text-info">
+                                        <i class="fas fa-hotel me-2"></i>
+                                        <span>San Juan, Batangas</span>
+                                    </div>
+                                    <h5 class="card-title">Acacia Resort</h5>
+                                    <p class="card-text small">Added Feb 15 by Property Manager</p>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <img src="/api/placeholder/400/240" class="card-img-top" alt="Taal Heritage Tour">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2 text-warning">
+                                        <i class="fas fa-route me-2"></i>
+                                        <span>Taal, Batangas</span>
+                                    </div>
+                                    <h5 class="card-title">Taal Heritage Tour</h5>
+                                    <p class="card-text small">Added Feb 14 by Tour Operator</p>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-3">Terms of Service</a>
+                    <a href="#">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript dependencies would typically be here -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
