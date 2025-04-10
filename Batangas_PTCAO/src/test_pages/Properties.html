@@ -7,31 +7,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --memo-color: #0d6efd;
+            --destinations-color: #198754;
+            --updates-color: #0dcaf0;
+            --about-color: #6c757d;
+            --local-color: #28a745;
+            --foreign-color: #6f42c1;
+        }
         body {
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
             min-height: 100vh;
-            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
         }
         .top-header {
-            background-color: #003366;
-            padding: 0.5rem;
+            background-color: var(--primary);
+            padding: 0.8rem;
             color: white;
             position: fixed;
             top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            height: 56px;
-        }
-        .search-container {
-            max-width: 500px;
-        }
-        .search-input {
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
-            border: none;
             width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .logo-text {
             color: white;
@@ -44,242 +48,368 @@
         .logo-text:hover {
             color: white;
         }
-        .logo-text img {
+        .navbar-nav .nav-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
             height: 40px;
-            margin-right: 0.5rem;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
         }
         .sidebar {
-            position: fixed;
-            top: 56px;
-            left: 0;
-            bottom: 0;
-            width: 220px;
             background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: 100%;
+            position: fixed;
+            top: 72px;
+            width: 16.66667%;
             overflow-y: auto;
-            padding-top: 1rem;
-            border-right: 1px solid #dee2e6;
+            z-index: 999;
         }
-        .main-content {
-            margin-left: 220px;
-            margin-top: 56px;
-            padding: 1.5rem;
-        }
-        .nav-link {
-            color: #333;
-            padding: 0.6rem 1rem;
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
             transition: all 0.3s;
         }
-        .nav-link:hover, .nav-link.active {
-            background-color: #003366;
-            color: white;
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
         }
-        .nav-link.active i {
-            color: white;
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
         }
-        .filters-container {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .btn-action {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-container {
+            margin-top: 70px;
+            margin-left: 16.66667%;
+            padding: 20px;
+            width: calc(100% - 16.66667%);
         }
         .property-card {
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-            overflow: hidden;
+            height: 100%;
         }
-        .property-image {
-            width: 100%;
-            height: 200px;
+        .property-img {
+            height: 180px;
             object-fit: cover;
+            border-radius: 8px 8px 0 0;
         }
-        .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            color: white;
-        }
-        .status-available {
-            background-color: #198754;
-        }
-        .status-pending {
-            background-color: #ffc107;
-        }
-        .status-sold {
-            background-color: #dc3545;
-        }
-        .property-details {
-            padding: 1rem;
-        }
-        .property-price {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #003366;
+        .property-rating {
+            color: #ffc107;
         }
         .property-features {
             display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-            color: #6c757d;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .property-feature {
+        .feature-badge {
+            background-color: rgba(0, 51, 102, 0.1);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
         }
-        .grid-view .property-card {
-            height: 100%;
+        .feature-badge i {
+            margin-right: 5px;
+            font-size: 0.7rem;
+        }
+        .property-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .property-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .filter-bar {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .pagination .page-link {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
-    <div class="top-header">
+    <!-- Header -->
+    <header class="top-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
                 <a href="#" class="logo-text">
-                    <img src="../static/img/Batangas_Logo.png" alt="Logo">
-                    Batangas Explorer
+                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    Batangas Explorer - MTO
                 </a>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search properties...">
-                </div>
-                <div class="dropdown">
-                    <i class="fas fa-bars text-white" style="cursor: pointer;" data-bs-toggle="dropdown"></i>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit AE Information</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                    </ul>
+
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="position-relative me-3">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-md-inline">MTO Admin</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
+    <!-- Sidebar -->
     <div class="sidebar">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-home me-2"></i>Home</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link active"><i class="fas fa-building me-2"></i>Properties</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-file-alt me-2"></i>Documents</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-exchange-alt me-2"></i>Transactions</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-map-marked-alt me-2"></i>Mapping</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-chart-bar me-2"></i>Reports</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-bullhorn me-2"></i>Announcement</a>
-            </li>
-            <li class="nav-item mt-auto">
-                <a href="#" class="nav-link text-danger"><i class="fas fa-sign-out-alt me-2"></i>Log Out</a>
-            </li>
-        </ul>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>Destinations</span>
+        </a>
+        <a href="#" class="sidebar-link active">
+            <i class="fas fa-hotel"></i>
+            <span>Properties</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-users"></i>
+            <span>Visitors</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Events</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-bullhorn"></i>
+            <span>Announcements</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-file-alt"></i>
+            <span>Reports</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
     </div>
 
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Properties</h4>
-            <div class="d-flex gap-2">
-                <button class="btn btn-outline-secondary">
-                    <i class="fas fa-th-large"></i>
-                </button>
-                <button class="btn btn-outline-secondary">
-                    <i class="fas fa-list"></i>
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="section-title mb-0">Properties Management</h1>
+            <div>
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-download me-1"></i> Export
                 </button>
                 <button class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Add Property
+                    <i class="fas fa-plus me-1"></i> Add New Property
                 </button>
             </div>
         </div>
 
-        <div class="filters-container mb-3">
-            <div class="row g-3">
-                <div class="col-md-2">
+        <!-- Filter Bar -->
+        <div class="filter-bar mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Barangay</label>
                     <select class="form-select">
-                        <option>All Types</option>
-                        <option>Residential</option>
-                        <option>Commercial</option>
-                        <option>Agricultural</option>
+                        <option selected>All Barangays</option>
+                        <option>San Andres</option>
+                        <option>Talahib</option>
+                        <option>Poblacion</option>
+                        <option>Lumbangan</option>
+                        <option>Mataas na Kahoy</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <label class="form-label">Property Type</label>
                     <select class="form-select">
-                        <option>All Status</option>
-                        <option>Available</option>
+                        <option selected>All Types</option>
+                        <option>Resort</option>
+                        <option>Hotel</option>
+                        <option>Lodge</option>
+                        <option>Restaurant</option>
+                        <option>Tour Operator</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select">
+                        <option selected>All Statuses</option>
+                        <option>Active</option>
                         <option>Pending</option>
-                        <option>Sold</option>
+                        <option>Closed</option>
+                        <option>Under Maintenance</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select class="form-select">
-                        <option>Price Range</option>
-                        <option>Below ₱1M</option>
-                        <option>₱1M - ₱5M</option>
-                        <option>Above ₱5M</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select class="form-select">
-                        <option>Municipality</option>
-                        <option>Batangas City</option>
-                        <option>Lipa City</option>
-                        <option>Tanauan</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select class="form-select">
-                        <option>Sort By</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Latest</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">Apply Filters</button>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-1"></i> Apply Filters
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="row g-3">
+        <!-- Property Cards -->
+        <div class="row">
             <!-- Property Card 1 -->
             <div class="col-md-4">
-                <div class="property-card">
-                    <div class="position-relative">
-                        <img src="/api/placeholder/400/300" alt="Property" class="property-image">
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    <div class="property-details">
-                        <div class="property-price">₱2,500,000</div>
-                        <h5 class="mb-2">Modern House in Batangas City</h5>
-                        <p class="text-muted mb-2">123 Sample Street, Batangas City</p>
+                <div class="card property-card">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top property-img" alt="Bayside Resort">
+                    <span class="property-status badge bg-success">Active</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">Bayside Resort & Spa</h5>
+                            <div class="property-rating">
+                                <i class="fas fa-star"></i> 4.8
+                            </div>
+                        </div>
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> San Andres, Nasugbu</p>
+                        <p class="card-text">Luxury beachfront resort with spa services, infinity pool, and gourmet dining options.</p>
+
                         <div class="property-features">
-                            <div class="property-feature">
-                                <i class="fas fa-bed"></i>
-                                <span>3 Beds</span>
+                            <span class="feature-badge"><i class="fas fa-swimming-pool"></i> Pool</span>
+                            <span class="feature-badge"><i class="fas fa-utensils"></i> Restaurant</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-spa"></i> Spa</span>
+                        </div>
+
+                        <div class="property-footer">
+                            <div>
+                                <span class="text-primary fw-bold">₱5,200</span>
+                                <span class="text-muted">/ night</span>
                             </div>
-                            <div class="property-feature">
-                                <i class="fas fa-bath"></i>
-                                <span>2 Baths</span>
-                            </div>
-                            <div class="property-feature">
-                                <i class="fas fa-ruler-combined"></i>
-                                <span>150 m²</span>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -288,27 +418,38 @@
 
             <!-- Property Card 2 -->
             <div class="col-md-4">
-                <div class="property-card">
-                    <div class="position-relative">
-                        <img src="/api/placeholder/400/300" alt="Property" class="property-image">
-                        <span class="status-badge status-pending">Pending</span>
-                    </div>
-                    <div class="property-details">
-                        <div class="property-price">₱4,800,000</div>
-                        <h5 class="mb-2">Commercial Space in Lipa</h5>
-                        <p class="text-muted mb-2">456 Business Avenue, Lipa City</p>
+                <div class="card property-card">
+                    <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top property-img" alt="Ocean View Hotel">
+                    <span class="property-status badge bg-success">Active</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">Ocean View Hotel</h5>
+                            <div class="property-rating">
+                                <i class="fas fa-star"></i> 4.5
+                            </div>
+                        </div>
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Talahib, Nasugbu</p>
+                        <p class="card-text">Modern hotel with panoramic ocean views, conference facilities, and rooftop bar.</p>
+
                         <div class="property-features">
-                            <div class="property-feature">
-                                <i class="fas fa-door-open"></i>
-                                <span>5 Rooms</span>
+                            <span class="feature-badge"><i class="fas fa-concierge-bell"></i> Room Service</span>
+                            <span class="feature-badge"><i class="fas fa-parking"></i> Parking</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-dumbbell"></i> Gym</span>
+                        </div>
+
+                        <div class="property-footer">
+                            <div>
+                                <span class="text-primary fw-bold">₱3,800</span>
+                                <span class="text-muted">/ night</span>
                             </div>
-                            <div class="property-feature">
-                                <i class="fas fa-parking"></i>
-                                <span>4 Parking</span>
-                            </div>
-                            <div class="property-feature">
-                                <i class="fas fa-ruler-combined"></i>
-                                <span>200 m²</span>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -317,23 +458,158 @@
 
             <!-- Property Card 3 -->
             <div class="col-md-4">
-                <div class="property-card">
-                    <div class="position-relative">
-                        <img src="/api/placeholder/400/300" alt="Property" class="property-image">
-                        <span class="status-badge status-sold">Sold</span>
-                    </div>
-                    <div class="property-details">
-                        <div class="property-price">₱1,800,000</div>
-                        <h5 class="mb-2">Farm Lot in Tanauan</h5>
-                        <p class="text-muted mb-2">789 Rural Road, Tanauan</p>
-                        <div class="property-features">
-                            <div class="property-feature">
-                                <i class="fas fa-tree"></i>
-                                <span>Agricultural</span>
+                <div class="card property-card">
+                    <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top property-img" alt="Mountain View Lodge">
+                    <span class="property-status badge bg-secondary">Maintenance</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">Mountain View Lodge</h5>
+                            <div class="property-rating">
+                                <i class="fas fa-star"></i> 4.2
                             </div>
-                            <div class="property-feature">
-                                <i class="fas fa-ruler-combined"></i>
-                                <span>1000 m²</span>
+                        </div>
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Poblacion, Nasugbu</p>
+                        <p class="card-text">Cozy lodge nestled in the mountains with hiking trails and nature views.</p>
+
+                        <div class="property-features">
+                            <span class="feature-badge"><i class="fas fa-hiking"></i> Hiking</span>
+                            <span class="feature-badge"><i class="fas fa-fire"></i> Fireplace</span>
+                            <span class="feature-badge"><i class="fas fa-utensils"></i> Restaurant</span>
+                            <span class="feature-badge"><i class="fas fa-paw"></i> Pet Friendly</span>
+                        </div>
+
+                        <div class="property-footer">
+                            <div>
+                                <span class="text-primary fw-bold">₱2,500</span>
+                                <span class="text-muted">/ night</span>
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Card 4 -->
+            <div class="col-md-4">
+                <div class="card property-card">
+                    <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top property-img" alt="Sunrise Beach Resort">
+                    <span class="property-status badge bg-success">Active</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">Sunrise Beach Resort</h5>
+                            <div class="property-rating">
+                                <i class="fas fa-star"></i> 4.6
+                            </div>
+                        </div>
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Lumbangan, Nasugbu</p>
+                        <p class="card-text">Family-friendly beach resort with water sports activities and kids' playground.</p>
+
+                        <div class="property-features">
+                            <span class="feature-badge"><i class="fas fa-swimming-pool"></i> Pool</span>
+                            <span class="feature-badge"><i class="fas fa-umbrella-beach"></i> Beachfront</span>
+                            <span class="feature-badge"><i class="fas fa-utensils"></i> Restaurant</span>
+                            <span class="feature-badge"><i class="fas fa-child"></i> Kids Area</span>
+                        </div>
+
+                        <div class="property-footer">
+                            <div>
+                                <span class="text-primary fw-bold">₱4,500</span>
+                                <span class="text-muted">/ night</span>
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Card 5 -->
+            <div class="col-md-4">
+                <div class="card property-card">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top property-img" alt="Hilltop Retreat">
+                    <span class="property-status badge bg-warning text-dark">Pending</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">Hilltop Retreat</h5>
+                            <div class="property-rating">
+                                <i class="fas fa-star"></i> 4.3
+                            </div>
+                        </div>
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Mataas na Kahoy, Nasugbu</p>
+                        <p class="card-text">Secluded retreat with panoramic views, yoga deck, and organic farm-to-table dining.</p>
+
+                        <div class="property-features">
+                            <span class="feature-badge"><i class="fas fa-spa"></i> Spa</span>
+                            <span class="feature-badge"><i class="fas fa-leaf"></i> Organic</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-yin-yang"></i> Yoga</span>
+                        </div>
+
+                        <div class="property-footer">
+                            <div>
+                                <span class="text-primary fw-bold">₱6,800</span>
+                                <span class="text-muted">/ night</span>
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Card 6 -->
+            <div class="col-md-4">
+                <div class="card property-card">
+                    <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top property-img" alt="Riverside Inn">
+                    <span class="property-status badge bg-success">Active</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">Riverside Inn</h5>
+                            <div class="property-rating">
+                                <i class="fas fa-star"></i> 4.1
+                            </div>
+                        </div>
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Barangay 1, Nasugbu</p>
+                        <p class="card-text">Charming riverside inn with fishing dock, kayak rentals, and riverside dining.</p>
+
+                        <div class="property-features">
+                            <span class="feature-badge"><i class="fas fa-water"></i> Riverside</span>
+                            <span class="feature-badge"><i class="fas fa-fish"></i> Fishing</span>
+                            <span class="feature-badge"><i class="fas fa-utensils"></i> Restaurant</span>
+                            <span class="feature-badge"><i class="fas fa-campground"></i> Camping</span>
+                        </div>
+
+                        <div class="property-footer">
+                            <div>
+                                <span class="text-primary fw-bold">₱3,200</span>
+                                <span class="text-muted">/ night</span>
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -341,24 +617,39 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <span>Showing 1 to 3 of 24 properties</span>
-            <nav>
-                <ul class="pagination mb-0">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-3">Terms of Service</a>
+                    <a href="#">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 </html>

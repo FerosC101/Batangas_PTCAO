@@ -1,109 +1,106 @@
-from sqlalchemy import CheckConstraint
-
+from datetime import datetime
+from sqlalchemy import CheckConstraint, Enum as SqlEnum
 from Batangas_PTCAO.src.extension import db
-from werkzeug.security import generate_password_hash, check_password_hash
-from enum import Enum
 import bcrypt
+from enum import Enum
 
 
 class AccountStatus(str, Enum):
     ACTIVE = 'active'
     SUSPENDED = 'suspended'
-    MAINTENANCE = 'maintenance'
+    RESIGNED = 'resigned'
 
-class RegistrationStep(str, Enum):
-    BUSINESS_DETAILS = 'business_details'
-    SPECIAL_SERVICES = 'special_services'
-    LOGIN_CREDENTIALS = 'login_credentials'
+
+class PropertyStatus(str, Enum):
+    ACTIVE = 'Active'
+    MAINTENANCE = 'Maintenance'
+
 
 class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
-    user_email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    account_status = db.Column(db.String(20), default=AccountStatus.ACTIVE)
-    failed_login_attempts = db.Column(db.Integer, default=0)
-    business_registration = db.relationship('BusinessRegistration', backref='user', lazy=True)
+    full_name = db.Column(db.String(100), nullable=False)
+    municipality = db.Column(db.String(100), nullable=False)
+    id_number = db.Column(db.String(50), nullable=False, unique=True)
+    designation = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    gender = db.Column(db.String(10), nullable=False)
+    birthday = db.Column(db.Date, nullable=False)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
+    is_active = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def __repr__(self):
+        return f'<User {self.username}>'
 
     def set_password(self, password: str):
-        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-    def check_password(self, password:str) -> tuple[bool, bytes]:
-        return bcrypt.checkpw('utf-8'), self.password_hash.encode('utf-8')
-
-    def is_suspended(self):
-        return self.account_status == AccountStatus.SUSPENDED
-
-    def is_active(self):
-        return self.account_status == AccountStatus.ACTIVE
+    def check_password(self, password: str) -> bool:
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
 
-class BusinessRegistration(db.Model):
-    __tablename__ = 'businessregistration'
+class Property(db.Model):
+    __tablename__ = 'property'
 
-    business_id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    business_registration_no = db.Column(db.String(100), nullable=False)
-    business_name = db.Column(db.String(255), nullable=False)
-    official_contact_no = db.Column(db.String(50), nullable=False)
-    business_address = db.Column(db.String(255), nullable=False)
-    taxpayer_name = db.Column(db.String(255), nullable=False)
-    total_employees = db.Column(db.Integer, nullable=False)
-    total_rooms = db.Column(db.Integer, nullable=False)
-    total_beds = db.Column(db.Integer, nullable=False)
+    property_id = db.Column(db.Integer, primary_key=True)
+    property_name = db.Column(db.String(100), nullable=False)
+    barangay = db.Column(db.String(100))
+    municipality = db.Column(db.String(100))
+    accommodation_type = db.Column(db.String(50))
+    status = db.Column(SqlEnum(PropertyStatus, name="status_enum"), nullable=False, default=PropertyStatus.ACTIVE)
+    description = db.Column(db.Text)
 
+    rooms = db.relationship('Room', back_populates='property', cascade="all, delete-orphan")
+    amenities = db.relationship('Amenity', back_populates='property', cascade="all, delete-orphan")
+    typical_locations = db.relationship('TypicalLocation', back_populates='property', cascade="all, delete-orphan")
+    coordinates = db.relationship('LongLat', back_populates='property', cascade="all, delete-orphan")
 
-    special_services = db.relationship('SpecialServices', backref='business', lazy=True)
-    rooms = db.relationship('Room', backref='business', lazy=True)
-    event_facilities = db.relationship('EventFacility', backref='business', lazy=True)
-    amenities = db.relationship('Amenity', backref='business', lazy=True)
-
-
-class SpecialServices(db.Model):
-    __tablename__ = 'special_services'
-
-    service_id = db.Column(db.Integer, primary_key = True)
-    business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
-    accreditation_type = db.Column(db.String(100), nullable=False)
-    ae_classification = db.Column(db.String(100), nullable=False)
 
 class Room(db.Model):
-    __tablename__ = 'rooms'
+    __tablename__ = 'room'
 
     room_id = db.Column(db.Integer, primary_key=True)
-    business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
-    room_type = db.Column(db.String(100), nullable=False)
-    total_number = db.Column(db.Integer, nullable=False)
-    capacity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Double, nullable=False, default=0.00)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    room_type = db.Column(db.String(50))
+    day_price = db.Column(db.Numeric(10, 2))
+    overnight_price = db.Column(db.Numeric(10, 2))
+    capacity = db.Column(db.Integer)
 
-    @property
-    def calculated_price(self):
-        """
-        Hypothetically calculated price
-        Note: For revisions
-        """
-        return self.capacity * 1000
+    property = db.relationship('Property', back_populates='rooms')
+    amenities = db.relationship('Amenity', back_populates='room', cascade="all, delete-orphan")
 
-class EventFacility(db.Model):
-    __tablename__ = 'event_facilities'
-
-    facility_id = db.Column(db.Integer, primary_key=True)
-    business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
-    room_name = db.Column(db.String(255), nullable=False)
-    capacity = db.Column(db.Integer, nullable=False)
-    facilities = db.Column(db.String(255), nullable=False)
 
 class Amenity(db.Model):
     __tablename__ = 'amenities'
 
     amenity_id = db.Column(db.Integer, primary_key=True)
-    business_id = db.Column(db.Integer, db.ForeignKey('businessregistration.business_id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), nullable=True)
     amenity = db.Column(db.String(255), nullable=False)
-    rating = db.Column(db.Integer, nullable=True)
 
-    __table_args__ = (
-        CheckConstraint('rating >= 1 AND rating <= 5', name='check_rating'),
-    )
+    property = db.relationship('Property', back_populates='amenities')
+    room = db.relationship('Room', back_populates='amenities')
+
+
+class TypicalLocation(db.Model):
+    __tablename__ = 'typical_location'
+
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+
+    property = db.relationship('Property', back_populates='typical_locations')
+
+
+class LongLat(db.Model):
+    __tablename__ = 'longlat'
+
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    longitude = db.Column(db.Integer, nullable=False)
+    latitude = db.Column(db.Integer, nullable=False)
+
+    property = db.relationship('Property', back_populates='coordinates')

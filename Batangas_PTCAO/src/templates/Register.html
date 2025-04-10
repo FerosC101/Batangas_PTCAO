@@ -4,18 +4,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AE Registration</title>
+    <title>MTO Registration</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background: url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
+            background: url("{{ url_for('static', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
             background-size: cover;
             color: #333;
-            max-height: 100vh; /* Limit the height */
-            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 100vh;
+            overflow-y: auto;
         }
 
         .container {
@@ -24,7 +24,7 @@
             align-items: center;
             flex-direction: column;
             padding: 1rem;
-            height: auto; /* Allow the container to grow */
+            height: auto;
         }
 
         .logo {
@@ -51,23 +51,6 @@
             margin-bottom: 1.5rem;
             color: #007BFF;
             font-size: 1.8rem;
-        }
-
-        .steps {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .steps span {
-            font-size: 1rem;
-            color: #333;
-            flex: 1;
-            text-align: center;
-        }
-
-        .steps .active {
-            color: #007BFF;
         }
 
         .form-group {
@@ -164,9 +147,9 @@
     <div class="container">
         <div class="registration-panel">
             <div class="logo">
-                <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Office Logo">
+                <img src="{{ url_for('static', filename='img/Batangas_Logo.png') }}" alt="Office Logo">
             </div>
-            <h2>AE REGISTRATION</h2>
+            <h2>MTO REGISTRATION</h2>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -181,59 +164,69 @@
                 {% endif %}
             {% endwith %}
 
-            <div class="steps">
-                <span class="active"><i class="fas fa-info-circle"></i> Details</span>
-                <span><i class="fas fa-cogs"></i> Special Services</span>
-                <span><i class="fas fa-user-lock"></i> Login Credentials</span>
-            </div>
-
-            <form action="{{ url_for('business_registration') }}" method="POST" class="registration-form">
+            <form action="{{ url_for('mto.mto_registration') }}" method="POST" class="registration-form">
                 <div class="form-group">
-                    <label for="business-registration">Business Registration No</label>
-                    <input type="text" class="form-control" name="business-registration" id="business-registration" placeholder="Enter business registration no" required>
+                    <label for="full-name">Full Name</label>
+                    <input type="text" class="form-control" name="full-name" id="full-name" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="business-name">Business Name</label>
-                    <input type="text" class="form-control" name="business-name" id="business-name" placeholder="Enter business name" required>
+                    <label for="municipality">Municipality</label>
+                    <input type="text" class="form-control" name="municipality" id="municipality" placeholder="Enter your municipality" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="official-contact">Official Contact No</label>
-                    <input type="text" class="form-control" name="official-contact" id="official-contact" placeholder="Enter official contact no" required>
+                    <label for="id-number">ID Number</label>
+                    <input type="text" class="form-control" name="id-number" id="id-number" placeholder="Enter your ID number" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="business-address">Business Address</label>
-                    <input type="text" class="form-control" name="business-address" id="business-address" placeholder="Enter Business Address" required>
+                    <label for="designation">Designation</label>
+                    <input type="text" class="form-control" name="designation" id="designation" placeholder="Enter your designation" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="taxpayer-name">Tax Payer Name</label>
-                    <input type="text" class="form-control" name="taxpayer-name" id="taxpayer-name" placeholder="Enter Tax Payer Name" required>
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" name="email" id="email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="total-employees">No. of Employees</label>
-                    <input type="number" class="form-control" name="total-employees" id="total-employees" placeholder="Enter total no. of employees" required>
+                    <label for="gender">Gender</label>
+                    <select class="form-control" name="gender" id="gender" required>
+                        <option value="" disabled selected>Select your gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="total-rooms">Total No. of Rooms</label>
-                    <input type="number" class="form-control" name="total-rooms" id="total-rooms" placeholder="Enter total no. of rooms" required>
+                    <label for="birthday">Birthday</label>
+                    <input type="date" class="form-control" name="birthday" id="birthday" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="total-beds">Total No. of Beds</label>
-                    <input type="number" class="form-control" name="total-beds" id="total-beds" placeholder="Enter total no. of beds" required>
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Create a username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Create a password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password-confirmation">Password Confirmation</label>
+                    <input type="password" class="form-control" name="password-confirmation" id="password-confirmation" placeholder="Confirm your password" required>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Next</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
                 </div>
             </form>
 
             <div class="form-footer">
+                <p>Already registered? <a href="{{ url_for('login') }}">Sign in here</a></p>
                 <p>By proceeding with this registration, you consent to the <a href="#">Data Privacy Notice</a> of this system.</p>
             </div>
         </div>
