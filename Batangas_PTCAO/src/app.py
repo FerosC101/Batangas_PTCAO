@@ -5,9 +5,9 @@ from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.config import Config
 from datetime import timedelta
 
-# Correct import paths
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
-from Batangas_PTCAO.src.routes.MTO import init_mto_routes  # Ensure correct case
+from Batangas_PTCAO.src.routes.MTO import init_mto_routes
+from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes
 
 
 def create_app():
@@ -24,14 +24,13 @@ def create_app():
     jwt = JWTManager(app)
     db.init_app(app)
 
-    # Create a proper application context
     with app.app_context():
-        from Batangas_PTCAO.src.model import User  # Ensure all models are imported before creating tables
         db.create_all()
 
     # Initialize routes
     init_auth_routes(app)
     init_mto_routes(app)
+    init_property_routes(app)
 
     # Static file serving route
     @app.route('/static/<path:filename>')
@@ -48,7 +47,6 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# Application instantiation
 app = create_app()
 
 if __name__ == '__main__':
