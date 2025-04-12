@@ -50,10 +50,79 @@ CREATE TABLE typical_location (
     FOREIGN KEY (property_id) REFERENCES property(property_id)
 );
 
--- not yet created
 CREATE TABLE LongLat (
     property_id INT,
     longitude INT NOT NULL,
     latitude INT NOT NULL,
     FOREIGN KEY (property_id) REFERENCES property(property_id)
 );
+
+CREATE TABLE events (
+    event_id SERIAL PRIMARY KEY,
+    event_title VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    municipality VARCHAR(100),
+    location VARCHAR(255),
+    event_image VARCHAR(255), -- file path
+    category VARCHAR(100)
+);
+
+-- Create enum for visitor type
+CREATE TYPE visitor_type_enum AS ENUM ('Local', 'Foreign');
+
+-- Create enum for stay type
+CREATE TYPE stay_type_enum AS ENUM ('Day Tour', 'Overnight');
+
+-- Create a table to store visitor statistics
+CREATE TABLE visitor_statistics (
+    stat_id SERIAL PRIMARY KEY,
+    property_id INT NOT NULL,
+    report_date DATE NOT NULL,
+    visitor_type visitor_type_enum NOT NULL,
+    stay_type stay_type_enum NOT NULL,
+    count INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES property(property_id),
+    UNIQUE (property_id, report_date, visitor_type, stay_type)
+);
+
+-- Create a table for monthly aggregated statistics by barangay
+CREATE TABLE barangay_monthly_statistics (
+    stat_id SERIAL PRIMARY KEY,
+    barangay VARCHAR(100) NOT NULL,
+    year INT NOT NULL,
+    month INT NOT NULL,
+    local_visitors INT NOT NULL DEFAULT 0,
+    foreign_visitors INT NOT NULL DEFAULT 0,
+    day_tour_visitors INT NOT NULL DEFAULT 0,
+    overnight_visitors INT NOT NULL DEFAULT 0,
+    total_visitors INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (barangay, year, month)
+);
+
+-- Create a table for monthly property statistics
+CREATE TABLE property_monthly_statistics (
+    stat_id SERIAL PRIMARY KEY,
+    property_id INT NOT NULL,
+    year INT NOT NULL,
+    month INT NOT NULL,
+    local_visitors INT NOT NULL DEFAULT 0,
+    foreign_visitors INT NOT NULL DEFAULT 0,
+    day_tour_visitors INT NOT NULL DEFAULT 0,
+    overnight_visitors INT NOT NULL DEFAULT 0,
+    total_visitors INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES property(property_id),
+    UNIQUE (property_id, year, month)
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_visitor_statistics_property_date ON visitor_statistics(property_id, report_date);
+CREATE INDEX idx_barangay_statistics_year_month ON barangay_monthly_statistics(barangay, year, month);
+CREATE INDEX idx_property_statistics_year_month ON property_monthly_statistics(property_id, year, month);
