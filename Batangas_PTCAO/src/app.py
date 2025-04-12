@@ -8,7 +8,7 @@ from datetime import timedelta
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
 from Batangas_PTCAO.src.routes.MTO import init_mto_routes
 from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes
-
+from Batangas_PTCAO.src.routes.MTO_Dashboard import init_dashboard_routes
 
 def create_app():
     app = Flask(__name__,
@@ -31,6 +31,7 @@ def create_app():
     init_auth_routes(app)
     init_mto_routes(app)
     init_property_routes(app)
+    init_dashboard_routes(app)
 
     # Static file serving route
     @app.route('/static/<path:filename>')
