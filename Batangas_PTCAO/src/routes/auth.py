@@ -28,27 +28,23 @@ def init_auth_routes(app):
                 flash('Email and password are required', 'error')
                 return render_template('Login.html')
 
-
             user = User.query.filter_by(email=email).first()
 
             if not user:
                 flash('User not found', 'error')
                 return render_template('Login.html')
 
-            try:
-                password_correct = user.check_password(password)
-            except ValueError:
-                password_correct = user.password == password
+            # Check if account is active
+            if not user.is_active:
+                flash('Your account is not yet activated', 'error')
+                return render_template('Login.html')
 
-                if password_correct:
-                    user.set_password(password)
-                    db.session.commit()
-
-            if password_correct:
+            # Use the model's check_password method consistently
+            if user.check_password(password):
                 session['access_token'] = create_access_token(identity=user.user_id)
                 session['account_id'] = user.user_id
                 session['account_type'] = 'mto'
-                return redirect(url_for('homepage'))
+                return redirect(url_for('mto.mto_dashboard'))
 
             flash('Invalid email or password', 'error')
             return render_template('Login.html')

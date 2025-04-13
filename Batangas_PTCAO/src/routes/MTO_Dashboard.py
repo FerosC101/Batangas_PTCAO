@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, url_for, render_template
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from Batangas_PTCAO.src.extension import db
@@ -15,6 +15,71 @@ dashboard_bp = Blueprint('dashboard', __name__)
 def init_dashboard_routes(app):
     app.register_blueprint(dashboard_bp)
 
+
+@dashboard_bp.route('/mto/dashboard')
+@jwt_required()
+def mto_dashboard():
+    """
+    Render the MTO Dashboard with all necessary statistics and data
+    """
+    try:
+        # Get current user identity
+        current_user_id = get_jwt_identity()
+
+        # Calculate date ranges
+        today = datetime.now().date()
+        last_30_days = today - timedelta(days=30)
+        last_7_days = today - timedelta(days=7)
+
+        # 1. Get summary statistics
+        summary_stats = {
+            'total_properties': Property.query.filter_by(status='Active').count(),
+            'total_visitors': get_visitor_count(last_30_days, today),
+            'local_visitors': get_visitor_count(last_30_days, today, 'Local'),
+            'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign'),
+            'new_properties': Property.query.filter(
+                Property.registration_date >= last_30_days
+            ).count()
+        }
+
+        # 2. Get top 5 destinations
+        top_destinations = get_top_destinations(limit=5)
+
+        # 3. Get recent visitor trends (weekly)
+        visitor_trends = get_visitor_trends(last_7_days, today)
+
+        # 4. Get property status distribution
+        status_distribution = {
+            'Active': Property.query.filter_by(status='Active').count(),
+            'Inactive': Property.query.filter_by(status='Inactive').count(),
+            'Pending': Property.query.filter_by(status='Pending').count()
+        }
+
+        return render_template(
+            'MTO_Dashboard.html',
+            current_date=today.strftime('%B %d, %Y'),
+            summary=summary_stats,
+            top_destinations=top_destinations,
+            visitor_trends=visitor_trends,
+            status_distribution=status_distribution,
+            user_id=current_user_id
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error loading MTO dashboard: {str(e)}")
+        flash('Failed to load dashboard data', 'error')
+        return redirect(url_for('login'))
+
+
+def get_visitor_count(start_date, end_date, visitor_type=None):
+    query = db.session.query(db.func.sum(VisitorStatistics.count)).filter(
+        VisitorStatistics.report_date.between(start_date, end_date)
+    )
+
+    if visitor_type:
+        query = query.filter(VisitorStatistics.visitor_type == visitor_type)
+
+    return query.scalar() or 0
 
 @dashboard_bp.route('/api/dashboard/summary', methods=['GET'])
 @jwt_required()

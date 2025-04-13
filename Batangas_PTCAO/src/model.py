@@ -36,11 +36,14 @@ class User(db.Model):
         return f'<User {self.username}>'
 
     def set_password(self, password: str):
+        salt = bcrypt.gensalt()
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     def check_password(self, password: str) -> bool:
-        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
-
+        try:
+            return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+        except ValueError as e:
+            return False
 
 class Property(db.Model):
     __tablename__ = 'property'
