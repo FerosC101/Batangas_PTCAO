@@ -44,7 +44,7 @@ def init_auth_routes(app):
                 session['access_token'] = create_access_token(identity=user.user_id)
                 session['account_id'] = user.user_id
                 session['account_type'] = 'mto'
-                return redirect(url_for('mto.mto_dashboard'))
+                return redirect(url_for('mto.dashboard'))
 
             flash('Invalid email or password', 'error')
             return render_template('Login.html')
