@@ -1,12 +1,46 @@
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus
+from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User
 from Batangas_PTCAO.src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
-properties_bp = Blueprint('properties', __name__)
+properties_bp = Blueprint("properties", __name__, url_prefix="/property")
+
+
+def init_property_routes(app):
+    app.register_blueprint(properties_bp)
+
+
+@properties_bp.route('/mto/properties')
+@jwt_required()
+def mto_properties():
+    """
+    Render the MTO Properties page with the list of all properties
+    """
+    try:
+        # Get current user identity
+        current_user_id = get_jwt_identity()
+
+        user = User.query.get(current_user_id)
+
+        if not user or not user.municipality:
+            flash('User municipality not found', 'error')
+            return redirect(url_for('dashboard.mto_dashboard'))
+
+        properties = Property.query.filter_by(municipality=user.municipality).all()
+
+        return render_template(
+            'MTO_Properties.html',
+            properties=properties,
+            user_id=current_user_id,
+            municipality=user.municipality
+        )
+
+    except Exception as e:
+        flash(f'Failed to load properties: {str(e)}', 'error')
+        return redirect(url_for('dashboard.mto_dashboard'))
 
 @properties_bp.route('', methods=['GET'])
 @jwt_required()
@@ -434,6 +468,3 @@ def change_property_status(property_id):
             'message': str(e)
         }), 500
 
-
-def init_property_routes(app):
-    app.register_blueprint(properties_bp, url_prefix='/api/properties')

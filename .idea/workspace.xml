@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Resolved Bycrypt password error">
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Resolved Login">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/MTO_Properties.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,6 +141,8 @@
       <workItem from="1744596437721" duration="6000" />
       <workItem from="1744597275066" duration="3000" />
       <workItem from="1744607932546" duration="2379000" />
+      <workItem from="1744641628485" duration="3445000" />
+      <workItem from="1744645939278" duration="329000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -250,7 +256,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744543600988</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Resolved Login">
+      <option name="closed" value="true" />
+      <created>1744641951237</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1744641951237</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -277,10 +291,11 @@
     <MESSAGE value="update app for properties" />
     <MESSAGE value="MTO Dashborad - Untested" />
     <MESSAGE value="Resolved Bycrypt password error" />
-    <option name="LAST_COMMIT_MESSAGE" value="Resolved Bycrypt password error" />
+    <MESSAGE value="Resolved Login" />
+    <option name="LAST_COMMIT_MESSAGE" value="Resolved Login" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1744543547041" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1744646406386" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
   </component>
 </project>
