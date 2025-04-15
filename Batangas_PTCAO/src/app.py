@@ -19,6 +19,9 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'fallback-secret-key')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
     app.secret_key = os.environ.get('SECRET_KEY', 'default-secret-key')
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_COOKIE_SECURE'] = False  # HTTPS only
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Enable CSRF protection
 
     # Initialize extensions
     jwt = JWTManager(app)

@@ -13,7 +13,7 @@ def init_property_routes(app):
     app.register_blueprint(properties_bp)
 
 
-@properties_bp.route('/mto/properties')
+@properties_bp.route('/mto/property')
 @jwt_required()
 def mto_properties():
     """
@@ -21,7 +21,7 @@ def mto_properties():
     """
     try:
         # Get current user identity
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
 
         user = User.query.get(current_user_id)
 
