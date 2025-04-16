@@ -648,6 +648,63 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // Form submission handler
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('event_title', document.getElementById('eventTitle').value);
+            formData.append('description', document.getElementById('eventDescription').value);
+            formData.append('start_date', document.getElementById('startDate').value);
+            formData.append('end_date', document.getElementById('endDate').value);
+            formData.append('location', document.getElementById('eventLocation').value);
+            formData.append('category', document.getElementById('eventCategory').value);
+
+            const imageFile = document.getElementById('eventImage').files[0];
+            if (imageFile) {
+                formData.append('event_image', imageFile);
+            }
+
+            try {
+                const response = await fetch('/api/events', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Event created successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error creating event: ' + error.message);
+            }
+        });
+
+        // Function to load events
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/events?type=upcoming');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update the UI with the events data
+                    // You'll need to implement this based on your frontend framework
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        // Load events when page loads
+        document.addEventListener('DOMContentLoaded', loadEvents);
     </script>
 </body>
 </html>
