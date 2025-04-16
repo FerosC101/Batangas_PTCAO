@@ -46,7 +46,7 @@ def mto_events():
         )
     except Exception as e:
         flash('Failed to load events data', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('dashboard'))
 
 
 @events_bp.route('/api/events', methods=['GET'])
