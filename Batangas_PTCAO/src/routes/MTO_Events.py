@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, url_for, render_template, flash, redirect, current_app
+from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from Batangas_PTCAO.src.extension import db
@@ -6,7 +6,7 @@ from Batangas_PTCAO.src.model import Event
 import os
 from werkzeug.utils import secure_filename
 
-events_bp = Blueprint('events', __name__)
+events_bp = Blueprint('events', __name__, url_prefix='/events')
 
 # Allowed file extensions for event images
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -39,14 +39,17 @@ def mto_events():
         ).order_by(Event.start_date.desc()).limit(3).all()
 
         return render_template(
-            'MTO_Events.html',
+            'Events.html',
             upcoming_events=upcoming_events,
             past_events=past_events,
             user_id=current_user_id
         )
     except Exception as e:
         flash('Failed to load events data', 'error')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard.mto_dashboard'))
+
+
+# ... (rest of your existing event routes remain the same)
 
 
 @events_bp.route('/api/events', methods=['GET'])

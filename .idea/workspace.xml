@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Working redirection from dashboard to property">
-      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Events.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/Events.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Events.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/Mapping.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/Mapping.html" afterDir="false" />
-    </list>
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Backend for MTO_Events" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -145,7 +139,7 @@
       <workItem from="1744645939278" duration="756000" />
       <workItem from="1744709429313" duration="416000" />
       <workItem from="1744724054034" duration="4528000" />
-      <workItem from="1744814856818" duration="1178000" />
+      <workItem from="1744814856818" duration="1457000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -283,7 +277,23 @@
       <option name="project" value="LOCAL" />
       <updated>1744726459828</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Backend for MTO_Events">
+      <option name="closed" value="true" />
+      <created>1744816090844</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1744816090844</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Backend for MTO_Events">
+      <option name="closed" value="true" />
+      <created>1744816314669</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1744816314669</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -313,10 +323,11 @@
     <MESSAGE value="Resolved Login" />
     <MESSAGE value="Routing for property" />
     <MESSAGE value="Working redirection from dashboard to property" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working redirection from dashboard to property" />
+    <MESSAGE value="Backend for MTO_Events" />
+    <option name="LAST_COMMIT_MESSAGE" value="Backend for MTO_Events" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1744726279549" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1744816240097" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
   </component>
 </project>
