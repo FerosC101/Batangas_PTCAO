@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Backend for MTO_Events" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Failed to load events data">
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/Edit_Property.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Events.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Events.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Events.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Events.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -140,6 +148,8 @@
       <workItem from="1744709429313" duration="416000" />
       <workItem from="1744724054034" duration="4528000" />
       <workItem from="1744814856818" duration="1457000" />
+      <workItem from="1744901371902" duration="1144000" />
+      <workItem from="1744976264320" duration="1669000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -293,7 +303,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744816314669</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Failed to load events data">
+      <option name="closed" value="true" />
+      <created>1744901903025</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1744901903025</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -324,10 +342,11 @@
     <MESSAGE value="Routing for property" />
     <MESSAGE value="Working redirection from dashboard to property" />
     <MESSAGE value="Backend for MTO_Events" />
-    <option name="LAST_COMMIT_MESSAGE" value="Backend for MTO_Events" />
+    <MESSAGE value="Failed to load events data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Failed to load events data" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1744816240097" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1744976362517" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
   </component>
 </project>

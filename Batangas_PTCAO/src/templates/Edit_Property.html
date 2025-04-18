@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Include same headers as MTO_Properties.html -->
+    <style>
+        .image-preview {
+            max-width: 300px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Same header and sidebar as MTO_Properties.html -->
+
+    <div class="main-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="section-title mb-0">Edit Property</h1>
+            <a href="{{ url_for('properties.mto_properties') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Properties
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('properties.update_property', property_id=property.property_id) }}" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Property Name</label>
+                                <input type="text" class="form-control" name="property_name"
+                                       value="{{ property.property_name }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Barangay</label>
+                                <input type="text" class="form-control" name="barangay"
+                                       value="{{ property.barangay }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Accommodation Type</label>
+                                <select class="form-select" name="accommodation_type">
+                                    <option value="Resort" {% if property.accommodation_type == 'Resort' %}selected{% endif %}>Resort</option>
+                                    <option value="Hotel" {% if property.accommodation_type == 'Hotel' %}selected{% endif %}>Hotel</option>
+                                    <option value="Lodge" {% if property.accommodation_type == 'Lodge' %}selected{% endif %}>Lodge</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="Active" {% if property.status.value == 'Active' %}selected{% endif %}>Active</option>
+                                    <option value="Maintenance" {% if property.status.value == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Property Image</label>
+                                <input type="file" class="form-control" name="property_image"
+                                       accept="image/*" onchange="previewImage(event)">
+                                {% if property.property_image %}
+                                <img src="/static/uploads/properties/{{ property.property_image }}"
+                                     class="image-preview mt-2" id="imagePreview">
+                                {% else %}
+                                <img src="https://via.placeholder.com/300x200"
+                                     class="image-preview mt-2 d-none" id="imagePreview">
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description"
+                                  rows="4">{{ property.description }}</textarea>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const preview = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 
-from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash
+from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
+import os
 from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User
 from Batangas_PTCAO.src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,9 +10,14 @@ from datetime import datetime
 
 properties_bp = Blueprint("properties", __name__, url_prefix="/property")
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = 'static/uploads/properties'
 
 def init_property_routes(app):
     app.register_blueprint(properties_bp)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @properties_bp.route('/mto/property')
@@ -155,6 +162,12 @@ def get_property(property_id):
 @jwt_required()
 def create_property():
     try:
+        property_image = None
+        if 'property_image' in request.files:
+            file = request.files['property_image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
         data = request.get_json()
 
         required_fields = ['property_name', 'municipality']
@@ -166,6 +179,7 @@ def create_property():
                 }), 400
 
         new_property = Property(
+            property_image = property_image,
             property_name=data['property_name'],
             barangay=data.get('barangay'),
             municipality=data['municipality'],
@@ -232,120 +246,6 @@ def create_property():
         }), 500
 
 
-@properties_bp.route('/<int:property_id>', methods=['PUT'])
-@jwt_required()
-def update_property(property_id):
-    try:
-        property = Property.query.get_or_404(property_id)
-        data = request.get_json()
-
-        if 'property_name' in data:
-            property.property_name = data['property_name']
-        if 'barangay' in data:
-            property.barangay = data['barangay']
-        if 'municipality' in data:
-            property.municipality = data['municipality']
-        if 'accommodation_type' in data:
-            property.accommodation_type = data['accommodation_type']
-        if 'status' in data:
-            property.status = PropertyStatus(data['status'])
-        if 'description' in data:
-            property.description = data['description']
-
-        if 'amenities' in data and isinstance(data['amenities'], list):
-            for amenity in property.amenities:
-                db.session.delete(amenity)
-
-            for amenity_name in data['amenities']:
-                amenity = Amenity(amenity=amenity_name, property_id=property.property_id)
-                db.session.add(amenity)
-
-        if 'typical_locations' in data and isinstance(data['typical_locations'], list):
-            for location in property.typical_locations:
-                db.session.delete(location)
-
-            for location_name in data['typical_locations']:
-                location = TypicalLocation(location=location_name, property_id=property.property_id)
-                db.session.add(location)
-
-        if 'coordinates' in data and isinstance(data['coordinates'], list):
-            for coord in property.coordinates:
-                db.session.delete(coord)
-
-            for coord in data['coordinates']:
-                if 'longitude' in coord and 'latitude' in coord:
-                    coordinate = LongLat(
-                        longitude=coord['longitude'],
-                        latitude=coord['latitude'],
-                        property_id=property.property_id
-                    )
-                    db.session.add(coordinate)
-
-        if 'rooms' in data and isinstance(data['rooms'], list):
-            existing_rooms = {room.room_id: room for room in property.rooms}
-            processed_room_ids = set()
-
-            for room_data in data['rooms']:
-                room_id = room_data.get('room_id')
-
-                if room_id and room_id in existing_rooms:
-                    room = existing_rooms[room_id]
-                    processed_room_ids.add(room_id)
-
-                    if 'room_type' in room_data:
-                        room.room_type = room_data['room_type']
-                    if 'day_price' in room_data:
-                        room.day_price = room_data['day_price']
-                    if 'overnight_price' in room_data:
-                        room.overnight_price = room_data['overnight_price']
-                    if 'capacity' in room_data:
-                        room.capacity = room_data['capacity']
-
-                    if 'amenities' in room_data and isinstance(room_data['amenities'], list):
-                        for amenity in room.amenities:
-                            db.session.delete(amenity)
-
-                        for amenity_name in room_data['amenities']:
-                            amenity = Amenity(amenity=amenity_name, room_id=room.room_id)
-                            db.session.add(amenity)
-                else:
-                    new_room = Room(
-                        property_id=property.property_id,
-                        room_type=room_data.get('room_type'),
-                        day_price=room_data.get('day_price'),
-                        overnight_price=room_data.get('overnight_price'),
-                        capacity=room_data.get('capacity')
-                    )
-
-                    if 'amenities' in room_data and isinstance(room_data['amenities'], list):
-                        for amenity_name in room_data['amenities']:
-                            amenity = Amenity(amenity=amenity_name)
-                            new_room.amenities.append(amenity)
-
-                    db.session.add(new_room)
-
-            for room_id, room in existing_rooms.items():
-                if room_id not in processed_room_ids:
-                    db.session.delete(room)
-
-        db.session.commit()
-
-        return jsonify({
-            'status': 'success',
-            'message': 'Property updated successfully'
-        }), 200
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
 
 # Delete a property
 @properties_bp.route('/<int:property_id>', methods=['DELETE'])
@@ -372,6 +272,64 @@ def delete_property(property_id):
             'status': 'error',
             'message': str(e)
         }), 500
+
+
+@properties_bp.route('/<int:property_id>/edit')
+@jwt_required()
+def edit_property(property_id):
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        property = Property.query.get_or_404(property_id)
+
+        if property.municipality != user.municipality:
+            flash('Unauthorized to edit this property', 'error')
+            return redirect(url_for('properties.mto_properties'))
+
+        return render_template(
+            'Edit_Property.html',
+            property=property,
+            user_id=current_user_id
+        )
+    except Exception as e:
+        flash(str(e), 'error')
+        return redirect(url_for('properties.mto_properties'))
+
+
+@properties_bp.route('/<int:property_id>', methods=['POST'])
+@jwt_required()
+def update_property(property_id):
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        property = Property.query.get_or_404(property_id)
+
+        if property.municipality != user.municipality:
+            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+        # Handle file upload
+        if 'property_image' in request.files:
+            file = request.files['property_image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                property.property_image = filename
+
+        # Update other fields
+        property.property_name = request.form.get('property_name', property.property_name)
+        property.barangay = request.form.get('barangay', property.barangay)
+        property.accommodation_type = request.form.get('accommodation_type', property.accommodation_type)
+        property.status = PropertyStatus(request.form.get('status', property.status.value))
+        property.description = request.form.get('description', property.description)
+
+        db.session.commit()
+        flash('Property updated successfully', 'success')
+        return redirect(url_for('properties.mto_properties'))
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error updating property: {str(e)}', 'error')
+        return redirect(url_for('properties.edit_property', property_id=property_id))
 
 
 # Get all unique barangays

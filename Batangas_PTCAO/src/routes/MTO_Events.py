@@ -6,7 +6,7 @@ from Batangas_PTCAO.src.model import Event
 import os
 from werkzeug.utils import secure_filename
 
-events_bp = Blueprint('events', __name__, url_prefix='/events')
+events_bp = Blueprint('events', __name__, url_prefix='/mto/events')
 
 # Allowed file extensions for event images
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -21,35 +21,36 @@ def init_events_routes(app):
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
 
 
-@events_bp.route('/mto/events')
+@events_bp.route('/')
 @jwt_required()
 def mto_events():
     """Render the Events Management page"""
     try:
         current_user_id = get_jwt_identity()
+        print(f"Current user ID: {current_user_id}")  # Debug print
 
-        # Get upcoming events (events with end_date >= today)
+        # Get upcoming events
         upcoming_events = Event.query.filter(
             Event.end_date >= datetime.now().date()
         ).order_by(Event.start_date.asc()).all()
+        print(f"Found {len(upcoming_events)} upcoming events")  # Debug print
 
-        # Get past events (events with end_date < today)
+        # Get past events
         past_events = Event.query.filter(
             Event.end_date < datetime.now().date()
         ).order_by(Event.start_date.desc()).limit(3).all()
+        print(f"Found {len(past_events)} past events")  # Debug print
 
         return render_template(
-            'Events.html',
+            'MTO_Events.html',
             upcoming_events=upcoming_events,
             past_events=past_events,
             user_id=current_user_id
         )
     except Exception as e:
+        print(f"Error in mto_events: {str(e)}")  # Debug print
         flash('Failed to load events data', 'error')
         return redirect(url_for('dashboard.mto_dashboard'))
-
-
-# ... (rest of your existing event routes remain the same)
 
 
 @events_bp.route('/api/events', methods=['GET'])
