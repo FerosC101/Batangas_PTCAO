@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - MTO Visitors</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --memo-color: #0d6efd;
+            --destinations-color: #198754;
+            --updates-color: #0dcaf0;
+            --about-color: #6c757d;
+            --local-color: #28a745;
+            --foreign-color: #6f42c1;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .dashboard-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .dashboard-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-label {
+            color: #666;
+            font-size: 1rem;
+        }
+        .destinations-icon {
+            color: var(--destinations-color);
+        }
+        .visitors-icon {
+            color: var(--memo-color);
+        }
+        .properties-icon {
+            color: var(--updates-color);
+        }
+        .tasks-icon {
+            color: var(--accent);
+        }
+        .local-icon {
+            color: var(--local-color);
+        }
+        .foreign-icon {
+            color: var(--foreign-color);
+        }
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: 100%;
+            position: fixed;
+            top: 72px;
+            width: 16.66667%;
+            overflow-y: auto;
+            z-index: 999;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .btn-action {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tab-btn {
+            background-color: var(--light-bg);
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background-color: #fff;
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+        }
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+        .main-container {
+            margin-top: 70px;
+            margin-left: 16.66667%;
+            padding: 20px;
+            width: calc(100% - 16.66667%);
+        }
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 400px;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+            padding: 0.5rem;
+        }
+        .filter-card {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .visitor-type-label {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .visitor-type-local {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--local-color);
+        }
+        .visitor-type-foreign {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: var(--foreign-color);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .visitor-chart {
+            height: 100%;
+            width: 100%;
+        }
+        .nav-tabs .nav-link {
+            color: #666;
+            font-weight: 500;
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: transparent;
+            border-bottom: 3px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text">
+                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    Batangas Explorer - MTO
+                </a>
+
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="position-relative me-3">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-md-inline">MTO Admin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/mto/dashboard" class="sidebar-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>Destinations</span>
+        </a>
+        <a href="/property/mto/property" class="sidebar-link">
+            <i class="fas fa-hotel"></i>
+            <span>Properties</span>
+        </a>
+        <a href="#" class="sidebar-link active">
+            <i class="fas fa-users"></i>
+            <span>Visitors</span>
+        </a>
+        <a href="/mto/analytics" class="sidebar-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
+        <a href="/mto/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Events</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-bullhorn"></i>
+            <span>Announcements</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-file-alt"></i>
+            <span>Reports</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="section-title mb-0">Visitor Management</h1>
+            <div>
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-download me-1"></i> Export Report
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Add Visitor Record
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon visitors-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="dashboard-number">25,218</div>
+                    <div class="dashboard-label">Total Visitors</div>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 9% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon local-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="dashboard-number">15,372</div>
+                    <div class="dashboard-label">Local Visitors</div>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon foreign-icon">
+                        <i class="fas fa-globe-americas"></i>
+                    </div>
+                    <div class="dashboard-number">9,846</div>
+                    <div class="dashboard-label">Foreign Visitors</div>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 5% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon tasks-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="dashboard-number">4,308</div>
+                    <div class="dashboard-label">Overnight Stays</div>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 7% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="card filter-card mb-4">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Date Range</label>
+                    <select class="form-select">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option selected>This month</option>
+                        <option>Last month</option>
+                        <option>Custom range</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label">Visitor Type</label>
+                    <select class="form-select">
+                        <option>All Types</option>
+                        <option>Local</option>
+                        <option>Foreign</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Destination</label>
+                    <select class="form-select">
+                        <option>All Destinations</option>
+                        <option>Bayside Resort & Spa</option>
+                        <option>Ocean View Hotel</option>
+                        <option>Mountain View Lodge</option>
+                        <option>Sunrise Beach Resort</option>
+                        <option>Hilltop Retreat</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label">Stay Type</label>
+                    <select class="form-select">
+                        <option>All Types</option>
+                        <option>Day Tour</option>
+                        <option>Overnight</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end mb-3">
+                    <button class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-1"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Tables Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">Visitor Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-3">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#daily">Daily</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#weekly">Weekly</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#monthly">Monthly</a>
+                            </li>
+                        </ul>
+                        <div class="chart-container">
+                            <img src="/api/placeholder/800/300" alt="Visitor trends chart" class="visitor-chart">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">Visitor Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <img src="/api/placeholder/400/300" alt="Visitor distribution chart" class="visitor-chart">
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Local Visitors</span>
+                                <span class="fw-bold">61%</span>
+                            </div>
+                            <div class="progress mb-3" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 61%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Foreign Visitors</span>
+                                <span class="fw-bold">39%</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-purple" role="progressbar" style="width: 39%; background-color: var(--foreign-color);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitors Table -->
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Visitor Records</h5>
+                <div class="input-group" style="max-width: 300px;">
+                    <input type="text" class="form-control" placeholder="Search visitors...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Visitor Type</th>
+                                <th>Destination</th>
+                                <th>Stay Type</th>
+                                <th>Adults</th>
+                                <th>Children</th>
+                                <th>Revenue</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#VS-1254</td>
+                                <td>Apr 22, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
+                                <td>Bayside Resort & Spa</td>
+                                <td>Day Tour</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td>₱3,600</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1253</td>
+                                <td>Apr 22, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
+                                <td>Ocean View Hotel</td>
+                                <td>Overnight</td>
+                                <td>2</td>
+                                <td>0</td>
+                                <td>₱8,500</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1252</td>
+                                <td>Apr 21, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
+                                <td>Mountain View Lodge</td>
+                                <td>Overnight</td>
+                                <td>6</td>
+                                <td>3</td>
+                                <td>₱12,000</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1251</td>
+                                <td>Apr 21, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
+                                <td>Sunrise Beach Resort</td>
+                                <td>Day Tour</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td>₱2,500</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1250</td>
+                                <td>Apr 20, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
+                                <td>Riverside Inn</td>
+                                <td>Day Tour</td>
+                                <td>8</td>
+                                <td>5</td>
+                                <td>₱6,500</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1249</td>
+                                <td>Apr 20, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
+                                <td>Bayside Resort & Spa</td>
+                                <td>Overnight</td>
+                                <td>2</td>
+                                <td>0</td>
+                                <td>₱9,800</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-end">
+                <nav>
+                    <ul class="pagination justify-content-end mb-0">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Top Performing Destinations -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Top Performing Destinations by Visitor Count</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="mb-3 text-primary">Local Visitors</h6>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>Bayside Resort & Spa</span>
+                                <span class="fw-bold">2,345</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>Sunrise Beach Resort</span>
+                                <span class="fw-bold">2,100</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>Ocean View Hotel</span>
+                                <span class="fw-bold">1,987</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-3 text-primary">Foreign Visitors</h6>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>Ocean View Hotel</span>
+                                <span class="fw-bold">2,198</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 85%; background-color: var(--foreign-color);"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>Sunrise Beach Resort</span>
+                                <span class="fw-bold">1,543</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 65%; background-color: var(--foreign-color);"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>Bayside Resort & Spa</span>
+                                <span class="fw-bold">1,265</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 55%; background-color: var(--foreign-color);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-
