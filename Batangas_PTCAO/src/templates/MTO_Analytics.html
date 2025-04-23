@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - MTO Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --memo-color: #0d6efd;
+            --destinations-color: #198754;
+            --updates-color: #0dcaf0;
+            --about-color: #6c757d;
+            --local-color: #28a745;
+            --foreign-color: #6f42c1;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: 100%;
+            position: fixed;
+            top: 72px;
+            width: 16.66667%;
+            overflow-y: auto;
+            z-index: 999;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-container {
+            margin-top: 70px;
+            margin-left: 16.66667%;
+            padding: 20px;
+            width: calc(100% - 16.66667%);
+        }
+        .visitor-chart {
+            height: 300px;
+            width: 100%;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            justify-content: space-between;
+        }
+        .chart-bar {
+            width: 50px;
+            background-color: var(--primary);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        .local-color {
+            background-color: var(--local-color);
+        }
+        .foreign-color {
+            background-color: var(--foreign-color);
+        }
+        .progress-bar-local {
+            background-color: var(--local-color);
+        }
+        .progress-bar-foreign {
+            background-color: var(--foreign-color);
+        }
+        .progress {
+            height: 8px;
+            border-radius: 5px;
+        }
+        .top-destination-item {
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        .top-destination-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .top-destination-stats {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .indicator-up {
+            color: var(--local-color);
+        }
+        .indicator-down {
+            color: #dc3545;
+        }
+        .analytics-filter {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .filter-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .dashboard-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text">
+                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    Batangas Explorer - MTO
+                </a>
+
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="position-relative me-3">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-md-inline">MTO Admin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/mto/dashboard" class="sidebar-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span> Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-map-marked-alt"></i>
+            <span> Destinations</span>
+        </a>
+        <a href="/property/mto/property" class="sidebar-link">
+            <i class="fas fa-hotel"></i>
+            <span> Properties</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-users"></i>
+            <span> Visitors</span>
+        </a>
+        <a href="/mto/analytics" class="sidebar-link active">
+            <i class="fas fa-chart-line"></i>
+            <span> Analytics</span>
+        </a>
+        <a href="/mto/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span> Events</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-bullhorn"></i>
+            <span> Announcements</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-file-alt"></i>
+            <span> Reports</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-cog"></i>
+            <span> Settings</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="section-title mb-0">Analytics Dashboard</h1>
+            <div>
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-download me-1"></i> Export Report
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+            </div>
+        </div>
+
+        <!-- Analytics Filters -->
+        <div class="analytics-filter">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="filter-label">Date Range</div>
+                    <select class="form-select">
+                        <option>Last 6 Months</option>
+                        <option>Last 3 Months</option>
+                        <option>Last Month</option>
+                        <option>This Month</option>
+                        <option>Custom Range</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="filter-label">Barangay</div>
+                    <select class="form-select">
+                        <option>All Barangays</option>
+                        <option>San Andres</option>
+                        <option>Talahib</option>
+                        <option>Poblacion</option>
+                        <option>Lumbangan</option>
+                        <option>Barangay 1</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="filter-label">Property Type</div>
+                    <select class="form-select">
+                        <option>All Types</option>
+                        <option>Resort</option>
+                        <option>Hotel</option>
+                        <option>Lodge</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="filter-label">Visitor Type</div>
+                    <select class="form-select">
+                        <option>All Visitors</option>
+                        <option>Local</option>
+                        <option>Foreign</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-outline-secondary me-2">Reset</button>
+                <button class="btn btn-primary">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Analytics Summary Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div><i class="fas fa-users text-primary fa-2x mb-2"></i></div>
+                <div class="stat-number">25,218</div>
+                <div class="stat-label">Total Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div><i class="fas fa-male text-success fa-2x mb-2"></i></div>
+                <div class="stat-number">15,372</div>
+                <div class="stat-label">Local Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div><i class="fas fa-globe text-purple fa-2x mb-2"></i></div>
+                <div class="stat-number">9,846</div>
+                <div class="stat-label">Foreign Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div><i class="fas fa-clock text-warning fa-2x mb-2"></i></div>
+                <div class="stat-number">4,765</div>
+                <div class="stat-label">Overnight Stays</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Visitor Statistics Chart -->
+            <div class="col-md-7">
+                <div class="card h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Visitor Statistics</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Last 6 Months
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Last 3 Months</a></li>
+                                <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
+                                <li><a class="dropdown-item" href="#">Last Year</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="visitor-chart">
+                            <div class="chart-bar" style="height: 120px; background-color: var(--local-color);">
+                                <div class="chart-bar-value">3.5K</div>
+                                <div class="chart-bar-label">Oct</div>
+                            </div>
+                            <div class="chart-bar" style="height: 150px; background-color: var(--local-color);">
+                                <div class="chart-bar-value">4.2K</div>
+                                <div class="chart-bar-label">Nov</div>
+                            </div>
+                            <div class="chart-bar" style="height: 180px; background-color: var(--local-color);">
+                                <div class="chart-bar-value">4.8K</div>
+                                <div class="chart-bar-label">Dec</div>
+                            </div>
+                            <div class="chart-bar" style="height: 140px; background-color: var(--local-color);">
+                                <div class="chart-bar-value">3.9K</div>
+                                <div class="chart-bar-label">Jan</div>
+                            </div>
+                            <div class="chart-bar" style="height: 160px; background-color: var(--local-color);">
+                                <div class="chart-bar-value">4.5K</div>
+                                <div class="chart-bar-label">Feb</div>
+                            </div>
+                            <div class="chart-bar" style="height: 210px; background-color: var(--local-color);">
+                                <div class="chart-bar-value">5.6K</div>
+                                <div class="chart-bar-label">Mar</div>
+                            </div>
+
+                            <div class="chart-bar" style="height: 80px; background-color: var(--foreign-color); margin-left: -50px;">
+                                <div class="chart-bar-value">2.3K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 100px; background-color: var(--foreign-color); margin-left: -50px;">
+                                <div class="chart-bar-value">2.8K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 130px; background-color: var(--foreign-color); margin-left: -50px;">
+                                <div class="chart-bar-value">3.5K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 90px; background-color: var(--foreign-color); margin-left: -50px;">
+                                <div class="chart-bar-value">2.5K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 110px; background-color: var(--foreign-color); margin-left: -50px;">
+                                <div class="chart-bar-value">3.0K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 150px; background-color: var(--foreign-color); margin-left: -50px;">
+                                <div class="chart-bar-value">4.0K</div>
+                            </div>
+                        </div>
+                        <div class="chart-legend mt-4">
+                            <div class="legend-item">
+                                <div class="legend-color local-color"></div>
+                                <span>Local Visitors</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color foreign-color"></div>
+                                <span>Foreign Visitors</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Destinations per Barangay -->
+            <div class="col-md-5">
+                <div class="card h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Top Destinations per Barangay</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                This Month
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">This Week</a></li>
+                                <li><a class="dropdown-item" href="#">This Month</a></li>
+                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="top-destination-item">
+                            <div class="top-destination-title">San Andres</div>
+                            <div class="top-destination-stats">
+                                <strong>Total Visitors:</strong> 3,610
+                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 15%</span>
+                            </div>
+                            <div class="progress mt-2 mb-2">
+                                <div class="progress-bar progress-bar-local" style="width: 60%"></div>
+                                <div class="progress-bar progress-bar-foreign" style="width: 40%"></div>
+                            </div>
+                            <div class="small">
+                                <span class="me-3">Local: 2,345 (65%)</span>
+                                <span>Foreign: 1,265 (35%)</span>
+                            </div>
+                        </div>
+
+                        <div class="top-destination-item">
+                            <div class="top-destination-title">Talahib</div>
+                            <div class="top-destination-stats">
+                                <strong>Total Visitors:</strong> 4,185
+                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 8%</span>
+                            </div>
+                            <div class="progress mt-2 mb-2">
+                                <div class="progress-bar progress-bar-local" style="width: 47%"></div>
+                                <div class="progress-bar progress-bar-foreign" style="width: 53%"></div>
+                            </div>
+                            <div class="small">
+                                <span class="me-3">Local: 1,987 (47%)</span>
+                                <span>Foreign: 2,198 (53%)</span>
+                            </div>
+                        </div>
+
+                        <div class="top-destination-item">
+                            <div class="top-destination-title">Lumbangan</div>
+                            <div class="top-destination-stats">
+                                <strong>Total Visitors:</strong> 4,308
+                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 12%</span>
+                            </div>
+                            <div class="progress mt-2 mb-2">
+                                <div class="progress-bar progress-bar-local" style="width: 64%"></div>
+                                <div class="progress-bar progress-bar-foreign" style="width: 36%"></div>
+                            </div>
+                            <div class="small">
+                                <span class="me-3">Local: 2,765 (64%)</span>
+                                <span>Foreign: 1,543 (36%)</span>
+                            </div>
+                        </div>
+
+                        <div class="top-destination-item">
+                            <div class="top-destination-title">Poblacion</div>
+                            <div class="top-destination-stats">
+                                <strong>Total Visitors:</strong> 2,241
+                                <span class="ms-2 indicator-down"><i class="fas fa-arrow-down"></i> 3%</span>
+                            </div>
+                            <div class="progress mt-2 mb-2">
+                                <div class="progress-bar progress-bar-local" style="width: 69%"></div>
+                                <div class="progress-bar progress-bar-foreign" style="width: 31%"></div>
+                            </div>
+                            <div class="small">
+                                <span class="me-3">Local: 1,543 (69%)</span>
+                                <span>Foreign: 698 (31%)</span>
+                            </div>
+                        </div>
+
+                        <div class="top-destination-item">
+                            <div class="top-destination-title">Barangay 1</div>
+                            <div class="top-destination-stats">
+                                <strong>Total Visitors:</strong> 2,197
+                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 5%</span>
+                            </div>
+                            <div class="progress mt-2 mb-2">
+                                <div class="progress-bar progress-bar-local" style="width: 65%"></div>
+                                <div class="progress-bar progress-bar-foreign" style="width: 35%"></div>
+                            </div>
+                            <div class="small">
+                                <span class="me-3">Local: 1,432 (65%)</span>
+                                <span>Foreign: 765 (35%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Analytics Components -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Visitor Demographics</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Last Month
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Last Week</a></li>
+                                <li><a class="dropdown-item" href="#">Last Month</a></li>
+                                <li><a class="dropdown-item" href="#">Last Year</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <h6 class="text-center mb-3">Age Distribution</h6>
+                                <div style="height: 200px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: flex-end; padding: 10px; justify-content: space-between;">
+                                    <div style="width: 30px; height: 70%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
+                                    <div style="width: 30px; height: 90%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
+                                    <div style="width: 30px; height: 60%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
+                                    <div style="width: 30px; height: 40%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
+                                    <div style="width: 30px; height: 25%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <small>18-24</small>
+                                    <small>25-34</small>
+                                    <small>35-44</small>
+                                    <small>45-54</small>
+                                    <small>55+</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-center mb-3">Gender Distribution</h6>
+                                <div style="height: 200px; width: 200px; margin: 0 auto; position: relative;">
+                                    <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(var(--primary) 0% 55%, var(--accent) 55% 100%);"></div>
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; width: 60%; height: 60%; border-radius: 50%;"></div>
+                                </div>
+                                <div class="d-flex justify-content-center mt-3 gap-4">
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 12px; height: 12px; background-color: var(--primary); border-radius: 2px; margin-right: 5px;"></div>
+                                        <small>Male (55%)</small>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 12px; height: 12px; background-color: var(--accent); border-radius: 2px; margin-right: 5px;"></div>
+                                        <small>Female (45%)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-3">Terms of Service</a>
+                    <a href="#">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+</html>

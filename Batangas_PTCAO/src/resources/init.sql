@@ -92,6 +92,7 @@ CREATE TABLE visitor_statistics (
 -- Create a table for monthly aggregated statistics by barangay
 CREATE TABLE barangay_monthly_statistics (
     stat_id SERIAL PRIMARY KEY,
+    municipality VARCHAR(100) NOT NULL,
     barangay VARCHAR(100) NOT NULL,
     year INT NOT NULL,
     month INT NOT NULL,
