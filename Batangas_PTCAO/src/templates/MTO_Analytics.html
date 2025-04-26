@@ -636,65 +636,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Additional Analytics Components -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Visitor Demographics</h5>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Last Month
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Last Week</a></li>
-                                <li><a class="dropdown-item" href="#">Last Month</a></li>
-                                <li><a class="dropdown-item" href="#">Last Year</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-6">
-                                <h6 class="text-center mb-3">Age Distribution</h6>
-                                <div style="height: 200px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: flex-end; padding: 10px; justify-content: space-between;">
-                                    <div style="width: 30px; height: 70%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
-                                    <div style="width: 30px; height: 90%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
-                                    <div style="width: 30px; height: 60%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
-                                    <div style="width: 30px; height: 40%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
-                                    <div style="width: 30px; height: 25%; background-color: var(--primary); border-radius: 5px 5px 0 0;"></div>
-                                </div>
-                                <div class="d-flex justify-content-between mt-2">
-                                    <small>18-24</small>
-                                    <small>25-34</small>
-                                    <small>35-44</small>
-                                    <small>45-54</small>
-                                    <small>55+</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <h6 class="text-center mb-3">Gender Distribution</h6>
-                                <div style="height: 200px; width: 200px; margin: 0 auto; position: relative;">
-                                    <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(var(--primary) 0% 55%, var(--accent) 55% 100%);"></div>
-                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; width: 60%; height: 60%; border-radius: 50%;"></div>
-                                </div>
-                                <div class="d-flex justify-content-center mt-3 gap-4">
-                                    <div class="d-flex align-items-center">
-                                        <div style="width: 12px; height: 12px; background-color: var(--primary); border-radius: 2px; margin-right: 5px;"></div>
-                                        <small>Male (55%)</small>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <div style="width: 12px; height: 12px; background-color: var(--accent); border-radius: 2px; margin-right: 5px;"></div>
-                                        <small>Female (45%)</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <footer class="footer">
@@ -711,6 +652,160 @@
             </div>
         </div>
     </footer>
+    <!-- Add this script at the bottom of the body, before the closing </body> tag -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch summary stats
+        fetch('/api/analytics/summary')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSummaryStats(data.data);
+                }
+            });
+
+        // Fetch visitor trends (default: 6 months)
+        fetchVisitorTrends('6months');
+
+        // Fetch top destinations (default: this month)
+        fetchTopDestinations('month');
+
+        // Event listeners for period selectors
+        document.querySelector('.visitor-trends-dropdown .dropdown-menu').addEventListener('click', function(e) {
+            if (e.target.classList.contains('dropdown-item')) {
+                const period = e.target.textContent.trim();
+                document.querySelector('.visitor-trends-dropdown .dropdown-toggle').textContent = period;
+                fetchVisitorTrends(getPeriodValue(period));
+            }
+        });
+
+        document.querySelector('.top-destinations-dropdown .dropdown-menu').addEventListener('click', function(e) {
+            if (e.target.classList.contains('dropdown-item')) {
+                const period = e.target.textContent.trim();
+                document.querySelector('.top-destinations-dropdown .dropdown-toggle').textContent = period;
+                fetchTopDestinations(getPeriodValue(period));
+            }
+        });
+
+        // Apply filters button
+        document.querySelector('.analytics-filter .btn-primary').addEventListener('click', function() {
+            const dateRange = document.querySelector('.analytics-filter select:nth-of-type(1)').value;
+            const barangay = document.querySelector('.analytics-filter select:nth-of-type(2)').value;
+            const propertyType = document.querySelector('.analytics-filter select:nth-of-type(3)').value;
+            const visitorType = document.querySelector('.analytics-filter select:nth-of-type(4)').value;
+
+            // You would implement filtering based on these values
+            console.log('Filters applied:', { dateRange, barangay, propertyType, visitorType });
+        });
+    });
+
+    function getPeriodValue(periodText) {
+        const periodMap = {
+            'Last 3 Months': '3months',
+            'Last 6 Months': '6months',
+            'Last Year': 'year',
+            'This Week': 'week',
+            'This Month': 'month',
+            'This Year': 'year'
+        };
+        return periodMap[periodText] || '6months';
+    }
+
+    function updateSummaryStats(data) {
+        document.querySelector('.stat-number:nth-of-type(1)').textContent = data.total_visitors.toLocaleString();
+        document.querySelector('.stat-number:nth-of-type(2)').textContent = data.local_visitors.toLocaleString();
+        document.querySelector('.stat-number:nth-of-type(3)').textContent = data.foreign_visitors.toLocaleString();
+        document.querySelector('.stat-number:nth-of-type(4)').textContent = data.overnight_stays.toLocaleString();
+    }
+
+    function fetchVisitorTrends(period) {
+        fetch(`/api/analytics/visitor-trends?period=${period}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateVisitorTrendsChart(data.data);
+                }
+            });
+    }
+
+    function updateVisitorTrendsChart(data) {
+        const chartContainer = document.querySelector('.visitor-chart');
+        chartContainer.innerHTML = '';
+
+        // Find max value for scaling
+        const maxValue = Math.max(...data.local_visitors, ...data.foreign_visitors);
+        const scaleFactor = 250 / maxValue; // 250px is our max height
+
+        // Create bars for each month
+        data.labels.forEach((label, index) => {
+            const localHeight = data.local_visitors[index] * scaleFactor;
+            const foreignHeight = data.foreign_visitors[index] * scaleFactor;
+
+            // Local visitors bar
+            const localBar = document.createElement('div');
+            localBar.className = 'chart-bar';
+            localBar.style.height = `${localHeight}px`;
+            localBar.style.backgroundColor = 'var(--local-color)';
+            localBar.innerHTML = `
+                <div class="chart-bar-value">${(data.local_visitors[index] / 1000).toFixed(1)}K</div>
+                <div class="chart-bar-label">${label.split(' ')[0]}</div>
+            `;
+            chartContainer.appendChild(localBar);
+
+            // Foreign visitors bar (offset)
+            const foreignBar = document.createElement('div');
+            foreignBar.className = 'chart-bar';
+            foreignBar.style.height = `${foreignHeight}px`;
+            foreignBar.style.backgroundColor = 'var(--foreign-color)';
+            foreignBar.style.marginLeft = '-50px';
+            foreignBar.innerHTML = `
+                <div class="chart-bar-value">${(data.foreign_visitors[index] / 1000).toFixed(1)}K</div>
+            `;
+            chartContainer.appendChild(foreignBar);
+        });
+    }
+
+    function fetchTopDestinations(period) {
+        fetch(`/api/analytics/top-destinations?period=${period}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateTopDestinations(data.data);
+                }
+            });
+    }
+
+    function updateTopDestinations(data) {
+        const container = document.querySelector('.card-body');
+        container.innerHTML = '';
+
+        data.forEach(destination => {
+            const item = document.createElement('div');
+            item.className = 'top-destination-item';
+
+            const arrowClass = destination.change_direction === 'up' ? 'indicator-up' : 'indicator-down';
+            const arrowIcon = destination.change_direction === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
+
+            item.innerHTML = `
+                <div class="top-destination-title">${destination.barangay}</div>
+                <div class="top-destination-stats">
+                    <strong>Total Visitors:</strong> ${destination.total_visitors.toLocaleString()}
+                    <span class="ms-2 ${arrowClass}"><i class="fas ${arrowIcon}"></i> ${Math.abs(destination.change_percent)}%</span>
+                </div>
+                <div class="progress mt-2 mb-2">
+                    <div class="progress-bar progress-bar-local" style="width: ${destination.local_percent}%"></div>
+                    <div class="progress-bar progress-bar-foreign" style="width: ${destination.foreign_percent}%"></div>
+                </div>
+                <div class="small">
+                    <span class="me-3">Local: ${destination.local_visitors.toLocaleString()} (${destination.local_percent}%)</span>
+                    <span>Foreign: ${destination.foreign_visitors.toLocaleString()} (${destination.foreign_percent}%)</span>
+                </div>
+            `;
+
+            container.appendChild(item);
+        });
+    }
+    </script>
 
     <!-- JavaScript dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
