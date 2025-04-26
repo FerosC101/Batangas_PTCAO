@@ -130,7 +130,7 @@ def create_event():
         if not all([event_title, start_date, end_date, location]):
             return jsonify({'success': False, 'message': 'Missing required fields'}), 400
 
-        # Handle file upload
+        # Handle file uploads
         event_image = None
         if 'event_image' in request.files:
             file = request.files['event_image']
@@ -183,7 +183,7 @@ def update_event(event_id):
         if end_date:
             event.end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
 
-        # Handle file upload
+        # Handle file uploads
         if 'event_image' in request.files:
             file = request.files['event_image']
             if file and allowed_file(file.filename):

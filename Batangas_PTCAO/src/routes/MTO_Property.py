@@ -307,7 +307,7 @@ def update_property(property_id):
         if property.municipality != user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        # Handle file upload
+        # Handle file uploads
         if 'property_image' in request.files:
             file = request.files['property_image']
             if file and allowed_file(file.filename):

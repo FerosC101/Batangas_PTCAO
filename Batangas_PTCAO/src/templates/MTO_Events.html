@@ -278,6 +278,15 @@
             object-fit: cover;
             border-radius: 8px;
         }
+        .municipality-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -310,7 +319,7 @@
         </div>
     </header>
 
-        <!-- Update the sidebar links to use proper URL routing -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <a href="/mto/dashboard" class="sidebar-link">
             <i class="fas fa-tachometer-alt"></i>
@@ -365,6 +374,13 @@
             </div>
         </div>
 
+        <!-- Municipality Badge -->
+        <div class="mb-4">
+            <span class="municipality-badge">
+                <i class="fas fa-map-marker-alt me-1"></i> {{ user_municipality }}
+            </span>
+        </div>
+
         <div class="row">
             <!-- Input Events Section -->
             <div class="col-md-6">
@@ -373,28 +389,32 @@
                         <h5 class="mb-0"><i class="fas fa-calendar-plus me-2"></i> Input New Event</h5>
                     </div>
                     <div class="card-body">
-                        <form>
+                        <form id="eventForm">
                             <div class="mb-3">
-                                <label for="eventTitle" class="form-label">Event Title</label>
+                                <label for="eventTitle" class="form-label">Event Title*</label>
                                 <input type="text" class="form-control" id="eventTitle" placeholder="Enter event title" required>
                             </div>
                             <div class="mb-3">
-                                <label for="eventDescription" class="form-label">Description</label>
+                                <label for="eventDescription" class="form-label">Description*</label>
                                 <textarea class="form-control" id="eventDescription" rows="3" placeholder="Enter event description" required></textarea>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <label for="startDate" class="form-label">Start Date*</label>
                                     <input type="date" class="form-control" id="startDate" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="endDate" class="form-label">End Date</label>
+                                    <label for="endDate" class="form-label">End Date*</label>
                                     <input type="date" class="form-control" id="endDate" required>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="eventLocation" class="form-label">Location</label>
+                                <label for="eventLocation" class="form-label">Location*</label>
                                 <input type="text" class="form-control" id="eventLocation" placeholder="Enter event location" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Municipality</label>
+                                <input type="text" class="form-control" value="{{ user_municipality }}" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="eventImage" class="form-label">Event Image</label>
@@ -404,7 +424,7 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="eventCategory" class="form-label">Category</label>
+                                <label for="eventCategory" class="form-label">Category*</label>
                                 <select class="form-select" id="eventCategory" required>
                                     <option value="">Select category</option>
                                     <option value="festival">Festival</option>
@@ -430,126 +450,37 @@
                     <div class="card-header bg-success text-white">
                         <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i> Upcoming Events</h5>
                     </div>
-                    <div class="card-body upcoming-events-list">
-                        <!-- Event 1 -->
+                    <div class="card-body upcoming-events-list" id="upcomingEventsContainer">
+                        <!-- Events will be loaded dynamically here -->
+                        {% for event in upcoming_events %}
                         <div class="card event-card mb-3">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <span class="event-date">May 15-17, 2025</span>
+                                        <span class="event-date">{{ event.start_date.strftime('%b %d, %Y') }} - {{ event.end_date.strftime('%b %d, %Y') }}</span>
                                         <span class="badge bg-info event-status-badge ms-2">Upcoming</span>
                                     </div>
                                     <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent({{ event.event_id }})">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger">
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEvent({{ event.event_id }})">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <h5 class="mt-2">Batangas Coffee Festival</h5>
-                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Lipa City Town Plaza</p>
-                                <p>Annual celebration of Batangas' rich coffee culture featuring local growers, barista competitions, and coffee tasting sessions.</p>
+                                <h5 class="mt-2">{{ event.event_title }}</h5>
+                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> {{ event.location }}</p>
+                                <p>{{ event.description }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <span class="badge bg-secondary me-1">Cultural</span>
-                                        <span class="badge bg-secondary">Food</span>
+                                        <span class="badge bg-secondary me-1">{{ event.category }}</span>
                                     </div>
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    <a href="#" class="btn btn-sm btn-outline-primary" onclick="viewEventDetails({{ event.event_id }})">View Details</a>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Event 2 -->
-                        <div class="card event-card mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <span class="event-date">Jun 8-10, 2025</span>
-                                        <span class="badge bg-warning text-dark event-status-badge ms-2">New</span>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <h5 class="mt-2">Nasugbu Beach Volleyball Tournament</h5>
-                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Nasugbu White Beach</p>
-                                <p>International beach volleyball competition featuring teams from across Asia, with food stalls and live music.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <span class="badge bg-secondary me-1">Sports</span>
-                                        <span class="badge bg-secondary">International</span>
-                                    </div>
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Event 3 -->
-                        <div class="card event-card mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <span class="event-date">Jul 22, 2025</span>
-                                        <span class="badge bg-success event-status-badge ms-2">Confirmed</span>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <h5 class="mt-2">Taal Heritage Tour</h5>
-                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Taal, Batangas</p>
-                                <p>Guided tour of Taal's heritage houses and Basilica, with cultural performances and local delicacies tasting.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <span class="badge bg-secondary me-1">Tourism</span>
-                                        <span class="badge bg-secondary">Historical</span>
-                                    </div>
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Event 4 -->
-                        <div class="card event-card mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <span class="event-date">Aug 12-14, 2025</span>
-                                        <span class="badge bg-info event-status-badge ms-2">Upcoming</span>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <h5 class="mt-2">Batangas Business Summit</h5>
-                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Batangas City Convention Center</p>
-                                <p>Annual gathering of business leaders discussing economic development, investment opportunities, and networking.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <span class="badge bg-secondary me-1">Business</span>
-                                        <span class="badge bg-secondary">Networking</span>
-                                    </div>
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                     <div class="card-footer text-center">
                         <a href="#" class="btn btn-link">View All Events <i class="fas fa-arrow-right ms-1"></i></a>
@@ -561,57 +492,29 @@
         <!-- Past Events Section -->
         <div class="mt-5">
             <h4 class="section-title">Past Events</h4>
-            <div class="row">
-                <!-- Past Event 1 -->
+            <div class="row" id="pastEventsContainer">
+                <!-- Past Events will be loaded dynamically here -->
+                {% for event in past_events %}
                 <div class="col-md-4">
                     <div class="card event-card">
-                        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top" alt="Past Event">
+                        {% if event.event_image %}
+                        <img src="{{ url_for('static', filename='uploads/events/' + event.event_image) }}" class="card-img-top" alt="{{ event.event_title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/500x300?text=No+Image" class="card-img-top" alt="No Image">
+                        {% endif %}
                         <div class="card-body">
                             <span class="badge bg-secondary">Past Event</span>
-                            <h5 class="mt-2">Batangas Food Festival 2024</h5>
-                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Batangas City</p>
-                            <p class="card-text">Celebration of Batangas cuisine with cooking demonstrations and food stalls.</p>
+                            <h5 class="mt-2">{{ event.event_title }}</h5>
+                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> {{ event.location }}</p>
+                            <p class="card-text">{{ event.description[:100] }}...</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">March 15-17, 2024</small>
-                                <a href="#" class="btn btn-sm btn-outline-primary">View Report</a>
+                                <small class="text-muted">{{ event.start_date.strftime('%b %d, %Y') }} - {{ event.end_date.strftime('%b %d, %Y') }}</small>
+                                <a href="#" class="btn btn-sm btn-outline-primary" onclick="viewEventDetails({{ event.event_id }})">View Report</a>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Past Event 2 -->
-                <div class="col-md-4">
-                    <div class="card event-card">
-                        <img src="https://images.unsplash.com/photo-1469371670807-013ccf25f16a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top" alt="Past Event">
-                        <div class="card-body">
-                            <span class="badge bg-secondary">Past Event</span>
-                            <h5 class="mt-2">Taal Lake Cleanup</h5>
-                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Taal Lake</p>
-                            <p class="card-text">Community environmental initiative to clean and preserve Taal Lake.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">February 5, 2024</small>
-                                <a href="#" class="btn btn-sm btn-outline-primary">View Report</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Past Event 3 -->
-                <div class="col-md-4">
-                    <div class="card event-card">
-                        <img src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="card-img-top" alt="Past Event">
-                        <div class="card-body">
-                            <span class="badge bg-secondary">Past Event</span>
-                            <h5 class="mt-2">Batangas Tourism Summit</h5>
-                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> Batangas Convention Center</p>
-                            <p class="card-text">Gathering of tourism stakeholders to discuss industry trends and strategies.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">January 20-21, 2024</small>
-                                <a href="#" class="btn btn-sm btn-outline-primary">View Report</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -636,15 +539,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Load events data when page loads
-            loadEvents();
-
-            // Handle form submission
-            document.querySelector('form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                await submitEventForm();
-            });
-
             // Image preview functionality
             document.getElementById('eventImage').addEventListener('change', function(event) {
                 const file = event.target.files[0];
@@ -658,35 +552,14 @@
                     reader.readAsDataURL(file);
                 }
             });
+
+            // Form submission
+            document.getElementById('eventForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await submitEventForm();
+            });
         });
 
-        async function loadEvents() {
-            try {
-                const response = await fetch('/mto/events/api/events', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-                    }
-                });
-
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    return;
-                }
-
-                const data = await response.json();
-
-                if (data.success) {
-                    renderEvents(data.data.events);
-                } else {
-                    console.error('Error loading events:', data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        // Update the form submission to include the municipality
         async function submitEventForm() {
             const formData = new FormData();
             formData.append('event_title', document.getElementById('eventTitle').value);
@@ -723,7 +596,6 @@
             }
         }
 
-        // Update the edit and delete functions to use the correct endpoint
         function editEvent(eventId) {
             window.location.href = `/mto/events/edit/${eventId}`;
         }
@@ -748,83 +620,6 @@
                 })
                 .catch(error => console.error('Error:', error));
             }
-        }
-
-
-        function renderEvents(events) {
-            const upcomingContainer = document.querySelector('.upcoming-events-list');
-            const pastContainer = document.querySelector('.past-events-container');
-
-            // Clear existing content
-            upcomingContainer.innerHTML = '';
-            pastContainer.innerHTML = '';
-
-            // Group events by upcoming/past
-            const today = new Date();
-            const upcoming = [];
-            const past = [];
-
-            events.forEach(event => {
-                const endDate = new Date(event.end_date);
-                if (endDate >= today) {
-                    upcoming.push(event);
-                } else {
-                    past.push(event);
-                }
-            });
-
-            // Render upcoming events
-            upcoming.forEach(event => {
-                const eventCard = createEventCard(event, 'upcoming');
-                upcomingContainer.appendChild(eventCard);
-            });
-
-            // Render past events
-            past.forEach(event => {
-                const eventCard = createEventCard(event, 'past');
-                pastContainer.appendChild(eventCard);
-            });
-        }
-
-        function createEventCard(event, type) {
-            const card = document.createElement('div');
-            card.className = 'card event-card mb-3';
-
-            const statusClass = type === 'upcoming' ? 'bg-info' : 'bg-secondary';
-            const statusText = type === 'upcoming' ? 'Upcoming' : 'Past Event';
-
-            const startDate = new Date(event.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            const endDate = new Date(event.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-            card.innerHTML = `
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="event-date">${startDate} - ${endDate}</span>
-                            <span class="badge ${statusClass} event-status-badge ms-2">${statusText}</span>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent(${event.event_id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteEvent(${event.event_id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <h5 class="mt-2">${event.event_title}</h5>
-                    <p class="text-muted"><i class="fas fa-map-marker-alt me-1 event-location"></i> ${event.location}</p>
-                    <p>${event.description}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="badge bg-secondary me-1">${event.category}</span>
-                        </div>
-                        <a href="#" class="btn btn-sm btn-outline-primary" onclick="viewEventDetails(${event.event_id})">View Details</a>
-                    </div>
-                </div>
-            `;
-
-            return card;
         }
 
         function viewEventDetails(eventId) {
