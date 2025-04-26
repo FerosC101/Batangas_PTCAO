@@ -662,8 +662,9 @@
 
         async function loadEvents() {
             try {
-                const response = await fetch('/events/api/events', {
+                const response = await fetch('/mto/events/api/events', {
                     headers: {
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
                     }
                 });
@@ -685,6 +686,7 @@
             }
         }
 
+        // Update the form submission to include the municipality
         async function submitEventForm() {
             const formData = new FormData();
             formData.append('event_title', document.getElementById('eventTitle').value);
@@ -700,18 +702,13 @@
             }
 
             try {
-                const response = await fetch('/events/api/events', {
+                const response = await fetch('/mto/events/api/events', {
                     method: 'POST',
                     body: formData,
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
                     }
                 });
-
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    return;
-                }
 
                 const data = await response.json();
 
@@ -725,6 +722,34 @@
                 alert('Error creating event: ' + error.message);
             }
         }
+
+        // Update the edit and delete functions to use the correct endpoint
+        function editEvent(eventId) {
+            window.location.href = `/mto/events/edit/${eventId}`;
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                fetch(`/mto/events/api/events/${eventId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Event deleted successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
 
         function renderEvents(events) {
             const upcomingContainer = document.querySelector('.upcoming-events-list');
@@ -800,32 +825,6 @@
             `;
 
             return card;
-        }
-
-        function editEvent(eventId) {
-            window.location.href = `/mto/events/edit/${eventId}`;
-        }
-
-        function deleteEvent(eventId) {
-            if (confirm('Are you sure you want to delete this event?')) {
-                fetch(`/events/api/events/${eventId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Event deleted successfully');
-                        window.location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
         }
 
         function viewEventDetails(eventId) {

@@ -1,8 +1,8 @@
-from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
+from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import Event
+from Batangas_PTCAO.src.model import Event, User
 import os
 from werkzeug.utils import secure_filename
 
@@ -24,31 +24,33 @@ def init_events_routes(app):
 @events_bp.route('/')
 @jwt_required()
 def mto_events():
-    """Render the Events Management page"""
     try:
-        current_user_id = get_jwt_identity()
-        print(f"Current user ID: {current_user_id}")  # Debug print
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            flash('User not found', 'error')
+            return redirect(url_for('dashboard.mto_dashboard'))
 
-        # Get upcoming events
+        # Get upcoming events from the user's municipality
         upcoming_events = Event.query.filter(
-            Event.end_date >= datetime.now().date()
+            Event.end_date >= datetime.now().date(),
+            Event.municipality == current_user.municipality
         ).order_by(Event.start_date.asc()).all()
-        print(f"Found {len(upcoming_events)} upcoming events")  # Debug print
 
-        # Get past events
+        # Get past events from the user's municipality
         past_events = Event.query.filter(
-            Event.end_date < datetime.now().date()
+            Event.end_date < datetime.now().date(),
+            Event.municipality == current_user.municipality
         ).order_by(Event.start_date.desc()).limit(3).all()
-        print(f"Found {len(past_events)} past events")  # Debug print
 
         return render_template(
             'MTO_Events.html',
             upcoming_events=upcoming_events,
             past_events=past_events,
-            user_id=current_user_id
+            user_id=current_user.user_id,
+            user_municipality=current_user.municipality
         )
     except Exception as e:
-        print(f"Error in mto_events: {str(e)}")  # Debug print
+        print(f"Error in mto_events: {str(e)}")
         flash('Failed to load events data', 'error')
         return redirect(url_for('dashboard.mto_dashboard'))
 
@@ -57,16 +59,24 @@ def mto_events():
 @jwt_required()
 def get_events():
     try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
         # Get filter parameters
-        event_type = request.args.get('type', 'upcoming')  # upcoming or past
+        event_type = request.args.get('type', 'upcoming')
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 10))
 
-        # Base query
+        # Base query filtered by user's municipality
+        query = Event.query.filter(
+            Event.municipality == current_user.municipality
+        )
+
         if event_type == 'upcoming':
-            query = Event.query.filter(Event.end_date >= datetime.now().date())
+            query = query.filter(Event.end_date >= datetime.now().date())
         else:
-            query = Event.query.filter(Event.end_date < datetime.now().date())
+            query = query.filter(Event.end_date < datetime.now().date())
 
         # Pagination
         paginated = query.order_by(Event.start_date.desc()).paginate(page=page, per_page=per_page)
@@ -104,13 +114,16 @@ def get_events():
 @jwt_required()
 def create_event():
     try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
         # Get form data
         event_title = request.form.get('event_title')
         description = request.form.get('description')
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
         location = request.form.get('location')
-        municipality = request.form.get('municipality')
         category = request.form.get('category')
 
         # Validate required fields
@@ -126,14 +139,14 @@ def create_event():
                 file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
                 event_image = filename
 
-        # Create new event
+        # Create new event with user's municipality
         new_event = Event(
             event_title=event_title,
             description=description,
             start_date=datetime.strptime(start_date, '%Y-%m-%d').date(),
             end_date=datetime.strptime(end_date, '%Y-%m-%d').date(),
             location=location,
-            municipality=municipality,
+            municipality=current_user.municipality,  # Use user's municipality
             event_image=event_image,
             category=category
         )
@@ -149,7 +162,6 @@ def create_event():
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
-
 
 @events_bp.route('/api/events/<int:event_id>', methods=['PUT'])
 @jwt_required()
