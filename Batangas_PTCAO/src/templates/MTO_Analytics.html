@@ -11,10 +11,6 @@
             --primary: #003366;
             --accent: #ff7e00;
             --light-bg: #f8f9fa;
-            --memo-color: #0d6efd;
-            --destinations-color: #198754;
-            --updates-color: #0dcaf0;
-            --about-color: #6c757d;
             --local-color: #28a745;
             --foreign-color: #6f42c1;
         }
@@ -301,6 +297,15 @@
             color: #666;
             font-size: 0.9rem;
         }
+        .municipality-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -309,7 +314,7 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
                 <a href="#" class="logo-text">
-                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    <img src="/static/img/logo.png" alt="Logo" class="me-2" width="40" height="40">
                     Batangas Explorer - MTO
                 </a>
 
@@ -378,13 +383,20 @@
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <h1 class="section-title mb-0">Analytics Dashboard</h1>
             <div>
-                <button class="btn btn-outline-primary me-2">
+                <button class="btn btn-outline-primary me-2" id="exportReportBtn">
                     <i class="fas fa-download me-1"></i> Export Report
                 </button>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" id="printBtn">
                     <i class="fas fa-print me-1"></i> Print
                 </button>
             </div>
+        </div>
+
+        <!-- Municipality Badge -->
+        <div class="mb-4">
+            <span class="municipality-badge">
+                <i class="fas fa-map-marker-alt me-1"></i> {{ municipality }}
+            </span>
         </div>
 
         <!-- Analytics Filters -->
@@ -392,46 +404,42 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="filter-label">Date Range</div>
-                    <select class="form-select">
-                        <option>Last 6 Months</option>
-                        <option>Last 3 Months</option>
-                        <option>Last Month</option>
-                        <option>This Month</option>
-                        <option>Custom Range</option>
+                    <select class="form-select" id="dateRangeFilter">
+                        <option value="6months">Last 6 Months</option>
+                        <option value="3months">Last 3 Months</option>
+                        <option value="month">Last Month</option>
+                        <option value="week">Last Week</option>
+                        <option value="custom">Custom Range</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <div class="filter-label">Barangay</div>
-                    <select class="form-select">
-                        <option>All Barangays</option>
-                        <option>San Andres</option>
-                        <option>Talahib</option>
-                        <option>Poblacion</option>
-                        <option>Lumbangan</option>
-                        <option>Barangay 1</option>
+                    <select class="form-select" id="barangayFilter">
+                        <option value="all">All Barangays</option>
+                        <!-- Barangays will be populated dynamically -->
                     </select>
                 </div>
                 <div class="col-md-3">
                     <div class="filter-label">Property Type</div>
-                    <select class="form-select">
-                        <option>All Types</option>
-                        <option>Resort</option>
-                        <option>Hotel</option>
-                        <option>Lodge</option>
+                    <select class="form-select" id="propertyTypeFilter">
+                        <option value="all">All Types</option>
+                        <option value="resort">Resort</option>
+                        <option value="hotel">Hotel</option>
+                        <option value="lodge">Lodge</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <div class="filter-label">Visitor Type</div>
-                    <select class="form-select">
-                        <option>All Visitors</option>
-                        <option>Local</option>
-                        <option>Foreign</option>
+                    <select class="form-select" id="visitorTypeFilter">
+                        <option value="all">All Visitors</option>
+                        <option value="local">Local</option>
+                        <option value="foreign">Foreign</option>
                     </select>
                 </div>
             </div>
             <div class="d-flex justify-content-end mt-3">
-                <button class="btn btn-outline-secondary me-2">Reset</button>
-                <button class="btn btn-primary">Apply Filters</button>
+                <button class="btn btn-outline-secondary me-2" id="resetFiltersBtn">Reset</button>
+                <button class="btn btn-primary" id="applyFiltersBtn">Apply Filters</button>
             </div>
         </div>
 
@@ -439,22 +447,22 @@
         <div class="dashboard-stats">
             <div class="stat-card">
                 <div><i class="fas fa-users text-primary fa-2x mb-2"></i></div>
-                <div class="stat-number">25,218</div>
+                <div class="stat-number" id="totalVisitors">{{ summary_stats.total_visitors|default(0)|number_format }}</div>
                 <div class="stat-label">Total Visitors</div>
             </div>
             <div class="stat-card">
                 <div><i class="fas fa-male text-success fa-2x mb-2"></i></div>
-                <div class="stat-number">15,372</div>
+                <div class="stat-number" id="localVisitors">{{ summary_stats.local_visitors|default(0)|number_format }}</div>
                 <div class="stat-label">Local Visitors</div>
             </div>
             <div class="stat-card">
                 <div><i class="fas fa-globe text-purple fa-2x mb-2"></i></div>
-                <div class="stat-number">9,846</div>
+                <div class="stat-number" id="foreignVisitors">{{ summary_stats.foreign_visitors|default(0)|number_format }}</div>
                 <div class="stat-label">Foreign Visitors</div>
             </div>
             <div class="stat-card">
                 <div><i class="fas fa-clock text-warning fa-2x mb-2"></i></div>
-                <div class="stat-number">4,765</div>
+                <div class="stat-number" id="overnightStays">{{ summary_stats.overnight_stays|default(0)|number_format }}</div>
                 <div class="stat-label">Overnight Stays</div>
             </div>
         </div>
@@ -466,61 +474,19 @@
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Visitor Statistics</h5>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="visitorTrendsPeriod" data-bs-toggle="dropdown">
                                 Last 6 Months
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Last 3 Months</a></li>
-                                <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
-                                <li><a class="dropdown-item" href="#">Last Year</a></li>
+                                <li><a class="dropdown-item" href="#" data-period="3months">Last 3 Months</a></li>
+                                <li><a class="dropdown-item" href="#" data-period="6months">Last 6 Months</a></li>
+                                <li><a class="dropdown-item" href="#" data-period="year">Last Year</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="visitor-chart">
-                            <div class="chart-bar" style="height: 120px; background-color: var(--local-color);">
-                                <div class="chart-bar-value">3.5K</div>
-                                <div class="chart-bar-label">Oct</div>
-                            </div>
-                            <div class="chart-bar" style="height: 150px; background-color: var(--local-color);">
-                                <div class="chart-bar-value">4.2K</div>
-                                <div class="chart-bar-label">Nov</div>
-                            </div>
-                            <div class="chart-bar" style="height: 180px; background-color: var(--local-color);">
-                                <div class="chart-bar-value">4.8K</div>
-                                <div class="chart-bar-label">Dec</div>
-                            </div>
-                            <div class="chart-bar" style="height: 140px; background-color: var(--local-color);">
-                                <div class="chart-bar-value">3.9K</div>
-                                <div class="chart-bar-label">Jan</div>
-                            </div>
-                            <div class="chart-bar" style="height: 160px; background-color: var(--local-color);">
-                                <div class="chart-bar-value">4.5K</div>
-                                <div class="chart-bar-label">Feb</div>
-                            </div>
-                            <div class="chart-bar" style="height: 210px; background-color: var(--local-color);">
-                                <div class="chart-bar-value">5.6K</div>
-                                <div class="chart-bar-label">Mar</div>
-                            </div>
-
-                            <div class="chart-bar" style="height: 80px; background-color: var(--foreign-color); margin-left: -50px;">
-                                <div class="chart-bar-value">2.3K</div>
-                            </div>
-                            <div class="chart-bar" style="height: 100px; background-color: var(--foreign-color); margin-left: -50px;">
-                                <div class="chart-bar-value">2.8K</div>
-                            </div>
-                            <div class="chart-bar" style="height: 130px; background-color: var(--foreign-color); margin-left: -50px;">
-                                <div class="chart-bar-value">3.5K</div>
-                            </div>
-                            <div class="chart-bar" style="height: 90px; background-color: var(--foreign-color); margin-left: -50px;">
-                                <div class="chart-bar-value">2.5K</div>
-                            </div>
-                            <div class="chart-bar" style="height: 110px; background-color: var(--foreign-color); margin-left: -50px;">
-                                <div class="chart-bar-value">3.0K</div>
-                            </div>
-                            <div class="chart-bar" style="height: 150px; background-color: var(--foreign-color); margin-left: -50px;">
-                                <div class="chart-bar-value">4.0K</div>
-                            </div>
+                        <div class="visitor-chart" id="visitorChart">
+                            <!-- Chart will be rendered here dynamically -->
                         </div>
                         <div class="chart-legend mt-4">
                             <div class="legend-item">
@@ -542,96 +508,18 @@
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Top Destinations per Barangay</h5>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="topDestinationsPeriod" data-bs-toggle="dropdown">
                                 This Month
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">This Week</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" data-period="week">This Week</a></li>
+                                <li><a class="dropdown-item" href="#" data-period="month">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" data-period="year">This Year</a></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="top-destination-item">
-                            <div class="top-destination-title">San Andres</div>
-                            <div class="top-destination-stats">
-                                <strong>Total Visitors:</strong> 3,610
-                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 15%</span>
-                            </div>
-                            <div class="progress mt-2 mb-2">
-                                <div class="progress-bar progress-bar-local" style="width: 60%"></div>
-                                <div class="progress-bar progress-bar-foreign" style="width: 40%"></div>
-                            </div>
-                            <div class="small">
-                                <span class="me-3">Local: 2,345 (65%)</span>
-                                <span>Foreign: 1,265 (35%)</span>
-                            </div>
-                        </div>
-
-                        <div class="top-destination-item">
-                            <div class="top-destination-title">Talahib</div>
-                            <div class="top-destination-stats">
-                                <strong>Total Visitors:</strong> 4,185
-                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 8%</span>
-                            </div>
-                            <div class="progress mt-2 mb-2">
-                                <div class="progress-bar progress-bar-local" style="width: 47%"></div>
-                                <div class="progress-bar progress-bar-foreign" style="width: 53%"></div>
-                            </div>
-                            <div class="small">
-                                <span class="me-3">Local: 1,987 (47%)</span>
-                                <span>Foreign: 2,198 (53%)</span>
-                            </div>
-                        </div>
-
-                        <div class="top-destination-item">
-                            <div class="top-destination-title">Lumbangan</div>
-                            <div class="top-destination-stats">
-                                <strong>Total Visitors:</strong> 4,308
-                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 12%</span>
-                            </div>
-                            <div class="progress mt-2 mb-2">
-                                <div class="progress-bar progress-bar-local" style="width: 64%"></div>
-                                <div class="progress-bar progress-bar-foreign" style="width: 36%"></div>
-                            </div>
-                            <div class="small">
-                                <span class="me-3">Local: 2,765 (64%)</span>
-                                <span>Foreign: 1,543 (36%)</span>
-                            </div>
-                        </div>
-
-                        <div class="top-destination-item">
-                            <div class="top-destination-title">Poblacion</div>
-                            <div class="top-destination-stats">
-                                <strong>Total Visitors:</strong> 2,241
-                                <span class="ms-2 indicator-down"><i class="fas fa-arrow-down"></i> 3%</span>
-                            </div>
-                            <div class="progress mt-2 mb-2">
-                                <div class="progress-bar progress-bar-local" style="width: 69%"></div>
-                                <div class="progress-bar progress-bar-foreign" style="width: 31%"></div>
-                            </div>
-                            <div class="small">
-                                <span class="me-3">Local: 1,543 (69%)</span>
-                                <span>Foreign: 698 (31%)</span>
-                            </div>
-                        </div>
-
-                        <div class="top-destination-item">
-                            <div class="top-destination-title">Barangay 1</div>
-                            <div class="top-destination-stats">
-                                <strong>Total Visitors:</strong> 2,197
-                                <span class="ms-2 indicator-up"><i class="fas fa-arrow-up"></i> 5%</span>
-                            </div>
-                            <div class="progress mt-2 mb-2">
-                                <div class="progress-bar progress-bar-local" style="width: 65%"></div>
-                                <div class="progress-bar progress-bar-foreign" style="width: 35%"></div>
-                            </div>
-                            <div class="small">
-                                <span class="me-3">Local: 1,432 (65%)</span>
-                                <span>Foreign: 765 (35%)</span>
-                            </div>
-                        </div>
+                    <div class="card-body" id="topDestinationsList">
+                        <!-- Top destinations will be loaded dynamically here -->
                     </div>
                 </div>
             </div>
@@ -652,163 +540,253 @@
             </div>
         </div>
     </footer>
-    <!-- Add this script at the bottom of the body, before the closing </body> tag -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fetch summary stats
-        fetch('/api/analytics/summary')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateSummaryStats(data.data);
-                }
-            });
-
-        // Fetch visitor trends (default: 6 months)
-        fetchVisitorTrends('6months');
-
-        // Fetch top destinations (default: this month)
-        fetchTopDestinations('month');
-
-        // Event listeners for period selectors
-        document.querySelector('.visitor-trends-dropdown .dropdown-menu').addEventListener('click', function(e) {
-            if (e.target.classList.contains('dropdown-item')) {
-                const period = e.target.textContent.trim();
-                document.querySelector('.visitor-trends-dropdown .dropdown-toggle').textContent = period;
-                fetchVisitorTrends(getPeriodValue(period));
-            }
-        });
-
-        document.querySelector('.top-destinations-dropdown .dropdown-menu').addEventListener('click', function(e) {
-            if (e.target.classList.contains('dropdown-item')) {
-                const period = e.target.textContent.trim();
-                document.querySelector('.top-destinations-dropdown .dropdown-toggle').textContent = period;
-                fetchTopDestinations(getPeriodValue(period));
-            }
-        });
-
-        // Apply filters button
-        document.querySelector('.analytics-filter .btn-primary').addEventListener('click', function() {
-            const dateRange = document.querySelector('.analytics-filter select:nth-of-type(1)').value;
-            const barangay = document.querySelector('.analytics-filter select:nth-of-type(2)').value;
-            const propertyType = document.querySelector('.analytics-filter select:nth-of-type(3)').value;
-            const visitorType = document.querySelector('.analytics-filter select:nth-of-type(4)').value;
-
-            // You would implement filtering based on these values
-            console.log('Filters applied:', { dateRange, barangay, propertyType, visitorType });
-        });
-    });
-
-    function getPeriodValue(periodText) {
-        const periodMap = {
-            'Last 3 Months': '3months',
-            'Last 6 Months': '6months',
-            'Last Year': 'year',
-            'This Week': 'week',
-            'This Month': 'month',
-            'This Year': 'year'
-        };
-        return periodMap[periodText] || '6months';
-    }
-
-    function updateSummaryStats(data) {
-        document.querySelector('.stat-number:nth-of-type(1)').textContent = data.total_visitors.toLocaleString();
-        document.querySelector('.stat-number:nth-of-type(2)').textContent = data.local_visitors.toLocaleString();
-        document.querySelector('.stat-number:nth-of-type(3)').textContent = data.foreign_visitors.toLocaleString();
-        document.querySelector('.stat-number:nth-of-type(4)').textContent = data.overnight_stays.toLocaleString();
-    }
-
-    function fetchVisitorTrends(period) {
-        fetch(`/api/analytics/visitor-trends?period=${period}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateVisitorTrendsChart(data.data);
-                }
-            });
-    }
-
-    function updateVisitorTrendsChart(data) {
-        const chartContainer = document.querySelector('.visitor-chart');
-        chartContainer.innerHTML = '';
-
-        // Find max value for scaling
-        const maxValue = Math.max(...data.local_visitors, ...data.foreign_visitors);
-        const scaleFactor = 250 / maxValue; // 250px is our max height
-
-        // Create bars for each month
-        data.labels.forEach((label, index) => {
-            const localHeight = data.local_visitors[index] * scaleFactor;
-            const foreignHeight = data.foreign_visitors[index] * scaleFactor;
-
-            // Local visitors bar
-            const localBar = document.createElement('div');
-            localBar.className = 'chart-bar';
-            localBar.style.height = `${localHeight}px`;
-            localBar.style.backgroundColor = 'var(--local-color)';
-            localBar.innerHTML = `
-                <div class="chart-bar-value">${(data.local_visitors[index] / 1000).toFixed(1)}K</div>
-                <div class="chart-bar-label">${label.split(' ')[0]}</div>
-            `;
-            chartContainer.appendChild(localBar);
-
-            // Foreign visitors bar (offset)
-            const foreignBar = document.createElement('div');
-            foreignBar.className = 'chart-bar';
-            foreignBar.style.height = `${foreignHeight}px`;
-            foreignBar.style.backgroundColor = 'var(--foreign-color)';
-            foreignBar.style.marginLeft = '-50px';
-            foreignBar.innerHTML = `
-                <div class="chart-bar-value">${(data.foreign_visitors[index] / 1000).toFixed(1)}K</div>
-            `;
-            chartContainer.appendChild(foreignBar);
-        });
-    }
-
-    function fetchTopDestinations(period) {
-        fetch(`/api/analytics/top-destinations?period=${period}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateTopDestinations(data.data);
-                }
-            });
-    }
-
-    function updateTopDestinations(data) {
-        const container = document.querySelector('.card-body');
-        container.innerHTML = '';
-
-        data.forEach(destination => {
-            const item = document.createElement('div');
-            item.className = 'top-destination-item';
-
-            const arrowClass = destination.change_direction === 'up' ? 'indicator-up' : 'indicator-down';
-            const arrowIcon = destination.change_direction === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
-
-            item.innerHTML = `
-                <div class="top-destination-title">${destination.barangay}</div>
-                <div class="top-destination-stats">
-                    <strong>Total Visitors:</strong> ${destination.total_visitors.toLocaleString()}
-                    <span class="ms-2 ${arrowClass}"><i class="fas ${arrowIcon}"></i> ${Math.abs(destination.change_percent)}%</span>
-                </div>
-                <div class="progress mt-2 mb-2">
-                    <div class="progress-bar progress-bar-local" style="width: ${destination.local_percent}%"></div>
-                    <div class="progress-bar progress-bar-foreign" style="width: ${destination.foreign_percent}%"></div>
-                </div>
-                <div class="small">
-                    <span class="me-3">Local: ${destination.local_visitors.toLocaleString()} (${destination.local_percent}%)</span>
-                    <span>Foreign: ${destination.foreign_visitors.toLocaleString()} (${destination.foreign_percent}%)</span>
-                </div>
-            `;
-
-            container.appendChild(item);
-        });
-    }
-    </script>
 
     <!-- JavaScript dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the page with data
+            loadInitialData();
+
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        function loadInitialData() {
+            // Load summary stats
+            updateSummaryStats({
+                total_visitors: {{ summary_stats.total_visitors|default(0) }},
+                local_visitors: {{ summary_stats.local_visitors|default(0) }},
+                foreign_visitors: {{ summary_stats.foreign_visitors|default(0) }},
+                overnight_stays: {{ summary_stats.overnight_stays|default(0) }}
+            });
+
+            // Load visitor trends (default: 6 months)
+            fetchVisitorTrends('6months');
+
+            // Load top destinations (default: month)
+            fetchTopDestinations('month');
+
+            // Populate barangay filter
+            fetchBarangays();
+        }
+
+        function setupEventListeners() {
+            // Visitor trends period selector
+            document.querySelectorAll('#visitorTrendsPeriod + .dropdown-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const period = this.getAttribute('data-period');
+                    document.getElementById('visitorTrendsPeriod').textContent = this.textContent;
+                    fetchVisitorTrends(period);
+                });
+            });
+
+            // Top destinations period selector
+            document.querySelectorAll('#topDestinationsPeriod + .dropdown-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const period = this.getAttribute('data-period');
+                    document.getElementById('topDestinationsPeriod').textContent = this.textContent;
+                    fetchTopDestinations(period);
+                });
+            });
+
+            // Filter buttons
+            document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
+            document.getElementById('resetFiltersBtn').addEventListener('click', resetFilters);
+
+            // Export and print buttons
+            document.getElementById('exportReportBtn').addEventListener('click', exportReport);
+            document.getElementById('printBtn').addEventListener('click', printPage);
+        }
+
+        function fetchBarangays() {
+            fetch('/api/analytics/barangays?municipality={{ municipality }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('barangayFilter');
+                        data.barangays.forEach(barangay => {
+                            const option = document.createElement('option');
+                            option.value = barangay;
+                            option.textContent = barangay;
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching barangays:', error));
+        }
+
+        function fetchVisitorTrends(period) {
+            fetch(`/api/analytics/visitor-trends?period=${period}&municipality={{ municipality }}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderVisitorTrendsChart(data.data);
+                    }
+                })
+                .catch(error => console.error('Error fetching visitor trends:', error));
+        }
+
+        function fetchTopDestinations(period) {
+            fetch(`/api/analytics/top-destinations?period=${period}&municipality={{ municipality }}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderTopDestinations(data.data);
+                    }
+                })
+                .catch(error => console.error('Error fetching top destinations:', error));
+        }
+
+        function renderVisitorTrendsChart(data) {
+            const ctx = document.createElement('canvas');
+            ctx.height = 300;
+            document.getElementById('visitorChart').innerHTML = '';
+            document.getElementById('visitorChart').appendChild(ctx);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Local Visitors',
+                            data: data.local_visitors,
+                            backgroundColor: 'var(--local-color)',
+                            borderColor: 'var(--local-color)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Foreign Visitors',
+                            data: data.foreign_visitors,
+                            backgroundColor: 'var(--foreign-color)',
+                            borderColor: 'var(--foreign-color)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visitors'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopDestinations(data) {
+            const container = document.getElementById('topDestinationsList');
+            container.innerHTML = '';
+
+            data.forEach(destination => {
+                const item = document.createElement('div');
+                item.className = 'top-destination-item';
+
+                const arrowClass = destination.change_percent >= 0 ? 'indicator-up' : 'indicator-down';
+                const arrowIcon = destination.change_percent >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+
+                item.innerHTML = `
+                    <div class="top-destination-title">${destination.barangay}</div>
+                    <div class="top-destination-stats">
+                        <strong>Total Visitors:</strong> ${destination.total_visitors.toLocaleString()}
+                        <span class="ms-2 ${arrowClass}"><i class="fas ${arrowIcon}"></i> ${Math.abs(destination.change_percent)}%</span>
+                    </div>
+                    <div class="progress mt-2 mb-2">
+                        <div class="progress-bar progress-bar-local" style="width: ${destination.local_percent}%"></div>
+                        <div class="progress-bar progress-bar-foreign" style="width: ${destination.foreign_percent}%"></div>
+                    </div>
+                    <div class="small">
+                        <span class="me-3">Local: ${destination.local_visitors.toLocaleString()} (${destination.local_percent}%)</span>
+                        <span>Foreign: ${destination.foreign_visitors.toLocaleString()} (${destination.foreign_percent}%)</span>
+                    </div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        function updateSummaryStats(data) {
+            document.getElementById('totalVisitors').textContent = data.total_visitors.toLocaleString();
+            document.getElementById('localVisitors').textContent = data.local_visitors.toLocaleString();
+            document.getElementById('foreignVisitors').textContent = data.foreign_visitors.toLocaleString();
+            document.getElementById('overnightStays').textContent = data.overnight_stays.toLocaleString();
+        }
+
+        function applyFilters() {
+            const dateRange = document.getElementById('dateRangeFilter').value;
+            const barangay = document.getElementById('barangayFilter').value;
+            const propertyType = document.getElementById('propertyTypeFilter').value;
+            const visitorType = document.getElementById('visitorTypeFilter').value;
+
+            // Update summary stats with filters
+            fetch(`/api/analytics/summary?date_range=${dateRange}&barangay=${barangay}&property_type=${propertyType}&visitor_type=${visitorType}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateSummaryStats(data.data);
+                    }
+                });
+
+            // Update visitor trends with filters
+            fetch(`/api/analytics/visitor-trends?period=${dateRange}&barangay=${barangay}&property_type=${propertyType}&visitor_type=${visitorType}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderVisitorTrendsChart(data.data);
+                    }
+                });
+
+            // Update top destinations with filters
+            fetch(`/api/analytics/top-destinations?period=${dateRange}&barangay=${barangay}&property_type=${propertyType}&visitor_type=${visitorType}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderTopDestinations(data.data);
+                    }
+                });
+        }
+
+        function resetFilters() {
+            document.getElementById('dateRangeFilter').value = '6months';
+            document.getElementById('barangayFilter').value = 'all';
+            document.getElementById('propertyTypeFilter').value = 'all';
+            document.getElementById('visitorTypeFilter').value = 'all';
+
+            // Reload initial data
+            loadInitialData();
+        }
+
+        function exportReport() {
+            // In a real implementation, this would generate and download a report
+            alert('Export functionality would be implemented here');
+        }
+
+        function printPage() {
+            window.print();
+        }
+    </script>
 </body>
 </html>
