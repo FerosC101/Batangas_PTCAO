@@ -447,22 +447,22 @@
         <div class="dashboard-stats">
             <div class="stat-card">
                 <div><i class="fas fa-users text-primary fa-2x mb-2"></i></div>
-                <div class="stat-number" id="totalVisitors">{{ summary_stats.total_visitors|default(0)|number_format }}</div>
+                <div class="stat-number" id="totalVisitors">{{ "{:,}".format(summary_stats.total_visitors|default(0)) }}</div>
                 <div class="stat-label">Total Visitors</div>
             </div>
             <div class="stat-card">
                 <div><i class="fas fa-male text-success fa-2x mb-2"></i></div>
-                <div class="stat-number" id="localVisitors">{{ summary_stats.local_visitors|default(0)|number_format }}</div>
+                <div class="stat-number" id="localVisitors">{{ "{:,}".format(summary_stats.local_visitors|default(0)) }}</div>
                 <div class="stat-label">Local Visitors</div>
             </div>
             <div class="stat-card">
                 <div><i class="fas fa-globe text-purple fa-2x mb-2"></i></div>
-                <div class="stat-number" id="foreignVisitors">{{ summary_stats.foreign_visitors|default(0)|number_format }}</div>
+                <div class="stat-number" id="foreignVisitors">{{ "{:,}".format(summary_stats.foreign_visitors|default(0)) }}</div>
                 <div class="stat-label">Foreign Visitors</div>
             </div>
             <div class="stat-card">
                 <div><i class="fas fa-clock text-warning fa-2x mb-2"></i></div>
-                <div class="stat-number" id="overnightStays">{{ summary_stats.overnight_stays|default(0)|number_format }}</div>
+                <div class="stat-number" id="overnightStays">{{ "{:,}".format(summary_stats.overnight_stays|default(0)) }}</div>
                 <div class="stat-label">Overnight Stays</div>
             </div>
         </div>
