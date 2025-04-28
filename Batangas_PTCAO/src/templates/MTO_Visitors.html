@@ -320,7 +320,6 @@
         </div>
     </header>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <a href="/mto/dashboard" class="sidebar-link">
             <i class="fas fa-tachometer-alt"></i>
@@ -330,15 +329,15 @@
             <i class="fas fa-map-marked-alt"></i>
             <span>Destinations</span>
         </a>
-        <a href="/property/mto/property" class="sidebar-link">
+        <a href="/property/mto/property" class="sidebar-link active">
             <i class="fas fa-hotel"></i>
             <span>Properties</span>
         </a>
-        <a href="#" class="sidebar-link active">
+        <a href="#" class="sidebar-link">
             <i class="fas fa-users"></i>
             <span>Visitors</span>
         </a>
-        <a href="/mto/analytics" class="sidebar-link">
+        <a href="#" class="sidebar-link">
             <i class="fas fa-chart-line"></i>
             <span>Analytics</span>
         </a>
@@ -363,7 +362,7 @@
     <!-- Main Content -->
     <div class="main-container">
         <div class="mb-4 d-flex justify-content-between align-items-center">
-            <h1 class="section-title mb-0">Visitor Management</h1>
+            <h1 class="section-title mb-0">Visitor List</h1>
             <div>
                 <button class="btn btn-outline-primary me-2">
                     <i class="fas fa-download me-1"></i> Export Report
@@ -371,58 +370,6 @@
                 <button class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i> Add Visitor Record
                 </button>
-            </div>
-        </div>
-
-        <!-- Main Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card dashboard-card">
-                    <div class="dashboard-icon visitors-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="dashboard-number">25,218</div>
-                    <div class="dashboard-label">Total Visitors</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 9% from last month
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card dashboard-card">
-                    <div class="dashboard-icon local-icon">
-                        <i class="fas fa-user-friends"></i>
-                    </div>
-                    <div class="dashboard-number">15,372</div>
-                    <div class="dashboard-label">Local Visitors</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 12% from last month
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card dashboard-card">
-                    <div class="dashboard-icon foreign-icon">
-                        <i class="fas fa-globe-americas"></i>
-                    </div>
-                    <div class="dashboard-number">9,846</div>
-                    <div class="dashboard-label">Foreign Visitors</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 5% from last month
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card dashboard-card">
-                    <div class="dashboard-icon tasks-icon">
-                        <i class="fas fa-ticket-alt"></i>
-                    </div>
-                    <div class="dashboard-number">4,308</div>
-                    <div class="dashboard-label">Overnight Stays</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 7% from last month
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -439,29 +386,50 @@
                         <option>Custom range</option>
                     </select>
                 </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Barangay</label>
+                    <select class="form-select">
+                        <option selected>All Barangays</option>
+                        <option>Alangilan</option>
+                        <option>Balete</option>
+                        <option>Barangay 1</option>
+                        <option>Barangay 2</option>
+                        <option>Barangay 3</option>
+                        <option>Barangay 4</option>
+                        <option>Barangay 5</option>
+                        <option>Barangay 6</option>
+                        <option>Barangay 7</option>
+                        <option>Barangay 8</option>
+                        <option>Bolbok</option>
+                        <option>Calicanto</option>
+                        <option>Conde Itaas</option>
+                        <option>Cuta</option>
+                        <option>Gulod Labac</option>
+                        <option>Kumintang Ibaba</option>
+                        <option>Mabacong</option>
+                        <option>Mahabang Dahilig</option>
+                        <option>Malitam</option>
+                        <option>Pallocan West</option>
+                        <option>Sampaga</option>
+                        <option>San Isidro</option>
+                        <option>Santa Clara</option>
+                        <option>Santo Niño</option>
+                        <option>Tabangao Dao</option>
+                        <option>Tingga Itaas</option>
+                    </select>
+                </div>
                 <div class="col-md-2 mb-3">
                     <label class="form-label">Visitor Type</label>
                     <select class="form-select">
-                        <option>All Types</option>
+                        <option selected>All Types</option>
                         <option>Local</option>
                         <option>Foreign</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Destination</label>
-                    <select class="form-select">
-                        <option>All Destinations</option>
-                        <option>Bayside Resort & Spa</option>
-                        <option>Ocean View Hotel</option>
-                        <option>Mountain View Lodge</option>
-                        <option>Sunrise Beach Resort</option>
-                        <option>Hilltop Retreat</option>
                     </select>
                 </div>
                 <div class="col-md-2 mb-3">
                     <label class="form-label">Stay Type</label>
                     <select class="form-select">
-                        <option>All Types</option>
+                        <option selected>All Types</option>
                         <option>Day Tour</option>
                         <option>Overnight</option>
                     </select>
@@ -474,65 +442,10 @@
             </div>
         </div>
 
-        <!-- Charts and Tables Section -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">Visitor Trends</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="nav nav-tabs mb-3">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#daily">Daily</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#weekly">Weekly</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#monthly">Monthly</a>
-                            </li>
-                        </ul>
-                        <div class="chart-container">
-                            <img src="/api/placeholder/800/300" alt="Visitor trends chart" class="visitor-chart">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">Visitor Distribution</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <img src="/api/placeholder/400/300" alt="Visitor distribution chart" class="visitor-chart">
-                        </div>
-                        <div class="mt-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Local Visitors</span>
-                                <span class="fw-bold">61%</span>
-                            </div>
-                            <div class="progress mb-3" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 61%"></div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Foreign Visitors</span>
-                                <span class="fw-bold">39%</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-purple" role="progressbar" style="width: 39%; background-color: var(--foreign-color);"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Visitors Table -->
         <div class="card mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Recent Visitor Records</h5>
+                <h5 class="card-title mb-0">Visitor Records</h5>
                 <div class="input-group" style="max-width: 300px;">
                     <input type="text" class="form-control" placeholder="Search visitors...">
                     <button class="btn btn-outline-secondary" type="button">
@@ -548,7 +461,7 @@
                                 <th>ID</th>
                                 <th>Date</th>
                                 <th>Visitor Type</th>
-                                <th>Destination</th>
+                                <th>Barangay</th>
                                 <th>Stay Type</th>
                                 <th>Adults</th>
                                 <th>Children</th>
@@ -561,7 +474,7 @@
                                 <td>#VS-1254</td>
                                 <td>Apr 22, 2025</td>
                                 <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Bayside Resort & Spa</td>
+                                <td>Alangilan</td>
                                 <td>Day Tour</td>
                                 <td>4</td>
                                 <td>2</td>
@@ -575,7 +488,7 @@
                                 <td>#VS-1253</td>
                                 <td>Apr 22, 2025</td>
                                 <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Ocean View Hotel</td>
+                                <td>Barangay 1</td>
                                 <td>Overnight</td>
                                 <td>2</td>
                                 <td>0</td>
@@ -589,7 +502,7 @@
                                 <td>#VS-1252</td>
                                 <td>Apr 21, 2025</td>
                                 <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Mountain View Lodge</td>
+                                <td>Gulod Labac</td>
                                 <td>Overnight</td>
                                 <td>6</td>
                                 <td>3</td>
@@ -603,7 +516,7 @@
                                 <td>#VS-1251</td>
                                 <td>Apr 21, 2025</td>
                                 <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Sunrise Beach Resort</td>
+                                <td>Santo Niño</td>
                                 <td>Day Tour</td>
                                 <td>2</td>
                                 <td>1</td>
@@ -617,7 +530,7 @@
                                 <td>#VS-1250</td>
                                 <td>Apr 20, 2025</td>
                                 <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Riverside Inn</td>
+                                <td>Cuta</td>
                                 <td>Day Tour</td>
                                 <td>8</td>
                                 <td>5</td>
@@ -631,11 +544,67 @@
                                 <td>#VS-1249</td>
                                 <td>Apr 20, 2025</td>
                                 <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Bayside Resort & Spa</td>
+                                <td>Barangay 7</td>
                                 <td>Overnight</td>
                                 <td>2</td>
                                 <td>0</td>
                                 <td>₱9,800</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1248</td>
+                                <td>Apr 19, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
+                                <td>Kumintang Ibaba</td>
+                                <td>Day Tour</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>₱2,800</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1247</td>
+                                <td>Apr 19, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
+                                <td>Balete</td>
+                                <td>Overnight</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td>₱15,200</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1246</td>
+                                <td>Apr 18, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
+                                <td>Calicanto</td>
+                                <td>Day Tour</td>
+                                <td>10</td>
+                                <td>4</td>
+                                <td>₱8,400</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#VS-1245</td>
+                                <td>Apr 18, 2025</td>
+                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
+                                <td>San Isidro</td>
+                                <td>Overnight</td>
+                                <td>2</td>
+                                <td>0</td>
+                                <td>₱7,600</td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
                                     <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
@@ -661,77 +630,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Top Performing Destinations -->
-        <div class="card mb-4">
-            <div class="card-header bg-white">
-                <h5 class="card-title mb-0">Top Performing Destinations by Visitor Count</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="mb-3 text-primary">Local Visitors</h6>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span>Bayside Resort & Spa</span>
-                                <span class="fw-bold">2,345</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span>Sunrise Beach Resort</span>
-                                <span class="fw-bold">2,100</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span>Ocean View Hotel</span>
-                                <span class="fw-bold">1,987</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 70%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="mb-3 text-primary">Foreign Visitors</h6>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span>Ocean View Hotel</span>
-                                <span class="fw-bold">2,198</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar" role="progressbar" style="width: 85%; background-color: var(--foreign-color);"></div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span>Sunrise Beach Resort</span>
-                                <span class="fw-bold">1,543</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar" role="progressbar" style="width: 65%; background-color: var(--foreign-color);"></div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span>Bayside Resort & Spa</span>
-                                <span class="fw-bold">1,265</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar" role="progressbar" style="width: 55%; background-color: var(--foreign-color);"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <footer class="footer">
@@ -741,16 +639,165 @@
                     <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="#" class="me-3">Privacy Policy</a>
-                    <a href="#" class="me-3">Terms of Service</a>
-                    <a href="#">Contact Support</a>
+                    <a href="#" class="text-white me-3">Privacy Policy</a>
+                    <a href="#" class="text-white me-3">Terms of Service</a>
+                    <a href="#" class="text-white">Contact Support</a>
                 </div>
             </div>
         </div>
     </footer>
 
+    // Add this script at the end of the body in MTO_Visitors.html
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get references to filter elements
+        const dateRangeSelect = document.querySelector('select[name="date_range"]');
+        const barangaySelect = document.querySelector('select[name="barangay"]');
+        const visitorTypeSelect = document.querySelector('select[name="visitor_type"]');
+        const stayTypeSelect = document.querySelector('select[name="stay_type"]');
+        const searchInput = document.querySelector('input[type="search"]');
+        const applyFiltersBtn = document.querySelector('.btn-primary');
+        const tableBody = document.querySelector('tbody');
+        const pagination = document.querySelector('.pagination');
+
+        // Current page state
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilters = {
+            date_range: 'this_month',
+            barangay: 'all',
+            visitor_type: 'all',
+            stay_type: 'all',
+            search: ''
+        };
+
+        // Load barangay options
+        fetch('/api/visitors/barangays')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const select = barangaySelect;
+                    // Clear existing options except the first one
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+
+                    // Add new options
+                    data.data.forEach(barangay => {
+                        const option = document.createElement('option');
+                        option.value = barangay;
+                        option.textContent = barangay;
+                        select.appendChild(option);
+                    });
+                }
+            });
+
+        // Function to load visitor data
+        function loadVisitors(page = 1) {
+            const params = new URLSearchParams({
+                ...currentFilters,
+                page: page,
+                per_page: 10
+            });
+
+            fetch(`/api/visitors?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderVisitors(data.data.visitors);
+                        updatePagination(data.data.total, data.data.pages, page);
+                    } else {
+                        alert('Failed to load visitors: ' + data.message);
+                    }
+                });
+        }
+
+        // Function to render visitors in the table
+        function renderVisitors(visitors) {
+            tableBody.innerHTML = '';
+
+            visitors.forEach(visitor => {
+                const row = document.createElement('tr');
+
+                // Determine visitor type class
+                const visitorTypeClass = visitor.visitor_type === 'Local' ?
+                    'visitor-type-local' : 'visitor-type-foreign';
+
+                row.innerHTML = `
+                    <td>#${visitor.id}</td>
+                    <td>${visitor.date}</td>
+                    <td><span class="visitor-type-label ${visitorTypeClass}">${visitor.visitor_type}</span></td>
+                    <td>${visitor.barangay}</td>
+                    <td>${visitor.stay_type}</td>
+                    <td>${visitor.adults}</td>
+                    <td>${visitor.children}</td>
+                    <td>₱${visitor.revenue.toLocaleString('en-US')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to update pagination
+        function updatePagination(total, pages, current) {
+            currentPage = current;
+            totalPages = pages;
+
+            pagination.innerHTML = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" tabindex="-1" data-page="${currentPage - 1}">Previous</a>
+                </li>
+            `;
+
+            for (let i = 1; i <= pages; i++) {
+                pagination.innerHTML += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            }
+
+            pagination.innerHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                </li>
+            `;
+        }
+
+        // Event listeners
+        applyFiltersBtn.addEventListener('click', function() {
+            currentFilters = {
+                date_range: dateRangeSelect.value,
+                barangay: barangaySelect.value,
+                visitor_type: visitorTypeSelect.value,
+                stay_type: stayTypeSelect.value,
+                search: searchInput.value
+            };
+
+            loadVisitors(1);
+        });
+
+        // Pagination click handler
+        pagination.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (e.target.tagName === 'A') {
+                const page = parseInt(e.target.dataset.page);
+                if (page >= 1 && page <= totalPages) {
+                    loadVisitors(page);
+                }
+            }
+        });
+
+        // Initial load
+        loadVisitors();
+    });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-
 </body>
 </html>
