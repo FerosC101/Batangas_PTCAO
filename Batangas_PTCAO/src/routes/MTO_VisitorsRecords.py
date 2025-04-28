@@ -1,22 +1,24 @@
 from flask import Blueprint, jsonify, request, render_template
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import (
     User,
-    VisitorStatistics,
-    Property
+    Property,
+    VisitorRecord,
+    VisitorType,
+    StayType
 )
 
-visitors_bp = Blueprint('visitors', __name__)
+visitor_records_bp = Blueprint('visitor_records', __name__, template_folder='../../templates')
 
 
-def init_visitors_routes(app):
-    app.register_blueprint(visitors_bp)
+def init_visitor_records_routes(app):
+    app.register_blueprint(visitor_records_bp)
 
 
-@visitors_bp.route('/mto/visitors')
+@visitor_records_bp.route('/mto/visitors')
 @jwt_required()
 def mto_visitors():
     """Render the MTO Visitors page"""
@@ -26,15 +28,12 @@ def mto_visitors():
     if not user:
         return jsonify({'success': False, 'message': 'User not found'}), 404
 
-    return render_template(
-        'MTO_Visitors.html',
-        municipality=user.municipality
-    )
+    return render_template('MTO_Visitors.html', municipality=user.municipality)
 
 
-@visitors_bp.route('/api/visitors', methods=['GET'])
+@visitor_records_bp.route('/api/visitors', methods=['GET'])
 @jwt_required()
-def get_visitors():
+def get_visitor_records():
     """Get visitor records for the MTO's municipality with filtering"""
     try:
         current_user_id = get_jwt_identity()
@@ -57,78 +56,69 @@ def get_visitors():
         start_date, end_date = get_date_range(date_range, today)
 
         # Base query
-        query = VisitorStatistics.query.join(
+        query = db.session.query(
+            VisitorRecord,
+            Property.property_name
+        ).join(
             Property,
-            Property.property_id == VisitorStatistics.property_id
+            Property.property_id == VisitorRecord.property_id
         ).filter(
-            Property.municipality == user.municipality
-        )
-
-        # Apply date filter
-        query = query.filter(
-            VisitorStatistics.report_date.between(start_date, end_date)
+            Property.municipality == user.municipality,
+            VisitorRecord.date.between(start_date, end_date)
         )
 
         # Apply barangay filter
         if barangay != 'all':
-            query = query.filter(
-                Property.barangay == barangay
-            )
+            query = query.filter(VisitorRecord.barangay == barangay)
 
         # Apply visitor type filter
         if visitor_type != 'all':
-            query = query.filter(
-                VisitorStatistics.visitor_type == visitor_type
-            )
+            query = query.filter(VisitorRecord.visitor_type == visitor_type)
 
         # Apply stay type filter
         if stay_type != 'all':
-            query = query.filter(
-                VisitorStatistics.stay_type == stay_type
-            )
+            query = query.filter(VisitorRecord.stay_type == stay_type)
 
         # Apply search filter
         if search:
             query = query.filter(
                 or_(
                     Property.property_name.ilike(f'%{search}%'),
-                    Property.barangay.ilike(f'%{search}%')
+                    VisitorRecord.barangay.ilike(f'%{search}%'),
+                    VisitorRecord.record_id.ilike(f'%{search}%')
                 )
             )
 
-        # Paginate results
+        # Get total count before pagination
+        total = query.count()
+
+        # Apply pagination
         paginated = query.order_by(
-            VisitorStatistics.report_date.desc()
-        ).paginate(page=page, per_page=per_page)
+            VisitorRecord.date.desc()
+        ).offset((page - 1) * per_page).limit(per_page).all()
 
         # Format results
         visitors = []
-        for stat in paginated.items:
+        for record, property_name in paginated:
             visitors.append({
-                'id': f"VS-{stat.stat_id}",
-                'date': stat.report_date.strftime('%b %d, %Y'),
-                'visitor_type': stat.visitor_type,
-                'barangay': stat.property.barangay,
-                'stay_type': stat.stay_type,
-                'adults': stat.adults,
-                'children': stat.children,
-                'revenue': float(stat.revenue) if stat.revenue else 0.0,
-                'property_name': stat.property.property_name
+                'id': record.record_id,
+                'date': record.date.strftime('%b %d, %Y'),
+                'visitor_type': record.visitor_type.value,
+                'barangay': record.barangay,
+                'stay_type': record.stay_type.value,
+                'adults': record.adults,
+                'children': record.children,
+                'revenue': float(record.revenue) if record.revenue else 0.0,
+                'property_name': property_name
             })
 
         return jsonify({
             'success': True,
             'data': {
                 'visitors': visitors,
-                'total': paginated.total,
-                'pages': paginated.pages,
+                'total': total,
+                'pages': (total + per_page - 1) // per_page,
                 'current_page': page
-            },
-            'filters': {
-                'date_range': date_range,
-                'barangay': barangay,
-                'visitor_type': visitor_type,
-                'stay_type': stay_type
             }
         })
 
@@ -136,7 +126,7 @@ def get_visitors():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
-@visitors_bp.route('/api/visitors/barangays', methods=['GET'])
+@visitor_records_bp.route('/api/visitors/barangays', methods=['GET'])
 @jwt_required()
 def get_barangays():
     """Get list of barangays for the MTO's municipality"""
@@ -148,7 +138,10 @@ def get_barangays():
             return jsonify({'success': False, 'message': 'User not found'}), 404
 
         barangays = db.session.query(
-            Property.barangay
+            VisitorRecord.barangay
+        ).join(
+            Property,
+            Property.property_id == VisitorRecord.property_id
         ).filter(
             Property.municipality == user.municipality
         ).distinct().all()

@@ -211,3 +211,30 @@ class PropertyMonthlyStatistics(db.Model):
 
     def __repr__(self):
         return f'<PropertyStat {self.property_id}-{self.year}-{self.month}>'
+
+# Add to model.py
+class VisitorRecord(db.Model):
+    __tablename__ = 'visitor_records'
+
+    id = db.Column(db.Integer, primary_key=True)
+    record_id = db.Column(db.String(20), unique=True, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    visitor_type = db.Column(SqlEnum(VisitorType, name="visitor_type_enum"), nullable=False)
+    stay_type = db.Column(SqlEnum(StayType, name="stay_type_enum"), nullable=False)
+    municipality = db.Column(db.String(100), nullable=False)
+    barangay = db.Column(db.String(100), nullable=False)
+    adults = db.Column(db.Integer, nullable=False, default=0)
+    children = db.Column(db.Integer, nullable=False, default=0)
+    revenue = db.Column(db.Numeric(10, 2), nullable=False, default=0.00)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    property = db.relationship('Property', backref=db.backref('visitor_records', lazy='dynamic'))
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.record_id = f"VR-{datetime.now().strftime('%Y%m%d')}-{self.id or 0:04d}"
+
+    def __repr__(self):
+        return f'<VisitorRecord {self.record_id}>'

@@ -148,12 +148,6 @@
         .tasks-icon {
             color: var(--accent);
         }
-        .local-icon {
-            color: var(--local-color);
-        }
-        .foreign-icon {
-            color: var(--foreign-color);
-        }
         .sidebar {
             background-color: white;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
@@ -288,6 +282,18 @@
             background-color: transparent;
             border-bottom: 3px solid var(--accent);
         }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading-spinner.active {
+            display: block;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
     </style>
 </head>
 <body>
@@ -320,6 +326,7 @@
         </div>
     </header>
 
+    <!-- Sidebar -->
     <div class="sidebar">
         <a href="/mto/dashboard" class="sidebar-link">
             <i class="fas fa-tachometer-alt"></i>
@@ -329,15 +336,15 @@
             <i class="fas fa-map-marked-alt"></i>
             <span>Destinations</span>
         </a>
-        <a href="/property/mto/property" class="sidebar-link active">
+        <a href="/property/mto/property" class="sidebar-link">
             <i class="fas fa-hotel"></i>
             <span>Properties</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="/mto/visitors" class="sidebar-link active">
             <i class="fas fa-users"></i>
             <span>Visitors</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="/mto/analytics" class="sidebar-link">
             <i class="fas fa-chart-line"></i>
             <span>Analytics</span>
         </a>
@@ -364,10 +371,10 @@
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <h1 class="section-title mb-0">Visitor List</h1>
             <div>
-                <button class="btn btn-outline-primary me-2">
+                <button class="btn btn-outline-primary me-2" id="exportBtn">
                     <i class="fas fa-download me-1"></i> Export Report
                 </button>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" id="addVisitorBtn">
                     <i class="fas fa-plus me-1"></i> Add Visitor Record
                 </button>
             </div>
@@ -378,64 +385,39 @@
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Date Range</label>
-                    <select class="form-select">
-                        <option>Last 7 days</option>
-                        <option>Last 30 days</option>
-                        <option selected>This month</option>
-                        <option>Last month</option>
-                        <option>Custom range</option>
+                    <select class="form-select" name="date_range">
+                        <option value="last_7_days">Last 7 days</option>
+                        <option value="last_30_days">Last 30 days</option>
+                        <option value="this_month" selected>This month</option>
+                        <option value="last_month">Last month</option>
+                        <option value="custom">Custom range</option>
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Barangay</label>
-                    <select class="form-select">
-                        <option selected>All Barangays</option>
-                        <option>Alangilan</option>
-                        <option>Balete</option>
-                        <option>Barangay 1</option>
-                        <option>Barangay 2</option>
-                        <option>Barangay 3</option>
-                        <option>Barangay 4</option>
-                        <option>Barangay 5</option>
-                        <option>Barangay 6</option>
-                        <option>Barangay 7</option>
-                        <option>Barangay 8</option>
-                        <option>Bolbok</option>
-                        <option>Calicanto</option>
-                        <option>Conde Itaas</option>
-                        <option>Cuta</option>
-                        <option>Gulod Labac</option>
-                        <option>Kumintang Ibaba</option>
-                        <option>Mabacong</option>
-                        <option>Mahabang Dahilig</option>
-                        <option>Malitam</option>
-                        <option>Pallocan West</option>
-                        <option>Sampaga</option>
-                        <option>San Isidro</option>
-                        <option>Santa Clara</option>
-                        <option>Santo Niño</option>
-                        <option>Tabangao Dao</option>
-                        <option>Tingga Itaas</option>
+                    <select class="form-select" name="barangay">
+                        <option value="all" selected>All Barangays</option>
+                        <!-- Barangay options will be loaded dynamically -->
                     </select>
                 </div>
                 <div class="col-md-2 mb-3">
                     <label class="form-label">Visitor Type</label>
-                    <select class="form-select">
-                        <option selected>All Types</option>
-                        <option>Local</option>
-                        <option>Foreign</option>
+                    <select class="form-select" name="visitor_type">
+                        <option value="all" selected>All Types</option>
+                        <option value="Local">Local</option>
+                        <option value="Foreign">Foreign</option>
                     </select>
                 </div>
                 <div class="col-md-2 mb-3">
                     <label class="form-label">Stay Type</label>
-                    <select class="form-select">
-                        <option selected>All Types</option>
-                        <option>Day Tour</option>
-                        <option>Overnight</option>
+                    <select class="form-select" name="stay_type">
+                        <option value="all" selected>All Types</option>
+                        <option value="Day Tour">Day Tour</option>
+                        <option value="Overnight">Overnight</option>
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end mb-3">
-                    <button class="btn btn-primary w-100">
+                    <button class="btn btn-primary w-100" id="applyFiltersBtn">
                         <i class="fas fa-filter me-1"></i> Apply Filters
                     </button>
                 </div>
@@ -447,8 +429,8 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Visitor Records</h5>
                 <div class="input-group" style="max-width: 300px;">
-                    <input type="text" class="form-control" placeholder="Search visitors...">
-                    <button class="btn btn-outline-secondary" type="button">
+                    <input type="text" class="form-control" placeholder="Search visitors..." name="search">
+                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -469,163 +451,22 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>#VS-1254</td>
-                                <td>Apr 22, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Alangilan</td>
-                                <td>Day Tour</td>
-                                <td>4</td>
-                                <td>2</td>
-                                <td>₱3,600</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1253</td>
-                                <td>Apr 22, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Barangay 1</td>
-                                <td>Overnight</td>
-                                <td>2</td>
-                                <td>0</td>
-                                <td>₱8,500</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1252</td>
-                                <td>Apr 21, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Gulod Labac</td>
-                                <td>Overnight</td>
-                                <td>6</td>
-                                <td>3</td>
-                                <td>₱12,000</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1251</td>
-                                <td>Apr 21, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Santo Niño</td>
-                                <td>Day Tour</td>
-                                <td>2</td>
-                                <td>1</td>
-                                <td>₱2,500</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1250</td>
-                                <td>Apr 20, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Cuta</td>
-                                <td>Day Tour</td>
-                                <td>8</td>
-                                <td>5</td>
-                                <td>₱6,500</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1249</td>
-                                <td>Apr 20, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Barangay 7</td>
-                                <td>Overnight</td>
-                                <td>2</td>
-                                <td>0</td>
-                                <td>₱9,800</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1248</td>
-                                <td>Apr 19, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Kumintang Ibaba</td>
-                                <td>Day Tour</td>
-                                <td>3</td>
-                                <td>1</td>
-                                <td>₱2,800</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1247</td>
-                                <td>Apr 19, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>Balete</td>
-                                <td>Overnight</td>
-                                <td>4</td>
-                                <td>2</td>
-                                <td>₱15,200</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1246</td>
-                                <td>Apr 18, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-local">Local</span></td>
-                                <td>Calicanto</td>
-                                <td>Day Tour</td>
-                                <td>10</td>
-                                <td>4</td>
-                                <td>₱8,400</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#VS-1245</td>
-                                <td>Apr 18, 2025</td>
-                                <td><span class="visitor-type-label visitor-type-foreign">Foreign</span></td>
-                                <td>San Isidro</td>
-                                <td>Overnight</td>
-                                <td>2</td>
-                                <td>0</td>
-                                <td>₱7,600</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                                </td>
-                            </tr>
+                        <tbody id="visitorsTableBody">
+                            <!-- Data will be loaded dynamically -->
                         </tbody>
                     </table>
+                </div>
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading visitor data...</p>
                 </div>
             </div>
             <div class="card-footer bg-white text-end">
                 <nav>
-                    <ul class="pagination justify-content-end mb-0">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
+                    <ul class="pagination justify-content-end mb-0" id="pagination">
+                        <!-- Pagination will be loaded dynamically -->
                     </ul>
                 </nav>
             </div>
@@ -647,157 +488,268 @@
         </div>
     </footer>
 
-    // Add this script at the end of the body in MTO_Visitors.html
+    <!-- JavaScript dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+    <!-- Custom JavaScript -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get references to filter elements
-        const dateRangeSelect = document.querySelector('select[name="date_range"]');
-        const barangaySelect = document.querySelector('select[name="barangay"]');
-        const visitorTypeSelect = document.querySelector('select[name="visitor_type"]');
-        const stayTypeSelect = document.querySelector('select[name="stay_type"]');
-        const searchInput = document.querySelector('input[type="search"]');
-        const applyFiltersBtn = document.querySelector('.btn-primary');
-        const tableBody = document.querySelector('tbody');
-        const pagination = document.querySelector('.pagination');
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dateRangeSelect = document.querySelector('select[name="date_range"]');
+            const barangaySelect = document.querySelector('select[name="barangay"]');
+            const visitorTypeSelect = document.querySelector('select[name="visitor_type"]');
+            const stayTypeSelect = document.querySelector('select[name="stay_type"]');
+            const searchInput = document.querySelector('input[name="search"]');
+            const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+            const searchBtn = document.getElementById('searchBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const addVisitorBtn = document.getElementById('addVisitorBtn');
+            const visitorsTableBody = document.getElementById('visitorsTableBody');
+            const pagination = document.getElementById('pagination');
+            const loadingSpinner = document.getElementById('loadingSpinner');
 
-        // Current page state
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentFilters = {
-            date_range: 'this_month',
-            barangay: 'all',
-            visitor_type: 'all',
-            stay_type: 'all',
-            search: ''
-        };
+            // Current state
+            let currentPage = 1;
+            let totalPages = 1;
+            let currentFilters = {
+                date_range: 'this_month',
+                barangay: 'all',
+                visitor_type: 'all',
+                stay_type: 'all',
+                search: ''
+            };
 
-        // Load barangay options
-        fetch('/api/visitors/barangays')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const select = barangaySelect;
-                    // Clear existing options except the first one
-                    while (select.options.length > 1) {
-                        select.remove(1);
-                    }
+            // Initialize the page
+            initPage();
 
-                    // Add new options
-                    data.data.forEach(barangay => {
-                        const option = document.createElement('option');
-                        option.value = barangay;
-                        option.textContent = barangay;
-                        select.appendChild(option);
+            function initPage() {
+                loadBarangays();
+                loadVisitors();
+                setupEventListeners();
+            }
+
+            function loadBarangays() {
+                fetch('/api/visitors/barangays')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Clear existing options except the first one
+                            while (barangaySelect.options.length > 1) {
+                                barangaySelect.remove(1);
+                            }
+
+                            // Add new options
+                            data.data.forEach(barangay => {
+                                const option = document.createElement('option');
+                                option.value = barangay;
+                                option.textContent = barangay;
+                                barangaySelect.appendChild(option);
+                            });
+                        } else {
+                            showError(data.message || 'Failed to load barangays');
+                        }
+                    })
+                    .catch(error => {
+                        showError('Error loading barangays: ' + error.message);
                     });
-                }
-            });
+            }
 
-        // Function to load visitor data
-        function loadVisitors(page = 1) {
-            const params = new URLSearchParams({
-                ...currentFilters,
-                page: page,
-                per_page: 10
-            });
+            function loadVisitors(page = 1) {
+                showLoading();
 
-            fetch(`/api/visitors?${params.toString()}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        renderVisitors(data.data.visitors);
-                        updatePagination(data.data.total, data.data.pages, page);
-                    } else {
-                        alert('Failed to load visitors: ' + data.message);
-                    }
+                const params = new URLSearchParams({
+                    ...currentFilters,
+                    page: page,
+                    per_page: 10
                 });
-        }
 
-        // Function to render visitors in the table
-        function renderVisitors(visitors) {
-            tableBody.innerHTML = '';
+                fetch(`/api/visitors?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            renderVisitors(data.data.visitors);
+                            updatePagination(data.data.total, data.data.pages, page);
+                        } else {
+                            showError(data.message || 'Failed to load visitors');
+                        }
+                    })
+                    .catch(error => {
+                        showError('Error loading visitors: ' + error.message);
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
+            }
 
-            visitors.forEach(visitor => {
-                const row = document.createElement('tr');
+            function renderVisitors(visitors) {
+                visitorsTableBody.innerHTML = '';
 
-                // Determine visitor type class
-                const visitorTypeClass = visitor.visitor_type === 'Local' ?
-                    'visitor-type-local' : 'visitor-type-foreign';
+                if (visitors.length === 0) {
+                    visitorsTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="text-center py-4">No visitor records found</td>
+                        </tr>
+                    `;
+                    return;
+                }
 
-                row.innerHTML = `
-                    <td>#${visitor.id}</td>
-                    <td>${visitor.date}</td>
-                    <td><span class="visitor-type-label ${visitorTypeClass}">${visitor.visitor_type}</span></td>
-                    <td>${visitor.barangay}</td>
-                    <td>${visitor.stay_type}</td>
-                    <td>${visitor.adults}</td>
-                    <td>${visitor.children}</td>
-                    <td>₱${visitor.revenue.toLocaleString('en-US')}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                    </td>
+                visitors.forEach(visitor => {
+                    const row = document.createElement('tr');
+
+                    const visitorTypeClass = visitor.visitor_type === 'Local' ?
+                        'visitor-type-local' : 'visitor-type-foreign';
+
+                    row.innerHTML = `
+                        <td>${visitor.id}</td>
+                        <td>${visitor.date}</td>
+                        <td><span class="visitor-type-label ${visitorTypeClass}">${visitor.visitor_type}</span></td>
+                        <td>${visitor.barangay}</td>
+                        <td>${visitor.stay_type}</td>
+                        <td>${visitor.adults}</td>
+                        <td>${visitor.children}</td>
+                        <td>₱${visitor.revenue.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary view-btn" data-id="${visitor.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="${visitor.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    `;
+
+                    visitorsTableBody.appendChild(row);
+                });
+            }
+
+            function updatePagination(total, pages, current) {
+                currentPage = current;
+                totalPages = pages;
+
+                pagination.innerHTML = `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+                    </li>
                 `;
 
-                tableBody.appendChild(row);
-            });
-        }
+                // Show page numbers
+                for (let i = 1; i <= pages; i++) {
+                    pagination.innerHTML += `
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" data-page="${i}">${i}</a>
+                        </li>
+                    `;
+                }
 
-        // Function to update pagination
-        function updatePagination(total, pages, current) {
-            currentPage = current;
-            totalPages = pages;
-
-            pagination.innerHTML = `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" tabindex="-1" data-page="${currentPage - 1}">Previous</a>
-                </li>
-            `;
-
-            for (let i = 1; i <= pages; i++) {
                 pagination.innerHTML += `
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
                     </li>
                 `;
             }
 
-            pagination.innerHTML += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
-                </li>
-            `;
-        }
+            function setupEventListeners() {
+                // Filter button
+                applyFiltersBtn.addEventListener('click', function() {
+                    currentFilters = {
+                        date_range: dateRangeSelect.value,
+                        barangay: barangaySelect.value,
+                        visitor_type: visitorTypeSelect.value,
+                        stay_type: stayTypeSelect.value,
+                        search: searchInput.value.trim()
+                    };
+                    loadVisitors(1);
+                });
 
-        // Event listeners
-        applyFiltersBtn.addEventListener('click', function() {
-            currentFilters = {
-                date_range: dateRangeSelect.value,
-                barangay: barangaySelect.value,
-                visitor_type: visitorTypeSelect.value,
-                stay_type: stayTypeSelect.value,
-                search: searchInput.value
-            };
+                // Search button
+                searchBtn.addEventListener('click', function() {
+                    currentFilters.search = searchInput.value.trim();
+                    loadVisitors(1);
+                });
 
-            loadVisitors(1);
-        });
+                // Search input (debounced)
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        currentFilters.search = searchInput.value.trim();
+                        loadVisitors(1);
+                    }, 500);
+                });
 
-        // Pagination click handler
-        pagination.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (e.target.tagName === 'A') {
-                const page = parseInt(e.target.dataset.page);
-                if (page >= 1 && page <= totalPages) {
-                    loadVisitors(page);
-                }
+                // Pagination
+                pagination.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (e.target.tagName === 'A') {
+                        const page = parseInt(e.target.dataset.page);
+                        if (page >= 1 && page <= totalPages) {
+                            loadVisitors(page);
+                        }
+                    }
+                });
+
+                // Export button
+                exportBtn.addEventListener('click', function() {
+                    exportVisitorData();
+                });
+
+                // Add visitor button
+                addVisitorBtn.addEventListener('click', function() {
+                    // Implement add visitor functionality
+                    alert('Add visitor functionality will be implemented here');
+                });
+
+                // View/Edit buttons (delegated events)
+                visitorsTableBody.addEventListener('click', function(e) {
+                    if (e.target.closest('.view-btn')) {
+                        const recordId = e.target.closest('.view-btn').dataset.id;
+                        viewRecord(recordId);
+                    } else if (e.target.closest('.edit-btn')) {
+                        const recordId = e.target.closest('.edit-btn').dataset.id;
+                        editRecord(recordId);
+                    }
+                });
+            }
+
+            function viewRecord(recordId) {
+                // Implement view functionality
+                console.log('View record:', recordId);
+                // You could show a modal with detailed information
+                alert(`Viewing record: ${recordId}`);
+            }
+
+            function editRecord(recordId) {
+                // Implement edit functionality
+                console.log('Edit record:', recordId);
+                // You could show an edit form
+                alert(`Editing record: ${recordId}`);
+            }
+
+            function exportVisitorData() {
+                const params = new URLSearchParams(currentFilters);
+                window.open(`/api/visitors/export?${params.toString()}`, '_blank');
+            }
+
+            function showLoading() {
+                loadingSpinner.classList.add('active');
+            }
+
+            function hideLoading() {
+                loadingSpinner.classList.remove('active');
+            }
+
+            function showError(message) {
+                // Simple error display - you could use a toast or modal
+                alert('Error: ' + message);
             }
         });
-
-        // Initial load
-        loadVisitors();
-    });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 </html>
