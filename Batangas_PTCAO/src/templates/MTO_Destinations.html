@@ -6,7 +6,7 @@
     <title>Batangas Explorer - Destinations Map</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css">
     <style>
         :root {
@@ -400,7 +400,7 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
                 <a href="#" class="logo-text">
-                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    <img src="https://via.placeholder.com/40" alt="Logo" class="me-2" width="40" height="40">
                     Batangas Explorer - MTO
                 </a>
 
@@ -430,7 +430,7 @@
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
-        <a href="#" class="sidebar-link active">
+        <a href="/mto/destinations" class="sidebar-link active">
             <i class="fas fa-map-marked-alt"></i>
             <span>Destinations</span>
         </a>
@@ -503,36 +503,27 @@
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Property Type</label>
-                        <select class="form-select">
-                            <option selected>All Types</option>
-                            <option>Resort</option>
-                            <option>Hotel</option>
-                            <option>Restaurant</option>
-                            <option>Tourist Spot</option>
-                            <option>Activity Center</option>
+                        <select class="form-select" id="typeFilter">
+                            <option value="All Types" selected>All Types</option>
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Barangay</label>
-                        <select class="form-select">
-                            <option selected>All Barangays</option>
-                            <option>San Andres</option>
-                            <option>Talahib</option>
-                            <option>Poblacion</option>
-                            <option>Lumbangan</option>
-                            <option>Mataas na Kahoy</option>
+                        <select class="form-select" id="barangayFilter">
+                            <option value="All Barangays" selected>All Barangays</option>
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Sort By</label>
-                        <select class="form-select">
-                            <option selected>Relevance</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Rating: High to Low</option>
-                            <option>Popularity</option>
+                        <select class="form-select" id="sortFilter">
+                            <option value="Relevance" selected>Relevance</option>
+                            <option value="Price: Low to High">Price: Low to High</option>
+                            <option value="Price: High to Low">Price: High to Low</option>
+                            <option value="Rating: High to Low">Rating: High to Low</option>
                         </select>
                     </div>
 
@@ -590,7 +581,7 @@
         <!-- Property Cards Drawer -->
         <div class="property-drawer">
             <div class="drawer-handle" id="drawerHandle"></div>
-            <h4 class="mb-3">Featured Properties</h4>
+            <h4 class="mb-3">Featured Properties in <span id="municipalityName"></span></h4>
 
             <div class="position-relative">
                 <div class="drawer-scroll-btn drawer-scroll-left">
@@ -608,76 +599,8 @@
 
             <!-- Property Detail View -->
             <div class="property-detail-view" id="propertyDetailView">
-                <div class="detail-close">
-                    <i class="fas fa-times"></i>
-                </div>
-
-                <h3 class="property-title mb-2" id="detailTitle">Acuatico Beach Resort</h3>
-                <p class="property-location mb-3" id="detailLocation">
-                    <i class="fas fa-map-marker-alt me-1"></i>
-                    <span id="detailAddress">San Andres, Batangas</span>
-                </p>
-
-                <div class="detail-gallery" id="detailGallery">
-                    <!-- Gallery images will be loaded here -->
-                </div>
-
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="detail-section">
-                            <h5 class="detail-section-title">About</h5>
-                            <p id="detailDescription">
-                                A luxurious beachfront resort offering panoramic views of Batangas Bay. The resort features Mediterranean-inspired architecture, with well-appointed rooms and modern amenities.
-                            </p>
-                        </div>
-
-                        <div class="detail-section">
-                            <h5 class="detail-section-title">Amenities</h5>
-                            <div class="detail-amenities" id="detailAmenities">
-                                <!-- Amenities will be loaded here -->
-                            </div>
-                        </div>
-
-                        <div class="detail-section">
-                            <h5 class="detail-section-title">
-                                Reviews
-                                <div class="rating-stars">
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                    <span class="ms-1">4.5</span>
-                                </div>
-                            </h5>
-                            <div id="detailReviews">
-                                <!-- Reviews will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="mb-3">Contact Information</h5>
-                                <p><i class="fas fa-phone me-2"></i> <span id="detailPhone">+63 921 123 4567</span></p>
-                                <p><i class="fas fa-envelope me-2"></i> <span id="detailEmail">info@example.com</span></p>
-                                <p><i class="fas fa-globe me-2"></i> <a href="#" id="detailWebsite">www.example.com</a></p>
-
-                                <hr>
-
-                                <h5 class="mb-3">Rates</h5>
-                                <p class="mb-2"><strong>Overnight:</strong> <span id="detailOvernightRate">₱8,500 - ₱15,000</span></p>
-                                <p><strong>Day Tour:</strong> <span id="detailDayTourRate">₱3,500 - ₱5,000</span></p>
-
-                                <div class="d-grid gap-2 mt-4">
-                                    <button class="btn btn-primary">Get Directions</button>
-                                    <button class="btn btn-outline-primary">Add to Itinerary</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Keep the existing detail view structure -->
+                <!-- ... -->
             </div>
         </div>
     </div>
@@ -686,127 +609,284 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
     <script>
-            document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Initialize map
             const map = L.map('mapView').setView([13.7565, 121.0583], 11);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-            // Sample properties data
-            const properties = [/* ... (keep the existing properties array) ... */];
-
-            // Initialize markers array and property cards container
+            // Initialize variables
+            let properties = [];
             const markers = [];
             const propertyCardsContainer = document.getElementById('propertyCards');
-            let currentProperties = properties;
+            let currentProperties = [];
+            let priceSlider;
+
+            // Function to fetch properties from backend
+            async function fetchProperties() {
+                try {
+                    const response = await fetch('/api/destinations/map-data');
+                    const data = await response.json();
+
+                    if (data.success) {
+                        properties = data.properties;
+                        currentProperties = [...properties];
+                        updatePropertyCards();
+                        updateMarkers();
+
+                        // Set municipality name
+                        document.getElementById('municipalityName').textContent = data.municipality;
+                    } else {
+                        console.error('Failed to fetch properties:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error fetching properties:', error);
+                }
+            }
+
+            // Function to fetch filter options
+            async function fetchFilterOptions() {
+                try {
+                    const response = await fetch('/api/destinations/filter-options');
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Populate type filter
+                        const typeFilter = document.getElementById('typeFilter');
+                        data.types.forEach(type => {
+                            const option = document.createElement('option');
+                            option.value = type;
+                            option.textContent = type;
+                            typeFilter.appendChild(option);
+                        });
+
+                        // Populate barangay filter
+                        const barangayFilter = document.getElementById('barangayFilter');
+                        data.barangays.forEach(barangay => {
+                            const option = document.createElement('option');
+                            option.value = barangay;
+                            option.textContent = barangay;
+                            barangayFilter.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching filter options:', error);
+                }
+            }
 
             // Function to generate star rating HTML
             function generateStarRating(rating) {
-            const fullStars = Math.floor(rating);
-            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-            let starsHtml = '';
+                const fullStars = Math.floor(rating);
+                let halfStar = rating % 1 >= 0.5;
+                let stars = '';
 
-            for (let i = 0; i < fullStars; i++) starsHtml += '<i class="fas fa-star text-warning"></i>';
-            if (halfStar) starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
-            for (let i = 0; i < (5 - fullStars - halfStar); i++) starsHtml += '<i class="far fa-star text-warning"></i>';
-            return starsHtml;
-        }
+                for (let i = 0; i < 5; i++) {
+                    if (i < fullStars) stars += '<i class="fas fa-star text-warning"></i>';
+                    else if (halfStar) {
+                        stars += '<i class="fas fa-star-half-alt text-warning"></i>';
+                        halfStar = false;
+                    } else {
+                        stars += '<i class="far fa-star text-warning"></i>';
+                    }
+                }
+                return stars;
+            }
 
             // Function to create property cards
             function createPropertyCard(property) {
-            const card = document.createElement('div');
-            card.className = 'property-card';
-            card.dataset.id = property.id;
-            card.innerHTML = `
-                    <img src="${property.image}" class="property-img card-img-top" alt="${property.name}">
+                const card = document.createElement('div');
+                card.className = 'property-card';
+                card.dataset.id = property.id;
+                card.innerHTML = `
+                    <img src="${property.image}" class="property-img card-img-top" alt="${property.name}" onerror="this.src='https://via.placeholder.com/400x200?text=Property+Image'">
                     <div class="card-body">
                         <h5 class="property-title">${property.name}</h5>
                         <p class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${property.location}</p>
                         <p class="property-price">₱${property.price.toLocaleString()}</p>
                         <div class="property-rating">${generateStarRating(property.rating)}</div>
                         <div class="amenities mt-2">
-                            ${property.amenities.map(a => `<span class="amenity-badge">${a}</span>`).join('')}
+                            ${property.amenities.slice(0, 3).map(a => `<span class="amenity-badge">${a}</span>`).join('')}
+                            ${property.amenities.length > 3 ? '<span class="amenity-badge">+ more</span>' : ''}
                         </div>
                     </div>
                 `;
-            card.addEventListener('click', () => showPropertyDetail(property));
-            return card;
-        }
+                card.addEventListener('click', () => showPropertyDetail(property));
+                return card;
+            }
 
             // Function to update map markers
-            function updateMarkers(properties) {
-            markers.forEach(marker => map.removeLayer(marker));
-            markers.length = 0;
+            function updateMarkers() {
+                // Clear existing markers
+                markers.forEach(marker => map.removeLayer(marker));
+                markers.length = 0;
 
-            properties.forEach(property => {
-            const marker = L.marker(property.coordinates)
-            .addTo(map)
-            .bindPopup(`<b>${property.name}</b><br>${property.type}`)
-            .on('click', () => showPropertyDetail(property));
-            markers.push(marker);
-        });
+                // Add new markers
+                currentProperties.forEach(property => {
+                    const marker = L.marker(property.coordinates)
+                        .addTo(map)
+                        .bindPopup(`<b>${property.name}</b><br>${property.type}<br>₱${property.price.toLocaleString()}/night`)
+                        .on('click', () => showPropertyDetail(property));
+                    markers.push(marker);
+                });
 
-            if (properties.length > 0) {
-            const bounds = L.latLngBounds(properties.map(p => p.coordinates));
-            map.fitBounds(bounds);
-        }
-        }
+                // Adjust map view to show all markers
+                if (currentProperties.length > 0) {
+                    const bounds = L.latLngBounds(currentProperties.map(p => p.coordinates));
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+
+            // Function to update property cards
+            function updatePropertyCards() {
+                propertyCardsContainer.innerHTML = '';
+                currentProperties.forEach(p => {
+                    propertyCardsContainer.appendChild(createPropertyCard(p));
+                });
+            }
 
             // Function to show property details
             function showPropertyDetail(property) {
-            document.getElementById('detailTitle').textContent = property.name;
-            document.getElementById('detailLocation').textContent = property.location;
-            document.getElementById('detailDescription').textContent = property.description;
-            document.getElementById('detailAmenities').innerHTML =
-            property.amenities.map(a => `<span class="amenity-badge">${a}</span>`).join('');
-            document.getElementById('propertyDetailView').classList.add('active');
-        }
+                document.getElementById('detailTitle').textContent = property.name;
+                document.getElementById('detailLocation').textContent = property.location;
+                document.getElementById('detailDescription').textContent = property.description;
+                document.getElementById('detailAmenities').innerHTML =
+                    property.amenities.map(a => `<span class="amenity-badge">${a}</span>`).join('');
+                document.getElementById('detailPhone').textContent = property.phone;
+                document.getElementById('detailEmail').textContent = property.email;
+                document.getElementById('detailWebsite').textContent = property.website;
+                document.getElementById('detailWebsite').href = `https://${property.website}`;
+                document.getElementById('detailOvernightRate').textContent = property.overnightRate;
+                document.getElementById('detailDayTourRate').textContent = property.dayTourRate;
+
+                // Update gallery
+                const galleryContainer = document.getElementById('detailGallery');
+                galleryContainer.innerHTML = '';
+                property.gallery.forEach(imgUrl => {
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.className = 'gallery-img';
+                    img.alt = property.name;
+                    img.onerror = function() {
+                        this.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+                    };
+                    galleryContainer.appendChild(img);
+                });
+
+                // Show the detail view
+                document.getElementById('propertyDetailView').classList.add('active');
+            }
 
             // Initialize price slider
-            const priceSlider = document.getElementById('priceRange');
-            noUiSlider.create(priceSlider, {
-            start: [500, Math.max(...properties.map(p => p.price))],
-            connect: true,
-            range: {min: 500, max: Math.max(...properties.map(p => p.price))},
-            step: 500
-        });
+            function initPriceSlider() {
+                priceSlider = document.getElementById('priceRange');
+                noUiSlider.create(priceSlider, {
+                    start: [500, 10000],
+                    connect: true,
+                    range: { min: 500, max: 10000 },
+                    step: 500,
+                    tooltips: [true, true],
+                    format: {
+                        to: function(value) {
+                            return '₱' + Math.round(value).toLocaleString();
+                        },
+                        from: function(value) {
+                            return Number(value.replace(/[^0-9.-]+/g,""));
+                        }
+                    }
+                });
+
+                // Update price display
+                priceSlider.noUiSlider.on('update', function(values, handle) {
+                    if (handle === 0) {
+                        document.getElementById('priceMin').textContent = values[handle];
+                    } else {
+                        document.getElementById('priceMax').textContent = values[handle];
+                    }
+                });
+            }
 
             // Filter functionality
             document.getElementById('applyFilters').addEventListener('click', function() {
-            const typeFilter = document.querySelector('select').value;
-            const [minPrice, maxPrice] = priceSlider.noUiSlider.get();
-            const amenities = Array.from(document.querySelectorAll('.form-check-input:checked'))
-            .map(cb => cb.nextElementSibling.textContent);
+                const typeFilter = document.getElementById('typeFilter').value;
+                const barangayFilter = document.getElementById('barangayFilter').value;
+                const searchQuery = document.getElementById('searchInput').value;
+                const [minPrice, maxPrice] = priceSlider.noUiSlider.get().map(val => parseInt(val.replace(/[^0-9]/g, '')));
+                const amenities = Array.from(document.querySelectorAll('.form-check-input:checked'))
+                                    .map(cb => cb.nextElementSibling.textContent);
 
-            currentProperties = properties.filter(property => {
-            return (typeFilter === 'All Types' || property.type === typeFilter) &&
-            property.price >= minPrice && property.price <= maxPrice &&
-            amenities.every(a => property.amenities.includes(a));
-        });
+                currentProperties = properties.filter(property => {
+                    return (typeFilter === 'All Types' || property.type === typeFilter) &&
+                           (barangayFilter === 'All Barangays' || property.location.includes(barangayFilter)) &&
+                           (searchQuery === '' || property.name.toLowerCase().includes(searchQuery.toLowerCase())) &&
+                           property.price >= minPrice && property.price <= maxPrice &&
+                           amenities.every(a => property.amenities.includes(a));
+                });
 
-            propertyCardsContainer.innerHTML = '';
-            currentProperties.forEach(p => propertyCardsContainer.appendChild(createPropertyCard(p)));
-            updateMarkers(currentProperties);
-        });
+                updatePropertyCards();
+                updateMarkers();
+
+                // Close filter panel
+                document.getElementById('filterPanel').classList.remove('active');
+            });
+
+            // Clear filters
+            document.getElementById('clearFilters').addEventListener('click', function() {
+                document.getElementById('typeFilter').value = 'All Types';
+                document.getElementById('barangayFilter').value = 'All Barangays';
+                document.getElementById('searchInput').value = '';
+                priceSlider.noUiSlider.set([500, 10000]);
+                document.querySelectorAll('.form-check-input').forEach(cb => cb.checked = false);
+
+                currentProperties = [...properties];
+                updatePropertyCards();
+                updateMarkers();
+
+                // Close filter panel
+                document.getElementById('filterPanel').classList.remove('active');
+            });
+
+            // Search button functionality
+            document.getElementById('searchButton').addEventListener('click', function() {
+                const searchQuery = document.getElementById('searchInput').value;
+
+                currentProperties = properties.filter(property => {
+                    return property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           property.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           property.description.toLowerCase().includes(searchQuery.toLowerCase());
+                });
+
+                updatePropertyCards();
+                updateMarkers();
+            });
 
             // Initial setup
-            properties.forEach(p => propertyCardsContainer.appendChild(createPropertyCard(p)));
-            updateMarkers(properties);
+            initPriceSlider();
+            fetchProperties();
+            fetchFilterOptions();
 
             // Event listeners
             document.querySelector('.detail-close').addEventListener('click', () => {
-            document.getElementById('propertyDetailView').classList.remove('active');
-        });
+                document.getElementById('propertyDetailView').classList.remove('active');
+            });
 
             document.getElementById('filterToggle').addEventListener('click', () => {
-            document.getElementById('filterPanel').classList.toggle('active');
-        });
+                document.getElementById('filterPanel').classList.toggle('active');
+            });
 
             document.querySelectorAll('.drawer-scroll-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-            const scrollAmount = btn.classList.contains('drawer-scroll-left') ? -300 : 300;
-            propertyCardsContainer.scrollBy({left: scrollAmount, behavior: 'smooth'});
-        });
-        });
+                btn.addEventListener('click', () => {
+                    const scrollAmount = btn.classList.contains('drawer-scroll-left') ? -300 : 300;
+                    propertyCardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+            });
+
+            // Close filter panel when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('#filterPanel') && !event.target.closest('#filterToggle')) {
+                    document.getElementById('filterPanel').classList.remove('active');
+                }
+            });
         });
     </script>
 </body>
