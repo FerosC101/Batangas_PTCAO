@@ -6,6 +6,7 @@
     <title>Batangas Explorer - Properties</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         :root {
             --primary: #003366;
@@ -248,8 +249,13 @@
 
         .map-container {
             height: 300px;
+            width: 100%;
             border-radius: 8px;
             margin-bottom: 15px;
+        }
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
         }
 
         .property-img-thumbnail {
@@ -680,9 +686,31 @@
         let currentPropertyId;
 
         // Initialize Add Property Map
+        // Initialize Add Property Map
         function initMap() {
-            map = L.map('map').setView([13.8799, 120.9233], 11);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            // Set default coordinates to Batangas City Hall
+            const defaultLat = 13.7565;
+            const defaultLng = 121.0583;
+
+            map = L.map('map', {
+                center: [defaultLat, defaultLng],
+                zoom: 15,
+                zoomControl: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add zoom control with proper position
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            // Set initial marker
+            marker = L.marker([defaultLat, defaultLng]).addTo(map);
+
+            // Update coordinates in form
+            document.querySelector('input[name="latitude"]').value = defaultLat;
+            document.querySelector('input[name="longitude"]').value = defaultLng;
 
             map.on('click', function(e) {
                 if (marker) marker.remove();
@@ -690,15 +718,27 @@
                 document.querySelector('input[name="latitude"]').value = e.latlng.lat;
                 document.querySelector('input[name="longitude"]').value = e.latlng.lng;
             });
+
+            // Fix map rendering in modal
+            setTimeout(() => map.invalidateSize(), 0);
         }
 
         // Initialize Edit Property Map
         function initEditMap() {
-            const lat = parseFloat(document.getElementById('editLatitude').value) || 13.8799;
-            const lng = parseFloat(document.getElementById('editLongitude').value) || 120.9233;
+            const lat = parseFloat(document.getElementById('editLatitude').value) || 13.7565;
+            const lng = parseFloat(document.getElementById('editLongitude').value) || 121.0583;
 
-            editMap = L.map('editMap').setView([lat, lng], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(editMap);
+            editMap = L.map('editMap', {
+                center: [lat, lng],
+                zoom: 15,
+                zoomControl: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(editMap);
+
+            L.control.zoom({ position: 'topright' }).addTo(editMap);
 
             if(lat && lng) {
                 editMarker = L.marker([lat, lng]).addTo(editMap);
@@ -710,6 +750,9 @@
                 document.getElementById('editLatitude').value = e.latlng.lat;
                 document.getElementById('editLongitude').value = e.latlng.lng;
             });
+
+            // Fix map rendering in modal
+            setTimeout(() => editMap.invalidateSize(), 0);
         }
 
         // Open Edit Modal
@@ -1011,7 +1054,15 @@
         });
 
         // Initialize map when modal is shown
-        document.getElementById('addPropertyModal').addEventListener('shown.bs.modal', initMap);
+        document.getElementById('addPropertyModal').addEventListener('shown.bs.modal', function() {
+            initMap();
+            document.getElementById('map').style.height = '300px';
+        });
+        document.getElementById('editPropertyModal').addEventListener('shown.bs.modal', function() {
+            initEditMap();
+            document.getElementById('editMap').style.height = '300px';
+        });
+
     </script>
 </body>
 </html>
