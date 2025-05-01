@@ -7,7 +7,7 @@ from datetime import timedelta
 
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
 from Batangas_PTCAO.src.routes.MTO import init_mto_routes
-from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes, properties_bp
+from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes
 from Batangas_PTCAO.src.routes.MTO_Dashboard import init_dashboard_routes
 from Batangas_PTCAO.src.routes.MTO_Events import init_events_routes
 from Batangas_PTCAO.src.routes.MTO_Analytics import init_analytics_routes
