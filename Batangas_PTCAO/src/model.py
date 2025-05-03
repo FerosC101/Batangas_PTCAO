@@ -239,7 +239,7 @@ class VisitorRecord(db.Model):
     def __repr__(self):
         return f'<VisitorRecord {self.record_id}>'
 
-class UserDataUpload(db.Model):
+class VisitorDataUpload(db.Model):
     __tablename__ = 'user_data_uploads'
 
     id = db.Column(db.Integer, primary_key=True)

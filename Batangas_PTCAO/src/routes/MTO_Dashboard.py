@@ -1,72 +1,84 @@
-from flask import Blueprint, jsonify, request, url_for, render_template, redirect, flash
+from flask import Blueprint, jsonify, request, url_for, render_template, flash, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
-
-from Batangas_PTCAO.src.app import app
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import (
+    User,
     Property,
     VisitorStatistics,
     BarangayMonthlyStatistics,
-    PropertyMonthlyStatistics
+    PropertyMonthlyStatistics,
+    VisitorRecord,
+    VisitorDataUpload
 )
-
-import pandas as  pd
+import pandas as pd
 import os
-
-from io import BytesIO
 from werkzeug.utils import secure_filename
-
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
-app.config['ALLOWED_EXTENSIONS'] = ['xlsx, xls, csv']
-
+from io import BytesIO
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
-def allowed_file(filename):
-    return '-'
+
 def init_dashboard_routes(app):
     app.register_blueprint(dashboard_bp)
+    # Ensure upload folder exists
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
 @dashboard_bp.route('/mto/dashboard')
 @jwt_required()
 def mto_dashboard():
-    """
-    Render the MTO Dashboard with all necessary statistics and data
-    """
+    """Render the MTO Dashboard with all necessary statistics and data"""
     try:
         # Get current user identity
         current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        municipality = user.municipality
 
         # Calculate date ranges
         today = datetime.now().date()
         last_30_days = today - timedelta(days=30)
         last_7_days = today - timedelta(days=7)
 
-        # 1. Get summary statistics
+        # 1. Get summary statistics filtered by municipality
         summary_stats = {
-            'total_properties': Property.query.filter_by(status='Active').count(),
-            'total_visitors': get_visitor_count(last_30_days, today),
-            'local_visitors': get_visitor_count(last_30_days, today, 'Local'),
-            'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign'),
+            'total_properties': Property.query.filter_by(
+                status='Active',
+                municipality=municipality
+            ).count(),
+            'total_visitors': get_visitor_count(last_30_days, today, municipality=municipality),
+            'local_visitors': get_visitor_count(last_30_days, today, 'Local', municipality),
+            'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign', municipality),
             'new_properties': Property.query.filter(
-                Property.registration_date >= last_30_days
+                Property.registration_date >= last_30_days,
+                Property.municipality == municipality
             ).count()
         }
 
-        # 2. Get top 5 destinations
-        top_destinations = get_top_destinations(limit=5)
+        # 2. Get top 5 destinations in the municipality
+        top_destinations = get_top_destinations(municipality=municipality, limit=5)
 
-        # 3. Get recent visitor trends (weekly)
-        visitor_trends = get_visitor_trends(last_7_days, today)
+        # 3. Get recent visitor trends (weekly) for the municipality
+        visitor_trends = get_visitor_trends(last_7_days, today, municipality)
 
-        # 4. Get property status distribution
+        # 4. Get property status distribution for the municipality
         status_distribution = {
-            'Active': Property.query.filter_by(status='Active').count(),
-            'Inactive': Property.query.filter_by(status='Inactive').count(),
-            'Pending': Property.query.filter_by(status='Pending').count()
+            'Active': Property.query.filter_by(
+                status='Active',
+                municipality=municipality
+            ).count(),
+            'Maintenance': Property.query.filter_by(
+                status='Maintenance',
+                municipality=municipality
+            ).count()
         }
+
+        # Get recent uploads
+        recent_uploads = VisitorDataUpload.query.filter_by(
+            municipality=municipality
+        ).order_by(
+            VisitorDataUpload.upload_date.desc()
+        ).limit(5).all()
 
         return render_template(
             'MTO_Dashboard.html',
@@ -75,56 +87,192 @@ def mto_dashboard():
             top_destinations=top_destinations,
             visitor_trends=visitor_trends,
             status_distribution=status_distribution,
-            user_id=current_user_id
+            recent_uploads=recent_uploads,
+            user_id=current_user_id,
+            municipality=municipality
         )
 
     except Exception as e:
         app.logger.error(f"Error loading MTO dashboard: {str(e)}")
         flash('Failed to load dashboard data', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('login')
+
+                        @ dashboard_bp.route('/mto/dashboard/upload', methods=['POST'])
+                        @ jwt_required()
 
 
-def get_visitor_count(start_date, end_date, visitor_type=None):
-    query = db.session.query(db.func.sum(VisitorStatistics.count)).filter(
+def upload_visitor_data():
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        municipality = user.municipality
+
+        if 'file' not in request.files:
+            flash('No file part', 'error')
+            return redirect(url_for('dashboard.mto_dashboard'))
+
+        file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file', 'error')
+            return redirect(url_for('dashboard.mto_dashboard'))
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+
+            # Process the Excel file
+            try:
+                if filename.endswith('.csv'):
+                    df = pd.read_csv(filepath)
+                else:
+                    df = pd.read_excel(filepath)
+
+                records_processed = 0
+
+                # Process each row and save to database
+                for _, row in df.iterrows():
+                    # Validate and process the row
+                    try:
+                        # Example processing - adjust based on your Excel format
+                        visitor_record = VisitorRecord(
+                            date=pd.to_datetime(row['date']).date(),
+                            property_id=row['property_id'],
+                            visitor_type=row['visitor_type'],
+                            stay_type=row['stay_type'],
+                            municipality=municipality,
+                            barangay=row['barangay'],
+                            adults=row['adults'],
+                            children=row['children'],
+                            revenue=row['revenue']
+                        )
+                        db.session.add(visitor_record)
+                        records_processed += 1
+                    except Exception as e:
+                        app.logger.error(f"Error processing row {_}: {str(e)}")
+                        continue
+
+                # Create upload record
+                upload_record = VisitorDataUpload(
+                    user_id=current_user_id,
+                    municipality=municipality,
+                    filename=filename,
+                    records_processed=records_processed
+                )
+                db.session.add(upload_record)
+                db.session.commit()
+
+                flash(f'Successfully processed {records_processed} records', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error processing file: {str(e)}', 'error')
+                app.logger.error(f"Error processing file: {str(e)}")
+            finally:
+                # Clean up - remove the uploaded file
+                try:
+                    os.remove(filepath)
+                except Exception as e:
+                    app.logger.error(f"Error removing file: {str(e)}")
+
+        else:
+            flash('Allowed file types are .xlsx, .xls, .csv', 'error')
+
+    except Exception as e:
+        flash('An error occurred during file upload', 'error')
+        app.logger.error(f"Upload error: {str(e)}")
+
+    return redirect(url_for('dashboard.mto_dashboard'))
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in {'xlsx', 'xls', 'csv'}
+
+
+def get_visitor_count(start_date, end_date, visitor_type=None, municipality=None):
+    query = db.session.query(db.func.sum(VisitorStatistics.count)).join(
+        Property,
+        Property.property_id == VisitorStatistics.property_id
+    ).filter(
         VisitorStatistics.report_date.between(start_date, end_date)
     )
 
     if visitor_type:
         query = query.filter(VisitorStatistics.visitor_type == visitor_type)
 
+    if municipality:
+        query = query.filter(Property.municipality == municipality)
+
     return query.scalar() or 0
+
+
+def get_top_destinations(municipality=None, limit=5):
+    query = db.session.query(
+        Property.property_id,
+        Property.property_name,
+        Property.barangay,
+        db.func.sum(VisitorStatistics.count).label('total_visitors')
+    ).join(
+        VisitorStatistics,
+        VisitorStatistics.property_id == Property.property_id
+    ).group_by(
+        Property.property_id,
+        Property.property_name,
+        Property.barangay
+    ).order_by(
+        db.desc('total_visitors')
+    ).limit(limit)
+
+    if municipality:
+        query = query.filter(Property.municipality == municipality)
+
+    return query.all()
+
+
+def get_visitor_trends(start_date, end_date, municipality=None):
+    query = db.session.query(
+        VisitorStatistics.report_date,
+        db.func.sum(VisitorStatistics.count).label('total_visitors')
+    ).join(
+        Property,
+        Property.property_id == VisitorStatistics.property_id
+    ).filter(
+        VisitorStatistics.report_date.between(start_date, end_date)
+    ).group_by(
+        VisitorStatistics.report_date
+    ).order_by(
+        VisitorStatistics.report_date
+    )
+
+    if municipality:
+        query = query.filter(Property.municipality == municipality)
+
+    return query.all()
+
 
 @dashboard_bp.route('/api/dashboard/summary', methods=['GET'])
 @jwt_required()
 def get_dashboard_summary():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    municipality = user.municipality
+
     # Calculate date ranges
     today = datetime.now().date()
     last_month = today - timedelta(days=30)
 
     try:
         # Get total properties
-        total_properties = Property.query.filter_by(status='Active').count()
+        total_properties = Property.query.filter_by(
+            status='Active',
+            municipality=municipality
+        ).count()
 
         # Get visitor statistics
-        total_visitors = db.session.query(
-            db.func.sum(VisitorStatistics.count)
-        ).filter(
-            VisitorStatistics.report_date.between(last_month, today)
-        ).scalar() or 0
-
-        local_visitors = db.session.query(
-            db.func.sum(VisitorStatistics.count)
-        ).filter(
-            VisitorStatistics.report_date.between(last_month, today),
-            VisitorStatistics.visitor_type == 'Local'
-        ).scalar() or 0
-
-        foreign_visitors = db.session.query(
-            db.func.sum(VisitorStatistics.count)
-        ).filter(
-            VisitorStatistics.report_date.between(last_month, today),
-            VisitorStatistics.visitor_type == 'Foreign'
-        ).scalar() or 0
+        total_visitors = get_visitor_count(last_month, today, municipality=municipality)
+        local_visitors = get_visitor_count(last_month, today, 'Local', municipality)
+        foreign_visitors = get_visitor_count(last_month, today, 'Foreign', municipality)
 
         # Calculate percentage changes (simplified - in real app you'd compare with previous period)
         properties_change = 8  # Example value
@@ -149,6 +297,10 @@ def get_dashboard_summary():
 @dashboard_bp.route('/api/dashboard/destinations', methods=['GET'])
 @jwt_required()
 def get_destinations_list():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    municipality = user.municipality
+
     try:
         # Get filter parameters
         search = request.args.get('search', '')
@@ -156,15 +308,14 @@ def get_destinations_list():
         per_page = int(request.args.get('per_page', 10))
 
         # Base query
-        query = Property.query
+        query = Property.query.filter_by(municipality=municipality)
 
         # Apply search filter
         if search:
             query = query.filter(
                 db.or_(
                     Property.property_name.ilike(f'%{search}%'),
-                    Property.barangay.ilike(f'%{search}%'),
-                    Property.municipality.ilike(f'%{search}%')
+                    Property.barangay.ilike(f'%{search}%')
                 )
             )
 
@@ -187,7 +338,6 @@ def get_destinations_list():
                 'property_id': prop.property_id,
                 'property_name': prop.property_name,
                 'barangay': prop.barangay,
-                'municipality': prop.municipality,
                 'type': prop.accommodation_type,
                 'status': prop.status,
                 'local_visitors': stats.local_visitors if stats else 0,
@@ -212,7 +362,11 @@ def get_destinations_list():
 
 @dashboard_bp.route('/api/dashboard/top-destinations', methods=['GET'])
 @jwt_required()
-def get_top_destinations():
+def get_top_destinations_api():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    municipality = user.municipality
+
     try:
         # Get time period parameter
         period = request.args.get('period', 'month')  # month, week, year
@@ -238,7 +392,8 @@ def get_top_destinations():
             PropertyMonthlyStatistics.property_id == Property.property_id
         ).filter(
             PropertyMonthlyStatistics.year == start_date.year,
-            PropertyMonthlyStatistics.month == start_date.month
+            PropertyMonthlyStatistics.month == start_date.month,
+            Property.municipality == municipality
         ).group_by(
             Property.barangay
         ).order_by(
@@ -271,9 +426,13 @@ def get_top_destinations():
 
 @dashboard_bp.route('/api/dashboard/visitor-trends', methods=['GET'])
 @jwt_required()
-def get_visitor_trends():
+def get_visitor_trends_api():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    municipality = user.municipality
+
     try:
-        # Get time period parameter
+        # Get period parameter (default: 6months)
         period = request.args.get('period', '6months')  # 3months, 6months, year
 
         # Determine number of months to include
@@ -288,15 +447,24 @@ def get_visitor_trends():
         end_date = datetime.now().date()
         start_date = end_date - timedelta(days=30 * months)
 
-        # Get monthly visitor trends
+        # Get monthly visitor trends for the municipality
         trends = db.session.query(
             BarangayMonthlyStatistics.year,
             BarangayMonthlyStatistics.month,
             db.func.sum(BarangayMonthlyStatistics.local_visitors).label('local_visitors'),
             db.func.sum(BarangayMonthlyStatistics.foreign_visitors).label('foreign_visitors')
+        ).join(
+            Property,
+            Property.barangay == BarangayMonthlyStatistics.barangay
         ).filter(
-            (BarangayMonthlyStatistics.year >= start_date.year) &
-            (BarangayMonthlyStatistics.month >= start_date.month if start_date.year == end_date.year else True)
+            Property.municipality == municipality,
+            (
+                    (BarangayMonthlyStatistics.year > start_date.year) |
+                    (
+                            (BarangayMonthlyStatistics.year == start_date.year) &
+                            (BarangayMonthlyStatistics.month >= start_date.month)
+                    )
+            )
         ).group_by(
             BarangayMonthlyStatistics.year,
             BarangayMonthlyStatistics.month
