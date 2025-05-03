@@ -238,3 +238,15 @@ class VisitorRecord(db.Model):
 
     def __repr__(self):
         return f'<VisitorRecord {self.record_id}>'
+
+class UserDataUpload(db.Model):
+    __tablename__ = 'user_data_uploads'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user.id'), nullable=False)
+    municipality = db.Column(db.String(100), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    records_processed = db.Column(db.Boolean, nullable=False, default=False)
+
+    user = db.relationship('User', backref=db.backref('data_uploads', lazy='dynamic'))

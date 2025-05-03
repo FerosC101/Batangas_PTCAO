@@ -1,6 +1,8 @@
-from flask import Blueprint, jsonify, request, url_for, render_template
+from flask import Blueprint, jsonify, request, url_for, render_template, redirect, flash
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
+
+from Batangas_PTCAO.src.app import app
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import (
     Property,
@@ -9,9 +11,20 @@ from Batangas_PTCAO.src.model import (
     PropertyMonthlyStatistics
 )
 
+import pandas as  pd
+import os
+
+from io import BytesIO
+from werkzeug.utils import secure_filename
+
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
+app.config['ALLOWED_EXTENSIONS'] = ['xlsx, xls, csv']
+
+
 dashboard_bp = Blueprint('dashboard', __name__)
 
-
+def allowed_file(filename):
+    return '-'
 def init_dashboard_routes(app):
     app.register_blueprint(dashboard_bp)
 
