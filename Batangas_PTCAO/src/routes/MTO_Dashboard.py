@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, url_for, render_template, flash, redirect
+from flask import Blueprint, jsonify, request, url_for, render_template, flash, redirect, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from Batangas_PTCAO.src.extension import db
@@ -22,7 +22,15 @@ dashboard_bp = Blueprint('dashboard', __name__)
 def init_dashboard_routes(app):
     app.register_blueprint(dashboard_bp)
     # Ensure upload folder exists
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'uploads')
+    os.makedirs(upload_folder, exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = upload_folder
+    app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 
 @dashboard_bp.route('/mto/dashboard')
@@ -33,6 +41,10 @@ def mto_dashboard():
         # Get current user identity
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
+        if not user:
+            flash('User not found', 'error')
+            return redirect(url_for('auth.login'))
+
         municipality = user.municipality
 
         # Calculate date ranges
@@ -83,7 +95,7 @@ def mto_dashboard():
         return render_template(
             'MTO_Dashboard.html',
             current_date=today.strftime('%B %d, %Y'),
-            summary=summary_stats,
+            summary=summary_stats,  # Make sure this is passed
             top_destinations=top_destinations,
             visitor_trends=visitor_trends,
             status_distribution=status_distribution,
@@ -93,14 +105,13 @@ def mto_dashboard():
         )
 
     except Exception as e:
-        app.logger.error(f"Error loading MTO dashboard: {str(e)}")
+        current_app.logger.error(f"Error loading MTO dashboard: {str(e)}")
         flash('Failed to load dashboard data', 'error')
-        return redirect(url_for('login')
-
-                        @ dashboard_bp.route('/mto/dashboard/upload', methods=['POST'])
-                        @ jwt_required()
+        return redirect(url_for('auth.login'))
 
 
+@dashboard_bp.route('/mto/dashboard/upload', methods=['POST'])
+@jwt_required()
 def upload_visitor_data():
     try:
         current_user_id = get_jwt_identity()
@@ -119,7 +130,7 @@ def upload_visitor_data():
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
             # Process the Excel file
@@ -150,7 +161,7 @@ def upload_visitor_data():
                         db.session.add(visitor_record)
                         records_processed += 1
                     except Exception as e:
-                        app.logger.error(f"Error processing row {_}: {str(e)}")
+                        current_app.logger.error(f"Error processing row {_}: {str(e)}")
                         continue
 
                 # Create upload record
@@ -167,27 +178,22 @@ def upload_visitor_data():
             except Exception as e:
                 db.session.rollback()
                 flash(f'Error processing file: {str(e)}', 'error')
-                app.logger.error(f"Error processing file: {str(e)}")
+                current_app.logger.error(f"Error processing file: {str(e)}")
             finally:
                 # Clean up - remove the uploaded file
                 try:
                     os.remove(filepath)
                 except Exception as e:
-                    app.logger.error(f"Error removing file: {str(e)}")
+                    current_app.logger.error(f"Error removing file: {str(e)}")
 
         else:
             flash('Allowed file types are .xlsx, .xls, .csv', 'error')
 
     except Exception as e:
         flash('An error occurred during file upload', 'error')
-        app.logger.error(f"Upload error: {str(e)}")
+        current_app.logger.error(f"Upload error: {str(e)}")
 
     return redirect(url_for('dashboard.mto_dashboard'))
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in {'xlsx', 'xls', 'csv'}
 
 
 def get_visitor_count(start_date, end_date, visitor_type=None, municipality=None):
@@ -212,14 +218,34 @@ def get_top_destinations(municipality=None, limit=5):
         Property.property_id,
         Property.property_name,
         Property.barangay,
-        db.func.sum(VisitorStatistics.count).label('total_visitors')
+        Property.accommodation_type,
+        Property.status,
+        db.func.sum(VisitorStatistics.count).label('total_visitors'),
+        db.func.sum(db.case(
+            [(VisitorStatistics.visitor_type == 'Local', VisitorStatistics.count)],
+            else_=0
+        )).label('local_visitors'),
+        db.func.sum(db.case(
+            [(VisitorStatistics.visitor_type == 'Foreign', VisitorStatistics.count)],
+            else_=0
+        )).label('foreign_visitors'),
+        db.func.sum(db.case(
+            [(VisitorStatistics.stay_type == 'Day Tour', VisitorStatistics.count)],
+            else_=0
+        )).label('day_tour_visitors'),
+        db.func.sum(db.case(
+            [(VisitorStatistics.stay_type == 'Overnight', VisitorStatistics.count)],
+            else_=0
+        )).label('overnight_visitors')
     ).join(
         VisitorStatistics,
         VisitorStatistics.property_id == Property.property_id
     ).group_by(
         Property.property_id,
         Property.property_name,
-        Property.barangay
+        Property.barangay,
+        Property.accommodation_type,
+        Property.status
     ).order_by(
         db.desc('total_visitors')
     ).limit(limit)

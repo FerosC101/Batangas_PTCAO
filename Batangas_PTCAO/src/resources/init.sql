@@ -127,3 +127,11 @@ CREATE TABLE property_monthly_statistics (
 CREATE INDEX idx_visitor_statistics_property_date ON visitor_statistics(property_id, report_date);
 CREATE INDEX idx_barangay_statistics_year_month ON barangay_monthly_statistics(barangay, year, month);
 CREATE INDEX idx_property_statistics_year_month ON property_monthly_statistics(property_id, year, month);
+
+
+-- First, check the current enum values
+SELECT enumlabel FROM pg_enum WHERE enumtypid = (SELECT oid FROM pg_type WHERE typname = 'status_enum');
+
+-- If needed, update the enum values
+ALTER TYPE status_enum RENAME VALUE 'Active' TO 'ACTIVE';
+ALTER TYPE status_enum RENAME VALUE 'Maintenance' TO 'MAINTENANCE';

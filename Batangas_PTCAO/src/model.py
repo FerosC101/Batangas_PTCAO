@@ -12,8 +12,8 @@ class AccountStatus(str, Enum):
 
 
 class PropertyStatus(str, Enum):
-    ACTIVE = 'Active'
-    MAINTENANCE = 'Maintenance'
+    ACTIVE = 'ACTIVE'
+    MAINTENANCE = 'MAINTENANCE'
 
 
 class User(db.Model):
@@ -53,7 +53,7 @@ class Property(db.Model):
     barangay = db.Column(db.String(100))
     municipality = db.Column(db.String(100))
     accommodation_type = db.Column(db.String(50))
-    status = db.Column(SqlEnum(PropertyStatus, name="status_enum"), nullable=False, default=PropertyStatus.ACTIVE)
+    status = db.Column(SqlEnum(PropertyStatus), nullable=False, default=PropertyStatus.ACTIVE)
     description = db.Column(db.Text)
 
     rooms = db.relationship('Room', back_populates='property', cascade="all, delete-orphan")
@@ -243,7 +243,7 @@ class VisitorDataUpload(db.Model):
     __tablename__ = 'user_data_uploads'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     municipality = db.Column(db.String(100), nullable=False)
     filename = db.Column(db.String(255), nullable=False)
     upload_date = db.Column(db.DateTime, default=datetime.utcnow)
