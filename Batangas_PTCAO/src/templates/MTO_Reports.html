@@ -44,27 +44,6 @@
         .logo-text:hover {
             color: white;
         }
-        .navbar-nav .nav-link {
-            color: white;
-            padding: 0.5rem 1rem;
-            font-weight: 500;
-            position: relative;
-        }
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background-color: var(--accent);
-            transition: all 0.3s;
-            transform: translateX(-50%);
-        }
-        .navbar-nav .nav-link:hover::after,
-        .navbar-nav .nav-link.active::after {
-            width: 70%;
-        }
         .user-profile {
             display: flex;
             align-items: center;
@@ -111,39 +90,6 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .card-title {
-            font-weight: 600;
-            color: var(--primary);
-        }
-        .dashboard-card {
-            text-align: center;
-            padding: 1.5rem;
-        }
-        .dashboard-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        .dashboard-number {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .dashboard-label {
-            color: #666;
-            font-size: 1rem;
-        }
-        .destinations-icon {
-            color: var(--destinations-color);
-        }
-        .visitors-icon {
-            color: var(--memo-color);
-        }
-        .properties-icon {
-            color: var(--updates-color);
-        }
-        .tasks-icon {
-            color: var(--accent);
-        }
         .sidebar {
             background-color: white;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
@@ -169,22 +115,6 @@
             margin-right: 10px;
             width: 20px;
             text-align: center;
-        }
-        .btn-action {
-            padding: 0.5rem 1.5rem;
-            border-radius: 30px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-        footer {
-            background-color: var(--primary);
-            padding: 1.5rem 0;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 2rem;
-            text-align: center;
-            font-size: 0.9rem;
         }
         .notification-badge {
             position: absolute;
@@ -245,38 +175,6 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
-        .dot-accredited {
-            background-color: #cfe2ff;
-            color: #084298;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .dot-not-accredited {
-            background-color: #e2e3e5;
-            color: #41464b;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .ptcao-registered {
-            background-color: #d1e7dd;
-            color: #0f5132;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .ptcao-not-registered {
-            background-color: #f8d7da;
-            color: #842029;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
         .tab-content {
             display: none;
         }
@@ -298,6 +196,12 @@
         }
         .filter-group {
             margin-right: 2rem;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
         }
         @media (max-width: 992px) {
             .sidebar {
@@ -371,7 +275,7 @@
                         <i class="fas fa-bullhorn"></i>
                         <span>Announcements</span>
                     </a>
-                    <a href="#" class="sidebar-link active">
+                    <a href="/mto/reports" class="sidebar-link active">
                         <i class="fas fa-file-alt"></i>
                         <span>Reports</span>
                     </a>
@@ -387,10 +291,10 @@
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <h1 class="section-title mb-0">MTO Reports</h1>
                     <div>
-                        <button class="btn btn-outline-primary me-2">
+                        <button class="btn btn-outline-primary me-2" id="exportBtn">
                             <i class="fas fa-download me-1"></i> Export Reports
                         </button>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" id="uploadBtn">
                             <i class="fas fa-upload me-1"></i> Upload Report
                         </button>
                     </div>
@@ -400,7 +304,6 @@
                 <div class="mb-4">
                     <button class="tab-btn active" data-tab="tourist-report">Tourist Report</button>
                     <button class="tab-btn" data-tab="property-report">Resort & Property Report</button>
-                    <button class="tab-btn" data-tab="manage-reports">Manage Reports</button>
                 </div>
 
                 <!-- Tourist Report Tab -->
@@ -408,18 +311,31 @@
                     <div class="report-filter d-flex">
                         <div class="filter-group">
                             <label>Date Range:</label>
-                            <input type="date" class="form-control-sm">
+                            <select class="form-select form-select-sm" id="dateRangeFilter">
+                                <option value="all">All</option>
+                                <option value="last_week">Last Week</option>
+                                <option value="last_month">Last Month</option>
+                            </select>
                         </div>
                         <div class="filter-group">
                             <label>Barangay:</label>
-                            <select class="form-control-sm">
-                                <option>All</option>
-                                <option>Pallocan Kanluran</option>
-                                <option>Kumintang</option>
-                                <option>Alangilan</option>
-                                <option>Balagtas</option>
+                            <select class="form-select form-select-sm" id="barangayFilter">
+                                <option value="all">All</option>
                             </select>
                         </div>
+                        <div class="filter-group">
+                            <label>Property Type:</label>
+                            <select class="form-select form-select-sm" id="typeFilter">
+                                <option value="all">All</option>
+                                <option value="Hotel">Hotel</option>
+                                <option value="Resort">Resort</option>
+                                <option value="Villa">Villa</option>
+                                <option value="Pension">Pension</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-sm btn-primary align-self-end" id="applyFilters">
+                            <i class="fas fa-filter me-1"></i> Apply
+                        </button>
                     </div>
 
                     <div class="card">
@@ -440,270 +356,29 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>AE-001</td>
-                                            <td>The Lighthouse Marina Resort</td>
-                                            <td>Balagtas</td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Hotel</option>
-                                                    <option>Resort</option>
-                                                    <option>Villa</option>
-                                                    <option>Pension</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-12-31">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2026-01-15">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Luxury</option>
-                                                    <option>Standard</option>
-                                                    <option>Economy</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>AE-002</td>
-                                            <td>Acacia Hotel</td>
-                                            <td>Alangilan</td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Hotel</option>
-                                                    <option>Resort</option>
-                                                    <option>Villa</option>
-                                                    <option>Pension</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-09-22">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-10-15">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Luxury</option>
-                                                    <option>Standard</option>
-                                                    <option>Economy</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>AE-003</td>
-                                            <td>Sea Breeze Resort</td>
-                                            <td>Kumintang</td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option>Hotel</option>
-                                                    <option selected>Resort</option>
-                                                    <option>Villa</option>
-                                                    <option>Pension</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-08-05">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option>Luxury</option>
-                                                    <option selected>Standard</option>
-                                                    <option>Economy</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>AE-004</td>
-                                            <td>Pontefino Hotel</td>
-                                            <td>Balagtas</td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Hotel</option>
-                                                    <option>Resort</option>
-                                                    <option>Villa</option>
-                                                    <option>Pension</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2026-02-18">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2026-03-10">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Luxury</option>
-                                                    <option>Standard</option>
-                                                    <option>Economy</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>AE-005</td>
-                                            <td>Summit Tagaytay</td>
-                                            <td>Alangilan</td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Hotel</option>
-                                                    <option>Resort</option>
-                                                    <option>Villa</option>
-                                                    <option>Pension</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-07-30">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-08-22">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Luxury</option>
-                                                    <option>Standard</option>
-                                                    <option>Economy</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>AE-006</td>
-                                            <td>Luks Lofts Hotel & Residences</td>
-                                            <td>Pallocan Kanluran</td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Hotel</option>
-                                                    <option>Resort</option>
-                                                    <option>Villa</option>
-                                                    <option>Pension</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option selected>Yes</option>
-                                                    <option>No</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm" value="2025-11-12">
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm">
-                                                    <option>Luxury</option>
-                                                    <option selected>Standard</option>
-                                                    <option>Economy</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
-                                            </td>
-                                        </tr>
+                                    <tbody id="reportTableBody">
+                                        <!-- Data will be loaded dynamically -->
                                     </tbody>
                                 </table>
                             </div>
                             <div class="d-flex justify-content-between mt-3">
-                                <button class="btn btn-outline-primary">
-                                    <i class="fas fa-save me-1"></i> Save Changes
-                                </button>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Rows per page:</span>
+                                    <select class="form-select form-select-sm" id="rowsPerPage" style="width: 70px;">
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
                                 <div>
-                                    <span class="me-3">Page 1 of 3</span>
-                                    <button class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-chevron-left"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
+                                    <span id="pageInfo" class="me-3">Page 1 of 1</span>
+                                    <button class="btn btn-sm btn-outline-secondary me-1" id="prevPage">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="nextPage">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -715,18 +390,25 @@
                     <div class="report-filter d-flex">
                         <div class="filter-group">
                             <label>Date Range:</label>
-                            <input type="date" class="form-control-sm">
+                            <select class="form-select form-select-sm" id="propDateRangeFilter">
+                                <option value="all">All</option>
+                                <option value="last_week">Last Week</option>
+                                <option value="last_month">Last Month</option>
+                            </select>
                         </div>
                         <div class="filter-group">
                             <label>Property Type:</label>
-                            <select class="form-control-sm">
-                                <option>All</option>
-                                <option>Hotel</option>
-                                <option>Resort</option>
-                                <option>Villa</option>
-                                <option>Pension</option>
+                            <select class="form-select form-select-sm" id="propTypeFilter">
+                                <option value="all">All</option>
+                                <option value="Hotel">Hotel</option>
+                                <option value="Resort">Resort</option>
+                                <option value="Villa">Villa</option>
+                                <option value="Pension">Pension</option>
                             </select>
                         </div>
+                        <button class="btn btn-sm btn-primary align-self-end" id="applyPropFilters">
+                            <i class="fas fa-filter me-1"></i> Apply
+                        </button>
                     </div>
 
                     <div class="card">
@@ -746,17 +428,473 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>AE-001</td>
-                                            <td>The Lighthouse Marina Resort</td>
-                                            <td>Balagtas</td>
-                                            <td>Hotel</td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm" value="45">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm" value="120">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control
+                                    <tbody id="propReportTableBody">
+                                        <!-- Data will be loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Rows per page:</span>
+                                    <select class="form-select form-select-sm" id="propRowsPerPage" style="width: 70px;">
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <span id="propPageInfo" class="me-3">Page 1 of 1</span>
+                                    <button class="btn btn-sm btn-outline-secondary me-1" id="propPrevPage">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="propNextPage">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="toast align-items-center text-white bg-danger" role="alert" aria-live="assertive" aria-atomic="true" id="errorToast">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="reportFile" class="form-label">Select Excel/CSV File</label>
+                            <input class="form-control" type="file" id="reportFile" name="file" accept=".xlsx,.xls,.csv" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reportType" class="form-label">Report Type</label>
+                            <select class="form-select" id="reportType" required>
+                                <option value="">Select report type</option>
+                                <option value="tourist">Tourist Report</option>
+                                <option value="property">Property Report</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitUpload">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap components
+            const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            const toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl, { autohide: true, delay: 3000 });
+            });
+            const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+
+            // Current state
+            let currentPage = 1;
+            let currentPropPage = 1;
+            let rowsPerPage = 10;
+            let propRowsPerPage = 10;
+            let totalPages = 1;
+            let propTotalPages = 1;
+            let currentFilters = {
+                date_range: 'all',
+                barangay: 'all',
+                type: 'all'
+            };
+            let currentPropFilters = {
+                date_range: 'all',
+                type: 'all'
+            };
+
+            // DOM Elements
+            const reportTableBody = document.getElementById('reportTableBody');
+            const propReportTableBody = document.getElementById('propReportTableBody');
+            const pageInfo = document.getElementById('pageInfo');
+            const propPageInfo = document.getElementById('propPageInfo');
+            const exportBtn = document.getElementById('exportBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const submitUpload = document.getElementById('submitUpload');
+            const uploadForm = document.getElementById('uploadForm');
+
+            // Initialize the page
+            initPage();
+
+            function initPage() {
+                loadBarangays();
+                loadTouristReport();
+                loadPropertyReport();
+                setupEventListeners();
+            }
+
+            function loadBarangays() {
+                fetch('/api/visitors/barangays')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const select = document.getElementById('barangayFilter');
+                            data.data.forEach(barangay => {
+                                const option = document.createElement('option');
+                                option.value = barangay;
+                                option.textContent = barangay;
+                                select.appendChild(option);
+                            });
+                        }
+                    });
+            }
+
+            function loadTouristReport(page = 1) {
+                const params = new URLSearchParams({
+                    ...currentFilters,
+                    page: page,
+                    per_page: rowsPerPage
+                });
+
+                fetch(`/api/reports/properties?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            renderTouristReport(data.data);
+                            updatePagination(data, 'tourist');
+                        }
+                    })
+                    .catch(error => showError('Error loading tourist report: ' + error));
+            }
+
+            function loadPropertyReport(page = 1) {
+                const params = new URLSearchParams({
+                    ...currentPropFilters,
+                    page: page,
+                    per_page: propRowsPerPage
+                });
+
+                fetch(`/api/reports/property-data?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            renderPropertyReport(data.data);
+                            updatePagination(data, 'property');
+                        }
+                    })
+                    .catch(error => showError('Error loading property report: ' + error));
+            }
+
+            function renderTouristReport(data) {
+                reportTableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    reportTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="10" class="text-center py-4">No tourist report data found</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.forEach(property => {
+                    const row = document.createElement('tr');
+                    row.dataset.id = property.ae_id;
+
+                    row.innerHTML = `
+                        <td>${property.ae_id}</td>
+                        <td>${property.name}</td>
+                        <td>${property.barangay}</td>
+                        <td>
+                            <select class="form-select form-select-sm type-select">
+                                ${getOptions(['Hotel', 'Resort', 'Villa', 'Pension'], property.type)}
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm dot-accredited">
+                                ${getOptions(['Yes', 'No'], property.dot_accredited ? 'Yes' : 'No')}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="date" class="form-control form-control-sm dot-valid"
+                                   value="${property.dot_valid || ''}">
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm ptcao-registered">
+                                ${getOptions(['Yes', 'No'], property.ptcao_registered ? 'Yes' : 'No')}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="date" class="form-control form-control-sm ptcao-valid"
+                                   value="${property.ptcao_valid || ''}">
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm classification">
+                                ${getOptions(['Luxury', 'Standard', 'Economy'], property.classification || 'Standard')}
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary save-btn">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </td>
+                    `;
+                    reportTableBody.appendChild(row);
+                });
+
+                // Add event listeners for save buttons
+                document.querySelectorAll('.save-btn').forEach(btn => {
+                    btn.addEventListener('click', saveProperty);
+                });
+            }
+
+            function renderPropertyReport(data) {
+                propReportTableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    propReportTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="text-center py-4">No property report data found</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.forEach(property => {
+                    const row = document.createElement('tr');
+                    row.dataset.id = property.ae_id;
+
+                    row.innerHTML = `
+                        <td>${property.ae_id}</td>
+                        <td>${property.name}</td>
+                        <td>${property.barangay}</td>
+                        <td>${property.type}</td>
+                        <td>${property.total_rooms}</td>
+                        <td>${property.day_tour_guests}</td>
+                        <td>${property.overnight_guests}</td>
+                        <td>${property.total_guests}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary view-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    `;
+                    propReportTableBody.appendChild(row);
+                });
+            }
+
+            function updatePagination(data, type) {
+                if (type === 'tourist') {
+                    totalPages = data.pages;
+                    pageInfo.textContent = `Page ${data.current_page} of ${totalPages}`;
+
+                    document.getElementById('prevPage').disabled = data.current_page === 1;
+                    document.getElementById('nextPage').disabled = data.current_page === totalPages;
+                } else {
+                    propTotalPages = data.pages;
+                    propPageInfo.textContent = `Page ${data.current_page} of ${propTotalPages}`;
+
+                    document.getElementById('propPrevPage').disabled = data.current_page === 1;
+                    document.getElementById('propNextPage').disabled = data.current_page === propTotalPages;
+                }
+            }
+
+            function getOptions(options, selected) {
+                return options.map(opt =>
+                    `<option ${opt === selected ? 'selected' : ''}>${opt}</option>`
+                ).join('');
+            }
+
+            function saveProperty(e) {
+                const row = e.target.closest('tr');
+                const data = {
+                    ae_id: row.dataset.id,
+                    type: row.querySelector('.type-select').value,
+                    dot_accredited: row.querySelector('.dot-accredited').value === 'Yes',
+                    dot_valid: row.querySelector('.dot-valid').value,
+                    ptcao_registered: row.querySelector('.ptcao-registered').value === 'Yes',
+                    ptcao_valid: row.querySelector('.ptcao-valid').value,
+                    classification: row.querySelector('.classification').value
+                };
+
+                fetch('/api/reports/update-property', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccess('Property updated successfully');
+                    } else {
+                        showError(data.message || 'Failed to update property');
+                    }
+                })
+                .catch(error => showError('Error updating property: ' + error));
+            }
+
+            function setupEventListeners() {
+                // Tab switching
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.tab-btn, .tab-content').forEach(el => {
+                            el.classList.remove('active');
+                        });
+                        btn.classList.add('active');
+                        document.getElementById(btn.dataset.tab).classList.add('active');
+                    });
+                });
+
+                // Filter application
+                document.getElementById('applyFilters').addEventListener('click', () => {
+                    currentFilters = {
+                        date_range: document.getElementById('dateRangeFilter').value,
+                        barangay: document.getElementById('barangayFilter').value,
+                        type: document.getElementById('typeFilter').value
+                    };
+                    currentPage = 1;
+                    loadTouristReport();
+                });
+
+                document.getElementById('applyPropFilters').addEventListener('click', () => {
+                    currentPropFilters = {
+                        date_range: document.getElementById('propDateRangeFilter').value,
+                        type: document.getElementById('propTypeFilter').value
+                    };
+                    currentPropPage = 1;
+                    loadPropertyReport();
+                });
+
+                // Pagination
+                document.getElementById('prevPage').addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        loadTouristReport(currentPage);
+                    }
+                });
+
+                document.getElementById('nextPage').addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        loadTouristReport(currentPage);
+                    }
+                });
+
+                document.getElementById('propPrevPage').addEventListener('click', () => {
+                    if (currentPropPage > 1) {
+                        currentPropPage--;
+                        loadPropertyReport(currentPropPage);
+                    }
+                });
+
+                document.getElementById('propNextPage').addEventListener('click', () => {
+                    if (currentPropPage < propTotalPages) {
+                        currentPropPage++;
+                        loadPropertyReport(currentPropPage);
+                    }
+                });
+
+                // Rows per page
+                document.getElementById('rowsPerPage').addEventListener('change', (e) => {
+                    rowsPerPage = parseInt(e.target.value);
+                    currentPage = 1;
+                    loadTouristReport();
+                });
+
+                document.getElementById('propRowsPerPage').addEventListener('change', (e) => {
+                    propRowsPerPage = parseInt(e.target.value);
+                    currentPropPage = 1;
+                    loadPropertyReport();
+                });
+
+                // Export
+                exportBtn.addEventListener('click', () => {
+                    const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+                    const endpoint = activeTab === 'tourist-report'
+                        ? '/api/reports/export-tourist'
+                        : '/api/reports/export-property';
+
+                    window.open(endpoint, '_blank');
+                });
+
+                // Upload
+                uploadBtn.addEventListener('click', () => {
+                    uploadModal.show();
+                });
+
+                submitUpload.addEventListener('click', () => {
+                    const formData = new FormData(uploadForm);
+                    const reportType = document.getElementById('reportType').value;
+
+                    if (!reportType) {
+                        showError('Please select a report type');
+                        return;
+                    }
+
+                    fetch('/api/reports/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess('Report uploaded successfully');
+                            uploadModal.hide();
+                            uploadForm.reset();
+
+                            // Reload the appropriate report
+                            if (reportType === 'tourist') {
+                                loadTouristReport();
+                            } else {
+                                loadPropertyReport();
+                            }
+                        } else {
+                            showError(data.message || 'Failed to upload report');
+                        }
+                    })
+                    .catch(error => showError('Error uploading report: ' + error));
+                });
+            }
+
+            function showSuccess(message) {
+                const toast = document.getElementById('successToast');
+                toast.querySelector('.toast-body').textContent = message;
+                bootstrap.Toast.getOrCreateInstance(toast).show();
+            }
+
+            function showError(message) {
+                const toast = document.getElementById('errorToast');
+                toast.querySelector('.toast-body').textContent = message;
+                bootstrap.Toast.getOrCreateInstance(toast).show();
+            }
+        });
+    </script>
+</body>
+</html>
