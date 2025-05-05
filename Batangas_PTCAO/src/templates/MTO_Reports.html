@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - MTO Reports Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --memo-color: #0d6efd;
+            --destinations-color: #198754;
+            --updates-color: #0dcaf0;
+            --about-color: #6c757d;
+            --local-color: #28a745;
+            --foreign-color: #6f42c1;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .dashboard-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .dashboard-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-label {
+            color: #666;
+            font-size: 1rem;
+        }
+        .destinations-icon {
+            color: var(--destinations-color);
+        }
+        .visitors-icon {
+            color: var(--memo-color);
+        }
+        .properties-icon {
+            color: var(--updates-color);
+        }
+        .tasks-icon {
+            color: var(--accent);
+        }
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: calc(100vh - 70px);
+            position: sticky;
+            top: 70px;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .btn-action {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tab-btn {
+            background-color: var(--light-bg);
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background-color: #fff;
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+        }
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+        .status-active {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #664d03;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-expired {
+            background-color: #f8d7da;
+            color: #842029;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .dot-accredited {
+            background-color: #cfe2ff;
+            color: #084298;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .dot-not-accredited {
+            background-color: #e2e3e5;
+            color: #41464b;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .ptcao-registered {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .ptcao-not-registered {
+            background-color: #f8d7da;
+            color: #842029;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+            padding: 0.5rem;
+        }
+        .report-filter {
+            background: var(--light-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .filter-group {
+            margin-right: 2rem;
+        }
+        @media (max-width: 992px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text">
+                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
+                    Batangas Explorer - MTO
+                </a>
+
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="position-relative me-3">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-md-inline">MTO Admin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 px-0">
+                <div class="sidebar">
+                    <a href="/mto/dashboard" class="sidebar-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/mto/destinations" class="sidebar-link">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <span>Destinations</span>
+                    </a>
+                    <a href="/property/mto/property" class="sidebar-link">
+                        <i class="fas fa-hotel"></i>
+                        <span>Properties</span>
+                    </a>
+                    <a href="/mto/visitors" class="sidebar-link">
+                        <i class="fas fa-users"></i>
+                        <span>Visitors</span>
+                    </a>
+                    <a href="/mto/analytics" class="sidebar-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="/mto/events" class="sidebar-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Events</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Announcements</span>
+                    </a>
+                    <a href="#" class="sidebar-link active">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Reports</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 py-4">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <h1 class="section-title mb-0">MTO Reports</h1>
+                    <div>
+                        <button class="btn btn-outline-primary me-2">
+                            <i class="fas fa-download me-1"></i> Export Reports
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-upload me-1"></i> Upload Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="mb-4">
+                    <button class="tab-btn active" data-tab="tourist-report">Tourist Report</button>
+                    <button class="tab-btn" data-tab="property-report">Resort & Property Report</button>
+                    <button class="tab-btn" data-tab="manage-reports">Manage Reports</button>
+                </div>
+
+                <!-- Tourist Report Tab -->
+                <div id="tourist-report" class="tab-content active">
+                    <div class="report-filter d-flex">
+                        <div class="filter-group">
+                            <label>Date Range:</label>
+                            <input type="date" class="form-control-sm">
+                        </div>
+                        <div class="filter-group">
+                            <label>Barangay:</label>
+                            <select class="form-control-sm">
+                                <option>All</option>
+                                <option>Pallocan Kanluran</option>
+                                <option>Kumintang</option>
+                                <option>Alangilan</option>
+                                <option>Balagtas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>AE-ID</th>
+                                            <th>AE Name</th>
+                                            <th>Barangay</th>
+                                            <th>Type-Class</th>
+                                            <th>DOT-Accredited</th>
+                                            <th>DOT Valid Until</th>
+                                            <th>PTCAO-Registered</th>
+                                            <th>PTCAO Valid Until</th>
+                                            <th>Classification</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AE-001</td>
+                                            <td>The Lighthouse Marina Resort</td>
+                                            <td>Balagtas</td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Hotel</option>
+                                                    <option>Resort</option>
+                                                    <option>Villa</option>
+                                                    <option>Pension</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-12-31">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2026-01-15">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Luxury</option>
+                                                    <option>Standard</option>
+                                                    <option>Economy</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>AE-002</td>
+                                            <td>Acacia Hotel</td>
+                                            <td>Alangilan</td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Hotel</option>
+                                                    <option>Resort</option>
+                                                    <option>Villa</option>
+                                                    <option>Pension</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-09-22">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-10-15">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Luxury</option>
+                                                    <option>Standard</option>
+                                                    <option>Economy</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>AE-003</td>
+                                            <td>Sea Breeze Resort</td>
+                                            <td>Kumintang</td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option>Hotel</option>
+                                                    <option selected>Resort</option>
+                                                    <option>Villa</option>
+                                                    <option>Pension</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option>Yes</option>
+                                                    <option selected>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-08-05">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option>Luxury</option>
+                                                    <option selected>Standard</option>
+                                                    <option>Economy</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>AE-004</td>
+                                            <td>Pontefino Hotel</td>
+                                            <td>Balagtas</td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Hotel</option>
+                                                    <option>Resort</option>
+                                                    <option>Villa</option>
+                                                    <option>Pension</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2026-02-18">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2026-03-10">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Luxury</option>
+                                                    <option>Standard</option>
+                                                    <option>Economy</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>AE-005</td>
+                                            <td>Summit Tagaytay</td>
+                                            <td>Alangilan</td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Hotel</option>
+                                                    <option>Resort</option>
+                                                    <option>Villa</option>
+                                                    <option>Pension</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-07-30">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-08-22">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Luxury</option>
+                                                    <option>Standard</option>
+                                                    <option>Economy</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>AE-006</td>
+                                            <td>Luks Lofts Hotel & Residences</td>
+                                            <td>Pallocan Kanluran</td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Hotel</option>
+                                                    <option>Resort</option>
+                                                    <option>Villa</option>
+                                                    <option>Pension</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option>Yes</option>
+                                                    <option selected>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option selected>Yes</option>
+                                                    <option>No</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control form-control-sm" value="2025-11-12">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm">
+                                                    <option>Luxury</option>
+                                                    <option selected>Standard</option>
+                                                    <option>Economy</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-save me-1"></i> Save Changes
+                                </button>
+                                <div>
+                                    <span class="me-3">Page 1 of 3</span>
+                                    <button class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Report Tab -->
+                <div id="property-report" class="tab-content">
+                    <div class="report-filter d-flex">
+                        <div class="filter-group">
+                            <label>Date Range:</label>
+                            <input type="date" class="form-control-sm">
+                        </div>
+                        <div class="filter-group">
+                            <label>Property Type:</label>
+                            <select class="form-control-sm">
+                                <option>All</option>
+                                <option>Hotel</option>
+                                <option>Resort</option>
+                                <option>Villa</option>
+                                <option>Pension</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>AE-ID</th>
+                                            <th>AE Name</th>
+                                            <th>Barangay</th>
+                                            <th>Type-Class</th>
+                                            <th>Total Rooms</th>
+                                            <th>Day Tour Guests</th>
+                                            <th>Overnight Guests</th>
+                                            <th>Total Guests</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AE-001</td>
+                                            <td>The Lighthouse Marina Resort</td>
+                                            <td>Balagtas</td>
+                                            <td>Hotel</td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm" value="45">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm" value="120">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control
