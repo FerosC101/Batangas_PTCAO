@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_
@@ -7,14 +7,18 @@ from Batangas_PTCAO.src.model import Property, User, VisitorStatistics
 import pandas as pd
 import os
 
-reports_bp = Blueprint('reports', __name__)
+reports_bp = Blueprint('reports', __name__, url_prefix='/mto')
 
+def init_reports_routes(app):
+    app.register_blueprint(reports_bp)
 
-@reports_bp.route('/mto/reports')
+@reports_bp.route('/reports')
 @jwt_required()
 def mto_reports():
+    current_user = User.query.get(get_jwt_identity())
+    if not current_user:
+        return redirect(url_for('auth.login'))
     return render_template('MTO_Reports.html')
-
 
 @reports_bp.route('/api/reports/properties', methods=['GET'])
 @jwt_required()
@@ -71,7 +75,6 @@ def get_property_report():
         'current_page': page
     })
 
-
 @reports_bp.route('/api/reports/update-property', methods=['POST'])
 @jwt_required()
 def update_property():
@@ -94,7 +97,6 @@ def update_property():
 
     db.session.commit()
     return jsonify({'success': True})
-
 
 @reports_bp.route('/api/reports/upload', methods=['POST'])
 @jwt_required()
@@ -119,7 +121,3 @@ def upload_report():
             return jsonify({'success': False, 'message': str(e)}), 500
 
     return jsonify({'success': False, 'message': 'Invalid file format'}), 400
-
-
-def init_reports_routes(app):
-    app.register_blueprint(reports_bp)

@@ -13,6 +13,7 @@ from Batangas_PTCAO.src.routes.MTO_Events import init_events_routes
 from Batangas_PTCAO.src.routes.MTO_Analytics import init_analytics_routes
 from Batangas_PTCAO.src.routes.MTO_VisitorsRecords import init_visitor_records_routes
 from Batangas_PTCAO.src.routes.MTO_Destinations import init_destinations_routes
+from Batangas_PTCAO.src.routes.MTO_Reports import init_reports_routes
 
 def create_app():
     app = Flask(__name__,
@@ -44,6 +45,7 @@ def create_app():
     init_analytics_routes(app)
     init_visitor_records_routes(app)
     init_destinations_routes(app)
+    init_reports_routes(app)
     # Static file serving route
     @app.route('/static/<path:filename>')
     def serve_static_file(filename):
