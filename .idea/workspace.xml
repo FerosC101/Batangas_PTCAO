@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="added reports frontend">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Destinations.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Destinations.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Events.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Events.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Visitors.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Visitors.html" afterDir="false" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="added reports redirection">
       <change beforePath="$PROJECT_DIR$/../MachineLearning/webcam_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/../MachineLearning/webcam_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -193,7 +187,7 @@
       <workItem from="1746462679921" duration="3024000" />
       <workItem from="1746544627838" duration="5000" />
       <workItem from="1747898874831" duration="438000" />
-      <workItem from="1747903176424" duration="1030000" />
+      <workItem from="1747903176424" duration="1394000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -515,7 +509,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746465906588</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="added reports redirection">
+      <option name="closed" value="true" />
+      <created>1747904410725</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1747904410725</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -533,7 +535,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="working routing for register. still error on css" />
     <MESSAGE value="img still has access problems" />
     <MESSAGE value="merged 02 to master" />
     <MESSAGE value="updated model.py and login route" />
@@ -558,7 +559,8 @@
     <MESSAGE value="unfinished backend for dashboard" />
     <MESSAGE value="updated dashboard" />
     <MESSAGE value="added reports frontend" />
-    <option name="LAST_COMMIT_MESSAGE" value="added reports frontend" />
+    <MESSAGE value="added reports redirection" />
+    <option name="LAST_COMMIT_MESSAGE" value="added reports redirection" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1747903304111" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
