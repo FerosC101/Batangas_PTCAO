@@ -1,19 +1,19 @@
 import os
 from flask import Flask, send_from_directory
 from flask_jwt_extended import JWTManager
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.config import Config
+from extension import db
+from config import Config
 from datetime import timedelta
 
-from Batangas_PTCAO.src.routes.auth import init_auth_routes
-from Batangas_PTCAO.src.routes.MTO import init_mto_routes
-from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes
-from Batangas_PTCAO.src.routes.MTO_Dashboard import init_dashboard_routes
-from Batangas_PTCAO.src.routes.MTO_Events import init_events_routes
-from Batangas_PTCAO.src.routes.MTO_Analytics import init_analytics_routes
-from Batangas_PTCAO.src.routes.MTO_VisitorsRecords import init_visitor_records_routes
-from Batangas_PTCAO.src.routes.MTO_Destinations import init_destinations_routes
-from Batangas_PTCAO.src.routes.MTO_Reports import init_reports_routes
+from routes.auth import init_auth_routes
+from routes.MTO import init_mto_routes
+from routes.MTO_Property import init_property_routes
+from routes.MTO_Dashboard import init_dashboard_routes
+from routes.MTO_Events import init_events_routes
+from routes.MTO_Analytics import init_analytics_routes
+from routes.MTO_VisitorsRecords import init_visitor_records_routes
+from routes.MTO_Destinations import init_destinations_routes
+from routes.MTO_Reports import init_reports_routes
 
 def create_app():
     app = Flask(__name__,

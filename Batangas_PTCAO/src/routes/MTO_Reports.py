@@ -2,8 +2,8 @@ from flask import Blueprint, request, jsonify, render_template, redirect, url_fo
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import Property, User, VisitorStatistics
+from extension import db
+from model import Property, User, VisitorStatistics
 import pandas as pd
 import os
 

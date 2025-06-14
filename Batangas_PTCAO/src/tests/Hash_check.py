@@ -1,6 +1,6 @@
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User
-from Batangas_PTCAO.src.app import create_app  # Import your app factory
+from extension import db
+from model import User
+from app import create_app  # Import your app factory
 import bcrypt
 
 # Create the Flask app instance

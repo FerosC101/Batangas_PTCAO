@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request, render_template, url_for, redirec
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
-from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User
-from Batangas_PTCAO.src.extension import db
+from model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User
+from extension import db
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 

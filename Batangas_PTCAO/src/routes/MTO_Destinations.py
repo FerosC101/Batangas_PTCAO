@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import Property, User, LongLat, Amenity, Room
+from extension import db
+from model import Property, User, LongLat, Amenity, Room
 from sqlalchemy.exc import SQLAlchemyError
 import json
 

@@ -1,7 +1,7 @@
 import bcrypt
 
-hashed_password = b"$2b$12$beUYqIixa29lAsJOJyv11.lVR3.atrovI3TBqe6.E21pEsxeuqlHO"
-input_password = "1234".encode('utf-8')
+hashed_password = b"$2b$12$yHvs1h6D4gK1IbZnNRQG2eMxqRvUNBX7O0jwF6AGF6CF6GqXG/vZK"
+input_password = "juandelacruz".encode('utf-8')
 
 if bcrypt.checkpw(input_password, hashed_password):
     print("✅ Password matches!")

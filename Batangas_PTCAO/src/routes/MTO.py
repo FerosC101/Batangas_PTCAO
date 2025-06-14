@@ -1,8 +1,8 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import User, Property, VisitorStatistics, VisitorDataUpload, PropertyStatus
+from extension import db
+from model import User, Property, VisitorStatistics, VisitorDataUpload, PropertyStatus
 
 mto_bp = Blueprint('mto', __name__, url_prefix='/mto')
 
