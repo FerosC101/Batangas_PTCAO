@@ -302,8 +302,8 @@
 
                 <!-- Tabs -->
                 <div class="mb-4">
-                    <button class="tab-btn active" data-tab="tourist-report">Tourist Report</button>
-                    <button class="tab-btn" data-tab="property-report">Resort & Property Report</button>
+                    <button class="tab-btn active" data-tab="tourist-report">Resort & Property Report</button>
+                    <button class="tab-btn" data-tab="property-report">Tourist Report</button>
                 </div>
 
                 <!-- Tourist Report Tab -->
@@ -327,10 +327,17 @@
                             <label>Property Type:</label>
                             <select class="form-select form-select-sm" id="typeFilter">
                                 <option value="all">All</option>
-                                <option value="Hotel">Hotel</option>
-                                <option value="Resort">Resort</option>
-                                <option value="Villa">Villa</option>
-                                <option value="Pension">Pension</option>
+                                <option value="Hotel">HTL(Hotel)</option>
+                                <option value="Resort">RES (Resort)</option>
+                                <option value="Villa">CON (Condotel)</option>
+                                <option value="Pension">SER (Service Residence)</option>
+                                <option value="Pension">APA (Apartelle)</option>
+                                <option value="Pension">MOT (Motel)</option>
+                                <option value="Pension">PEN (Pension)</option>
+                                <option value="Pension">HSS (Home Stay Site)</option>
+                                <option value="Pension">TIN (Tourist Inn)</option>
+                                <option value="Pension">MH (Motorist Hotel)</option>
+                            
                             </select>
                         </div>
                         <button class="btn btn-sm btn-primary align-self-end" id="applyFilters">
@@ -353,6 +360,12 @@
                                             <th>PTCAO-Registered</th>
                                             <th>PTCAO Valid Until</th>
                                             <th>Classification</th>
+                                            <th>Male Employees</th>
+                                            <th>Female Employees</th>
+                                            <th>Total No. of Employees</th>
+                                            <th>Daytour 100% Capacity</th>
+                                            <th>Overnight 100% Capacity</th>
+                                            <th>Total No. of Rooms</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -400,10 +413,16 @@
                             <label>Property Type:</label>
                             <select class="form-select form-select-sm" id="propTypeFilter">
                                 <option value="all">All</option>
-                                <option value="Hotel">Hotel</option>
-                                <option value="Resort">Resort</option>
-                                <option value="Villa">Villa</option>
-                                <option value="Pension">Pension</option>
+                                <option value="Hotel">HTL(Hotel)</option>
+                                <option value="Resort">RES (Resort)</option>
+                                <option value="Villa">CON (Condotel)</option>
+                                <option value="Pension">SER (Service Residence)</option>
+                                <option value="Pension">APA (Apartelle)</option>
+                                <option value="Pension">MOT (Motel)</option>
+                                <option value="Pension">PEN (Pension)</option>
+                                <option value="Pension">HSS (Home Stay Site)</option>
+                                <option value="Pension">TIN (Tourist Inn)</option>
+                                <option value="Pension">MH (Motorist Hotel)</option>
                             </select>
                         </div>
                         <button class="btn btn-sm btn-primary align-self-end" id="applyPropFilters">
@@ -422,9 +441,14 @@
                                             <th>Barangay</th>
                                             <th>Type-Class</th>
                                             <th>Total Rooms</th>
-                                            <th>Day Tour Guests</th>
-                                            <th>Overnight Guests</th>
-                                            <th>Total Guests</th>
+                                            <th>Total Guest Check In Day Tour</th>
+                                            <th>Total Guest Check In Overnight</th>
+                                            <th>Total No. of Guest Check In </th>
+                                            <th>Total No. of Rooms Occupied</th>
+                                            <th>Total Foreign Visitor Arrival Day Tour</th>
+                                            <th>Total Guest Over night  Foreign Visitor</th>
+                                            <th>Total No. of Male Tourists</th>
+                                            <th>Total No. of Female Tourists</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
