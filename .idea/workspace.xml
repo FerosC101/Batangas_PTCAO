@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="updated property backend">
-      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_User.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_User.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/ADMIN_User.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +20,8 @@
         <option value="Jupyter Notebook" />
         <option value="CSS File" />
         <option value="SQL File" />
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -58,36 +58,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JavaScript Debug.ADMIN_User.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.MTO_Properties.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.Users.html.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.MTO_Property.executor&quot;: &quot;Coverage&quot;,
-    &quot;Python.app.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.model.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Jan Mayen/Batangas_PTCAO&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;C:/Users/Jan Mayen/AppData/Roaming/JetBrains/PyCharm2025.1/node/versions/22.17.0/node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "JavaScript Debug.ADMIN_User.html (1).executor": "Run",
+    "JavaScript Debug.ADMIN_User.html.executor": "Run",
+    "JavaScript Debug.MTO_Properties.html.executor": "Run",
+    "JavaScript Debug.Users.html.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.MTO_Property.executor": "Coverage",
+    "Python.app.executor": "Debug",
+    "Python.model.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/Jan Mayen/Batangas_PTCAO",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "C:/Users/Jan Mayen/AppData/Roaming/JetBrains/PyCharm2025.1/node/versions/22.17.0/node",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\templates" />
@@ -97,7 +98,10 @@
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes\static\css" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.ADMIN_User.html">
+  <component name="RunManager" selected="Python.app">
+    <configuration name="ADMIN_User.html (1)" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Batangas_PTCAO/Batangas_PTCAO/src/templates/ADMIN_User.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="ADMIN_User.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Batangas_PTCAO/Batangas_PTCAO/src/test_pages/ADMIN_User.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
@@ -154,8 +158,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JavaScript Debug.ADMIN_User.html" />
         <item itemvalue="Python.app" />
+        <item itemvalue="JavaScript Debug.ADMIN_User.html (1)" />
+        <item itemvalue="JavaScript Debug.ADMIN_User.html" />
         <item itemvalue="JavaScript Debug.Users.html" />
         <item itemvalue="Python.MTO_Property" />
       </list>
@@ -222,6 +227,7 @@
       <workItem from="1750771240128" duration="4783000" />
       <workItem from="1750818825211" duration="4989000" />
       <workItem from="1750826317788" duration="2388000" />
+      <workItem from="1750861195183" duration="1294000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -567,7 +573,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750825902669</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="updated property backend">
+      <option name="closed" value="true" />
+      <created>1750861313487</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1750861313487</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
