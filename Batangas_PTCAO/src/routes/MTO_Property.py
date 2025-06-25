@@ -1,8 +1,11 @@
+import uuid
+
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
-from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User
+from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User, \
+    PropertyImage
 from Batangas_PTCAO.src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
@@ -152,10 +155,11 @@ def get_property(property_id):
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('', methods=['POST'])
 @jwt_required()
 def create_property():
-    """Create a new property"""
+    """Create a new property with all associated data"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -163,7 +167,13 @@ def create_property():
         if not user or not user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        data = request.get_json()
+        # Handle both form data (for files) and JSON
+        if request.files:
+            data = request.form.to_dict()
+            files = request.files.getlist('property_image')
+        else:
+            data = request.get_json()
+            files = []
 
         required_fields = ['property_name', 'barangay', 'municipality', 'accommodation_type']
         for field in required_fields:
@@ -178,20 +188,38 @@ def create_property():
             barangay=data['barangay'],
             municipality=data['municipality'],
             accommodation_type=data['accommodation_type'],
-            status=PropertyStatus(data.get('status', 'Active')),
+            status=PropertyStatus(data.get('status', 'ACTIVE')),
             description=data.get('description')
         )
 
+        # Handle file uploads
+        if files:
+            for file in files:
+                if file and allowed_file(file.filename):
+                    ext = file.filename.rsplit('.', 1)[1].lower()
+                    filename = f"{secure_filename(data['property_name']).replace(' ', '_')}_{uuid.uuid4().hex[:8]}.{ext}"
+                    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+
+                    property_image = PropertyImage(
+                        property=new_property,  # This will set property_id after flush
+                        image_path=filename
+                    )
+                    db.session.add(property_image)
+
+        # Handle amenities
         if 'amenities' in data and isinstance(data['amenities'], list):
             for amenity_name in data['amenities']:
                 amenity = Amenity(amenity=amenity_name)
                 new_property.amenities.append(amenity)
 
+        # Handle typical locations
         if 'typical_locations' in data and isinstance(data['typical_locations'], list):
             for location_name in data['typical_locations']:
                 location = TypicalLocation(location=location_name)
                 new_property.typical_locations.append(location)
 
+        # Handle coordinates
         if 'coordinates' in data and isinstance(data['coordinates'], list):
             for coord in data['coordinates']:
                 if 'longitude' in coord and 'latitude' in coord:
@@ -201,6 +229,7 @@ def create_property():
                     )
                     new_property.coordinates.append(coordinate)
 
+        # Handle rooms
         if 'rooms' in data and isinstance(data['rooms'], list):
             for room_data in data['rooms']:
                 room = Room(
@@ -308,10 +337,10 @@ def update_property(property_id):
             'message': str(e)
         }), 500
 
-@properties_bp.route('/<int:property_id>/image', methods=['POST'])
+
+@properties_bp.route('/<int:property_id>/images', methods=['POST'])
 @jwt_required()
-def upload_property_image(property_id):
-    """Upload an image for a property"""
+def upload_property_images(property_id):
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -320,30 +349,35 @@ def upload_property_image(property_id):
         if property.municipality != user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        if 'property_image' not in request.files:
-            return jsonify({'status': 'error', 'message': 'No file uploaded'}), 400
+        files = request.files.getlist('property_image')
+        if not files:
+            return jsonify({'status': 'error', 'message': 'No files uploaded'}), 400
 
-        file = request.files['property_image']
-        if file.filename == '':
-            return jsonify({'status': 'error', 'message': 'No selected file'}), 400
+        uploaded_files = []
+        for file in files:
+            if file and allowed_file(file.filename):
+                ext = file.filename.rsplit('.', 1)[1].lower()
+                filename = f"{property_id}_{secure_filename(property.property_name)}_{uuid.uuid4().hex[:8]}.{ext}"
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(f"{property_id}_{file.filename}")
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            property.property_image = filename
-            db.session.commit()
-            return jsonify({
-                'status': 'success',
-                'message': 'Image uploaded successfully',
-                'image_url': f"/static/uploads/properties/{filename}"
-            }), 200
+                property_image = PropertyImage(
+                    property_id=property_id,
+                    image_path=filename
+                )
+                db.session.add(property_image)
+                uploaded_files.append(filename)
 
-        return jsonify({'status': 'error', 'message': 'Invalid file type'}), 400
-    except Exception as e:
+        db.session.commit()
+
         return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+            'status': 'success',
+            'message': 'Images uploaded successfully',
+            'files': uploaded_files
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @properties_bp.route('/<int:property_id>', methods=['DELETE'])
 @jwt_required()

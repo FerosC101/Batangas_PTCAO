@@ -188,10 +188,16 @@
         .property-card {
             height: 100%;
         }
-        .property-img {
+        .property-img-container {
+            position: relative;
             height: 180px;
-            object-fit: cover;
+            overflow: hidden;
             border-radius: 8px 8px 0 0;
+        }
+        .property-img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
         }
         .property-rating {
             color: #ffc107;
@@ -246,7 +252,6 @@
         .pagination .page-link {
             color: var(--primary);
         }
-
         .map-container {
             height: 300px;
             width: 100%;
@@ -257,7 +262,33 @@
             height: 100%;
             width: 100%;
         }
-
+        .carousel-control-prev, .carousel-control-next {
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .carousel-control-prev { left: 10px; }
+        .carousel-control-next { right: 10px; }
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            width: 15px;
+            height: 15px;
+        }
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-preview {
+            height: 100px;
+            width: auto;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
         .property-img-thumbnail {
             max-height: 150px;
             object-fit: cover;
@@ -396,12 +427,36 @@
             {% for property in properties %}
             <div class="col-md-4 mb-4">
                 <div class="card property-card">
-                    <img src="{% if property.property_image %}/static/uploads/properties/{{ property.property_image }}{% else %}https://via.placeholder.com/300x200{% endif %}"
-                         class="card-img-top property-img"
-                         alt="{{ property.property_name }}">
-                    <span class="property-status badge bg-{% if property.status.value == 'Active' %}success{% else %}warning{% endif %}">
-                        {{ property.status.value }}
-                    </span>
+                    <div class="property-img-container">
+                        {% if property.images %}
+                        <div id="propertyCarousel{{ property.property_id }}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner" style="height: 100%;">
+                                {% for image in property.images %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %}" style="height: 100%;">
+                                    <img src="/static/uploads/properties/{{ image.image_path }}"
+                                         class="d-block w-100 property-img"
+                                         alt="{{ property.property_name }} image {{ loop.index }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if property.images|length > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel{{ property.property_id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel{{ property.property_id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200" class="property-img" alt="No image available">
+                        {% endif %}
+                        <span class="property-status badge bg-{% if property.status.value == 'ACTIVE' %}success{% else %}warning{% endif %}">
+                            {{ property.status.value }}
+                        </span>
+                    </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <h5 class="card-title mb-1">{{ property.property_name }}</h5>
@@ -429,10 +484,12 @@
                                 <span class="text-muted">/ night</span>
                             </div>
                             <div class="d-flex">
-                                <a href="{{ url_for('properties.edit_property', property_id=property.property_id) }}"
-                                   class="btn btn-sm btn-outline-primary me-2">
+                                <button class="btn btn-sm btn-outline-primary me-2 edit-btn"
+                                        data-id="{{ property.property_id }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editPropertyModal">
                                     <i class="fas fa-edit"></i>
-                                </a>
+                                </button>
                                 <button class="btn btn-sm btn-outline-danger delete-btn"
                                         data-id="{{ property.property_id }}">
                                     <i class="fas fa-trash"></i>
@@ -476,6 +533,7 @@
         </div>
     </footer>
 
+    <!-- Add Property Modal -->
     <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -518,8 +576,10 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Property Image</label>
-                                    <input type="file" class="form-control" name="property_image" accept="image/*">
+                                    <label class="form-label">Property Images*</label>
+                                    <input type="file" class="form-control" name="property_images" multiple accept="image/*" required>
+                                    <small class="text-muted">Upload multiple images (max 5, JPEG/PNG/GIF)</small>
+                                    <div id="imagePreview" class="image-preview-container mt-2"></div>
                                 </div>
                             </div>
 
@@ -620,8 +680,8 @@
                                 <div class="mb-3">
                                     <label class="form-label">Status*</label>
                                     <select class="form-select" name="status" id="editStatus" required>
-                                        <option value="Active">Active</option>
-                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="ACTIVE">Active</option>
+                                        <option value="MAINTENANCE">Maintenance</option>
                                     </select>
                                 </div>
 
@@ -631,9 +691,14 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Property Image</label>
-                                    <input type="file" class="form-control" name="property_image" accept="image/*">
-                                    <div id="currentImage" class="mt-2"></div>
+                                    <label class="form-label">Additional Images</label>
+                                    <input type="file" class="form-control" name="property_images" multiple accept="image/*">
+                                    <small class="text-muted">Add more images (JPEG/PNG/GIF)</small>
+                                    <div id="editImagePreview" class="image-preview-container mt-2"></div>
+                                    <div id="currentImages" class="mt-3">
+                                        <h6>Current Images</h6>
+                                        <div class="d-flex flex-wrap gap-2" id="existingImagesContainer"></div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -673,7 +738,6 @@
         </div>
     </div>
 
-
     <!-- JavaScript dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
@@ -686,9 +750,7 @@
         let currentPropertyId;
 
         // Initialize Add Property Map
-        // Initialize Add Property Map
         function initMap() {
-            // Set default coordinates to Batangas City Hall
             const defaultLat = 13.7565;
             const defaultLng = 121.0583;
 
@@ -702,13 +764,10 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Add zoom control with proper position
             L.control.zoom({ position: 'topright' }).addTo(map);
 
-            // Set initial marker
             marker = L.marker([defaultLat, defaultLng]).addTo(map);
 
-            // Update coordinates in form
             document.querySelector('input[name="latitude"]').value = defaultLat;
             document.querySelector('input[name="longitude"]').value = defaultLng;
 
@@ -719,7 +778,6 @@
                 document.querySelector('input[name="longitude"]').value = e.latlng.lng;
             });
 
-            // Fix map rendering in modal
             setTimeout(() => map.invalidateSize(), 0);
         }
 
@@ -751,9 +809,62 @@
                 document.getElementById('editLongitude').value = e.latlng.lng;
             });
 
-            // Fix map rendering in modal
             setTimeout(() => editMap.invalidateSize(), 0);
         }
+
+        // Image preview for Add Property
+        document.querySelector('input[name="property_images"]').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('imagePreview');
+            previewContainer.innerHTML = '';
+
+            if (this.files.length > 5) {
+                alert('Maximum 5 images allowed');
+                this.value = '';
+                return;
+            }
+
+            Array.from(this.files).forEach(file => {
+                if (!file.type.match('image.*')) {
+                    alert('Only image files are allowed');
+                    this.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('image-preview');
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Image preview for Edit Property
+        document.querySelector('#editPropertyForm input[name="property_images"]').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('editImagePreview');
+            previewContainer.innerHTML = '';
+
+            Array.from(this.files).forEach(file => {
+                if (!file.type.match('image.*')) {
+                    alert('Only image files are allowed');
+                    this.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('image-preview');
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
 
         // Open Edit Modal
         function openEditModal(propertyId) {
@@ -794,18 +905,58 @@
                         addEditRoomField(room, index);
                     });
 
-                    // Show current image
-                    const imageUrl = prop.property_image ?
-                        `/static/uploads/properties/${prop.property_image}` :
-                        'https://via.placeholder.com/300x200';
-                    document.getElementById('currentImage').innerHTML =
-                        `<img src="${imageUrl}" class="img-thumbnail property-img-thumbnail">`;
+                    // Show current images
+                    const existingImagesContainer = document.getElementById('existingImagesContainer');
+                    existingImagesContainer.innerHTML = '';
+                    if(prop.images && prop.images.length > 0) {
+                        prop.images.forEach(image => {
+                            const imgDiv = document.createElement('div');
+                            imgDiv.className = 'position-relative';
+                            imgDiv.innerHTML = `
+                                <img src="/static/uploads/properties/${image.image_path}"
+                                     class="img-thumbnail property-img-thumbnail">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                        onclick="deletePropertyImage(${image.id}, this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            existingImagesContainer.appendChild(imgDiv);
+                        });
+                    } else {
+                        document.getElementById('currentImages').style.display = 'none';
+                    }
 
                     // Initialize map
                     initEditMap();
                 }
             })
             .catch(error => console.error('Error:', error));
+        }
+
+        // Delete property image
+        function deletePropertyImage(imageId, button) {
+            if(confirm('Are you sure you want to delete this image?')) {
+                fetch(`/property/${currentPropertyId}/images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                    }
+                })
+                .then(response => {
+                    if(response.ok) {
+                        button.closest('.position-relative').remove();
+                        if(document.querySelectorAll('#existingImagesContainer .position-relative').length === 0) {
+                            document.getElementById('currentImages').style.display = 'none';
+                        }
+                    } else {
+                        alert('Error deleting image');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
         }
 
         // Dynamic fields for Add Property
@@ -901,50 +1052,22 @@
         // Add Property Form Submission
         document.getElementById('propertyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const formData = new FormData(e.target);
-            const data = {
-                property_name: formData.get('property_name'),
-                barangay: formData.get('barangay'),
-                municipality: formData.get('municipality'),
-                accommodation_type: formData.get('accommodation_type'),
-                description: formData.get('description'),
-                coordinates: [{
-                    longitude: formData.get('longitude'),
-                    latitude: formData.get('latitude')
-                }],
-                amenities: formData.getAll('amenities[]').filter(a => a),
-                rooms: []
-            };
-
-            // Process rooms
-            const roomIndices = new Set([...formData.keys()]
-                .map(k => k.match(/rooms\[(\d+)\]/)?.[1])
-                .filter(Boolean));
-
-            roomIndices.forEach(index => {
-                data.rooms.push({
-                    room_type: formData.get(`rooms[${index}][room_type]`),
-                    day_price: formData.get(`rooms[${index}][day_price]`),
-                    overnight_price: formData.get(`rooms[${index}][overnight_price]`),
-                    capacity: formData.get(`rooms[${index}][capacity]`)
-                });
-            });
 
             try {
                 const response = await fetch('/property', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
                     },
-                    body: JSON.stringify(data)
+                    body: formData
                 });
 
                 if (response.ok) {
                     window.location.reload();
                 } else {
-                    alert('Error saving property');
+                    const error = await response.json();
+                    alert(error.message || 'Error saving property');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -955,59 +1078,65 @@
         // Edit Property Form Submission
         document.getElementById('editPropertyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const formData = new FormData(e.target);
-            const data = {
-                property_name: formData.get('property_name'),
-                barangay: formData.get('barangay'),
-                municipality: formData.get('municipality'),
-                accommodation_type: formData.get('accommodation_type'),
-                status: formData.get('status'),
-                description: formData.get('description'),
-                coordinates: [{
-                    longitude: formData.get('longitude'),
-                    latitude: formData.get('latitude')
-                }],
-                amenities: formData.getAll('amenities[]').filter(a => a),
-                rooms: []
-            };
-
-            // Process rooms
-            const roomIndices = new Set([...formData.keys()]
-                .map(k => k.match(/rooms\[(\d+)\]/)?.[1])
-                .filter(Boolean));
-
-            roomIndices.forEach(index => {
-                data.rooms.push({
-                    room_type: formData.get(`rooms[${index}][room_type]`),
-                    day_price: formData.get(`rooms[${index}][day_price]`),
-                    overnight_price: formData.get(`rooms[${index}][overnight_price]`),
-                    capacity: formData.get(`rooms[${index}][capacity]`)
-                });
-            });
 
             try {
-                // Handle file upload separately
-                const fileInput = document.querySelector('#editPropertyForm input[name="property_image"]');
-                if (fileInput.files.length > 0) {
-                    const fileFormData = new FormData();
-                    fileFormData.append('property_image', fileInput.files[0]);
-
-                    const fileResponse = await fetch(`/property/${currentPropertyId}/image`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-                        },
-                        body: fileFormData
+                // First handle file uploads if any
+                const files = formData.getAll('property_images');
+                if (files.length > 0) {
+                    const uploadFormData = new FormData();
+                    files.forEach(file => {
+                        if (file.size > 0) {  // Skip empty files
+                            uploadFormData.append('property_images', file);
+                        }
                     });
 
-                    if (!fileResponse.ok) {
-                        throw new Error('Failed to upload image');
+                    if (uploadFormData.has('property_images')) {
+                        const uploadResponse = await fetch(`/property/${currentPropertyId}/images`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                            },
+                            body: uploadFormData
+                        });
+
+                        if (!uploadResponse.ok) {
+                            throw new Error('Failed to upload images');
+                        }
                     }
                 }
 
-                // Update property data
-                const response = await fetch(`/property/update${currentPropertyId}`, {
+                // Then update property data
+                const data = {
+                    property_name: formData.get('property_name'),
+                    barangay: formData.get('barangay'),
+                    municipality: formData.get('municipality'),
+                    accommodation_type: formData.get('accommodation_type'),
+                    status: formData.get('status'),
+                    description: formData.get('description'),
+                    coordinates: [{
+                        longitude: formData.get('longitude'),
+                        latitude: formData.get('latitude')
+                    }],
+                    amenities: formData.getAll('amenities[]').filter(a => a),
+                    rooms: []
+                };
+
+                // Process rooms
+                const roomIndices = new Set([...formData.keys()]
+                    .map(k => k.match(/rooms\[(\d+)\]/)?.[1])
+                    .filter(Boolean));
+
+                roomIndices.forEach(index => {
+                    data.rooms.push({
+                        room_type: formData.get(`rooms[${index}][room_type]`),
+                        day_price: formData.get(`rooms[${index}][day_price]`),
+                        overnight_price: formData.get(`rooms[${index}][overnight_price]`),
+                        capacity: formData.get(`rooms[${index}][capacity]`)
+                    });
+                });
+
+                const updateResponse = await fetch(`/property/update/${currentPropertyId}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
@@ -1016,10 +1145,11 @@
                     body: JSON.stringify(data)
                 });
 
-                if (response.ok) {
+                if (updateResponse.ok) {
                     window.location.reload();
                 } else {
-                    alert('Error updating property');
+                    const error = await updateResponse.json();
+                    alert(error.message || 'Error updating property');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -1053,6 +1183,14 @@
             });
         });
 
+        // Edit Button Click Handler
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const propertyId = this.getAttribute('data-id');
+                openEditModal(propertyId);
+            });
+        });
+
         // Initialize map when modal is shown
         document.getElementById('addPropertyModal').addEventListener('shown.bs.modal', function() {
             initMap();
@@ -1062,7 +1200,6 @@
             initEditMap();
             document.getElementById('editMap').style.height = '300px';
         });
-
     </script>
 </body>
 </html>

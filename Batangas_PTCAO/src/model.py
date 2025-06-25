@@ -60,7 +60,16 @@ class Property(db.Model):
     amenities = db.relationship('Amenity', back_populates='property', cascade="all, delete-orphan")
     typical_locations = db.relationship('TypicalLocation', back_populates='property', cascade="all, delete-orphan")
     coordinates = db.relationship('LongLat', back_populates='property', cascade="all, delete-orphan")
+    images = db.relationship('PropertyImage', back_populates='property', cascade="all, delete-orphan")
 
+class PropertyImage(db.Model):
+    __tablename__ = 'property_images'
+
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    image_path = db.Column(db.String(255), nullable=False)
+
+    property = db.relationship('Property', back_populates='images')
 
 class Room(db.Model):
     __tablename__ = 'room'
