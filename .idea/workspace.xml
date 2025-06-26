@@ -5,9 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="updated property backend">
-      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_users.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_dashboard.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_reports.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_Dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_Reports.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_User.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/ADMIN_User.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_users.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,13 +65,14 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "DefaultHtmlFileTemplate": "HTML File",
+    "JavaScript Debug.ADMIN_Reports.html.executor": "Run",
     "JavaScript Debug.ADMIN_User.html (1).executor": "Run",
     "JavaScript Debug.ADMIN_User.html.executor": "Run",
     "JavaScript Debug.MTO_Properties.html.executor": "Run",
     "JavaScript Debug.Users.html.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.MTO_Property.executor": "Coverage",
-    "Python.app.executor": "Debug",
+    "Python.app.executor": "Run",
     "Python.model.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
@@ -91,14 +96,17 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Jan Mayen\Batangas_PTCAO\Batangas_PTCAO\src\templates" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\templates" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes\static" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes" />
-      <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes\static\css" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.app">
+  <component name="RunManager" selected="JavaScript Debug.ADMIN_Reports.html">
+    <configuration name="ADMIN_Reports.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Batangas_PTCAO/Batangas_PTCAO/src/test_pages/ADMIN_Reports.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="ADMIN_User.html (1)" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Batangas_PTCAO/Batangas_PTCAO/src/templates/ADMIN_User.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
@@ -106,30 +114,6 @@
       <method v="2" />
     </configuration>
     <configuration name="Users.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Batangas_PTCAO/Batangas_PTCAO/src/test_pages/Users.html" useBuiltInWebServerPort="true">
-      <method v="2" />
-    </configuration>
-    <configuration name="MTO_Property" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="DjangoProject" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (Batangas_PTCAO)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -158,11 +142,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.ADMIN_Reports.html" />
         <item itemvalue="Python.app" />
         <item itemvalue="JavaScript Debug.ADMIN_User.html (1)" />
         <item itemvalue="JavaScript Debug.ADMIN_User.html" />
         <item itemvalue="JavaScript Debug.Users.html" />
-        <item itemvalue="Python.MTO_Property" />
       </list>
     </recent_temporary>
   </component>
@@ -227,7 +211,8 @@
       <workItem from="1750771240128" duration="4783000" />
       <workItem from="1750818825211" duration="4989000" />
       <workItem from="1750826317788" duration="2388000" />
-      <workItem from="1750861195183" duration="1294000" />
+      <workItem from="1750861195183" duration="2087000" />
+      <workItem from="1750905900137" duration="4377000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -581,7 +566,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750861313487</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="updated property backend">
+      <option name="closed" value="true" />
+      <created>1750865007690</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1750865007692</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

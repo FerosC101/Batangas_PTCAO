@@ -35,7 +35,6 @@ def get_user(user_id):
         'is_active': user.is_active
     })
 
-
 @admin_users_bp.route('/admin/users', methods=['POST'])
 @jwt_required()
 def create_user():
