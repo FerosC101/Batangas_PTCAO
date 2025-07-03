@@ -148,3 +148,19 @@ CREATE TABLE user_data_uploads (
     upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     records_processed BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+-- For PostgreSQL:
+-- For PostgreSQL:
+-- Create the sequence
+CREATE SEQUENCE property_id_seq;
+
+-- Connect it to your table
+ALTER TABLE property ALTER COLUMN property_id SET DEFAULT nextval('property_id_seq');
+
+-- Set the sequence to the current max value + 1
+SELECT setval('property_id_seq', COALESCE((SELECT MAX(property_id) FROM property), 1) + 1);
+
+ALTER TABLE property ALTER COLUMN property_id SET DEFAULT nextval('property_id_seq')
+
+SELECT * FROM property ORDER BY property_id DESC LIMIT 1;
+SELECT nextval('property_id_seq');

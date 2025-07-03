@@ -48,7 +48,7 @@ class User(db.Model):
 class Property(db.Model):
     __tablename__ = 'property'
 
-    property_id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     property_name = db.Column(db.String(100), nullable=False)
     barangay = db.Column(db.String(100))
     municipality = db.Column(db.String(100))

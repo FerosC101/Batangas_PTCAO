@@ -159,7 +159,6 @@ def get_property(property_id):
 @properties_bp.route('', methods=['POST'])
 @jwt_required()
 def create_property():
-    """Create a new property with all associated data"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -175,6 +174,7 @@ def create_property():
             data = request.get_json()
             files = []
 
+        # Validate required fields
         required_fields = ['property_name', 'barangay', 'municipality', 'accommodation_type']
         for field in required_fields:
             if field not in data:
@@ -183,6 +183,7 @@ def create_property():
                     'message': f'Missing required field: {field}'
                 }), 400
 
+        # Create property - no explicit transaction begin needed
         new_property = Property(
             property_name=data['property_name'],
             barangay=data['barangay'],
@@ -191,6 +192,9 @@ def create_property():
             status=PropertyStatus(data.get('status', 'ACTIVE')),
             description=data.get('description')
         )
+
+        db.session.add(new_property)
+        db.session.flush()  # This generates the ID
 
         # Handle file uploads
         if files:
@@ -201,52 +205,58 @@ def create_property():
                     file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
                     file.save(file_path)
 
-                    property_image = PropertyImage(
-                        property=new_property,  # This will set property_id after flush
+                    db.session.add(PropertyImage(
+                        property_id=new_property.property_id,
                         image_path=filename
-                    )
-                    db.session.add(property_image)
+                    ))
 
         # Handle amenities
         if 'amenities' in data and isinstance(data['amenities'], list):
-            for amenity_name in data['amenities']:
-                amenity = Amenity(amenity=amenity_name)
-                new_property.amenities.append(amenity)
+            for amenity in data['amenities']:
+                db.session.add(Amenity(
+                    property_id=new_property.property_id,
+                    amenity=amenity
+                ))
 
         # Handle typical locations
         if 'typical_locations' in data and isinstance(data['typical_locations'], list):
-            for location_name in data['typical_locations']:
-                location = TypicalLocation(location=location_name)
-                new_property.typical_locations.append(location)
+            for location in data['typical_locations']:
+                db.session.add(TypicalLocation(
+                    property_id=new_property.property_id,
+                    location=location
+                ))
 
         # Handle coordinates
         if 'coordinates' in data and isinstance(data['coordinates'], list):
             for coord in data['coordinates']:
                 if 'longitude' in coord and 'latitude' in coord:
-                    coordinate = LongLat(
-                        longitude=coord['longitude'],
-                        latitude=coord['latitude']
-                    )
-                    new_property.coordinates.append(coordinate)
+                    db.session.add(LongLat(
+                        property_id=new_property.property_id,
+                        longitude=float(coord['longitude']),  # Ensure float conversion
+                        latitude=float(coord['latitude'])  # Ensure float conversion
+                    ))
 
         # Handle rooms
         if 'rooms' in data and isinstance(data['rooms'], list):
             for room_data in data['rooms']:
                 room = Room(
+                    property_id=new_property.property_id,
                     room_type=room_data.get('room_type'),
-                    day_price=room_data.get('day_price'),
-                    overnight_price=room_data.get('overnight_price'),
-                    capacity=room_data.get('capacity')
+                    day_price=float(room_data.get('day_price', 0)),  # Convert to float
+                    overnight_price=float(room_data.get('overnight_price', 0)),  # Convert to float
+                    capacity=int(room_data.get('capacity', 1))  # Convert to int
                 )
+                db.session.add(room)
+                db.session.flush()  # Generate room ID
 
                 if 'amenities' in room_data and isinstance(room_data['amenities'], list):
-                    for amenity_name in room_data['amenities']:
-                        amenity = Amenity(amenity=amenity_name)
-                        room.amenities.append(amenity)
+                    for amenity in room_data['amenities']:
+                        db.session.add(Amenity(
+                            room_id=room.room_id,
+                            property_id=new_property.property_id,
+                            amenity=amenity
+                        ))
 
-                new_property.rooms.append(room)
-
-        db.session.add(new_property)
         db.session.commit()
 
         return jsonify({
@@ -254,16 +264,20 @@ def create_property():
             'message': 'Property created successfully',
             'property_id': new_property.property_id
         }), 201
+
     except SQLAlchemyError as e:
         db.session.rollback()
+        current_app.logger.error(f"Database error: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'Database error occurred'
         }), 500
     except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Unexpected error: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'An unexpected error occurred'
         }), 500
 
 @properties_bp.route('/update/<int:property_id>', methods=['POST'])
