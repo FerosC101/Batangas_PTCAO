@@ -169,7 +169,7 @@ def create_property():
         # Handle both form data (for files) and JSON
         if request.files:
             data = request.form.to_dict()
-            files = request.files.getlist('property_image')
+            files = request.files.getlist('property_images')
         else:
             data = request.get_json()
             files = []
