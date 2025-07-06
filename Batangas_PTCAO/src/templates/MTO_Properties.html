@@ -307,7 +307,7 @@
 
         /* Property Details Modal Styles */
         .property-details-modal .modal-dialog {
-            max-width: 800px;
+            max-width: 900px;
         }
 
         .property-details-carousel {
@@ -348,6 +348,13 @@
 
         .room-amenities {
             margin-top: 10px;
+        }
+
+        .property-map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -482,7 +489,7 @@
         <div class="row">
             {% for property in properties %}
             <div class="col-md-4 mb-4">
-                <div class="card property-card" onclick="showPropertyDetails({{ property.property_id }})">
+                <div class="card property-card" data-property-id="{{ property.property_id }}">
                     <div class="property-img-container">
                         {% if property.images %}
                         <div id="propertyCarousel{{ property.property_id }}" class="carousel slide" data-bs-ride="carousel">
@@ -548,13 +555,11 @@
                                 <button class="btn btn-sm btn-outline-primary me-2 edit-btn"
                                         data-id="{{ property.property_id }}"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editPropertyModal"
-                                        onclick="event.stopPropagation()">
+                                        data-bs-target="#editPropertyModal">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger delete-btn"
-                                        data-id="{{ property.property_id }}"
-                                        onclick="event.stopPropagation()">
+                                        data-id="{{ property.property_id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -628,10 +633,6 @@
                             </p>
                             <p id="propertyDetailsDescription" class="mb-4"></p>
 
-                            <div id="propertyMapContainer" class="map-container mb-4">
-                                <!-- Map will be loaded here -->
-                            </div>
-
                             <h5 class="mb-3">Amenities</h5>
                             <div class="amenities-list mb-4" id="propertyDetailsAmenities">
                                 <!-- Amenities will be loaded here -->
@@ -651,6 +652,10 @@
                                 <span class="badge" id="propertyDetailsStatus"></span>
                             </div>
                         </div>
+                    </div>
+
+                    <div id="propertyMapContainer">
+                        <!-- Map will be loaded here -->
                     </div>
 
                     <h5 class="mt-4 mb-3">Rooms</h5>
@@ -880,6 +885,175 @@
         let map, marker;
         let editMap, editMarker;
         let currentPropertyId;
+        let propertyMap; // For the property details modal map
+
+        // Show Property Details Modal
+        function showPropertyDetails(propertyId) {
+            currentPropertyId = propertyId;
+
+            // Show loading state
+            const modal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
+            modal.show();
+
+            document.getElementById('propertyDetailsCarouselInner').innerHTML = `
+                <div class="carousel-item active h-100">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            fetch(`/property/${propertyId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.property) {
+                    const prop = data.property;
+
+                    // Set basic info
+                    document.getElementById('propertyDetailsName').textContent = prop.property_name;
+                    document.getElementById('propertyDetailsLocation').textContent = `${prop.barangay}, ${prop.municipality}`;
+                    document.getElementById('propertyDetailsDescription').textContent = prop.description;
+
+                    // Set status
+                    const statusBadge = document.getElementById('propertyDetailsStatus');
+                    statusBadge.textContent = prop.status;
+                    statusBadge.className = `badge bg-${prop.status === 'ACTIVE' ? 'success' : 'warning'}`;
+
+                    // Load images
+                    const carouselInner = document.getElementById('propertyDetailsCarouselInner');
+                    carouselInner.innerHTML = '';
+
+                    if (prop.images && prop.images.length > 0) {
+                        prop.images.forEach((image, index) => {
+                            const carouselItem = document.createElement('div');
+                            carouselItem.className = `carousel-item h-100 ${index === 0 ? 'active' : ''}`;
+                            carouselItem.innerHTML = `
+                                <img src="/static/uploads/properties/${image.image_path}"
+                                     class="d-block w-100 h-100"
+                                     alt="${prop.property_name} image ${index + 1}"
+                                     style="object-fit: cover;">
+                            `;
+                            carouselInner.appendChild(carouselItem);
+                        });
+                    } else {
+                        carouselInner.innerHTML = `
+                            <div class="carousel-item active h-100">
+                                <img src="https://via.placeholder.com/800x400?text=No+Image+Available"
+                                     class="d-block w-100 h-100"
+                                     alt="No image available"
+                                     style="object-fit: cover;">
+                            </div>
+                        `;
+                    }
+
+                    // Load amenities
+                    const amenitiesContainer = document.getElementById('propertyDetailsAmenities');
+                    amenitiesContainer.innerHTML = '';
+
+                    if (prop.amenities && prop.amenities.length > 0) {
+                        prop.amenities.forEach(amenity => {
+                            const amenityBadge = document.createElement('span');
+                            amenityBadge.className = 'amenity-badge';
+                            amenityBadge.innerHTML = `<i class="fas fa-check me-1"></i> ${amenity.amenity}`;
+                            amenitiesContainer.appendChild(amenityBadge);
+                        });
+                    } else {
+                        amenitiesContainer.innerHTML = '<p>No amenities listed</p>';
+                    }
+
+                    // Load pricing info
+                    const pricingContainer = document.getElementById('propertyDetailsPricing');
+
+                    if (prop.rooms && prop.rooms.length > 0) {
+                        const minPrice = Math.min(...prop.rooms.map(r => parseFloat(r.overnight_price)));
+                        const maxPrice = Math.max(...prop.rooms.map(r => parseFloat(r.overnight_price)));
+
+                        pricingContainer.innerHTML = `
+                            <p><strong>Price Range:</strong> ₱${minPrice.toFixed(2)} - ₱${maxPrice.toFixed(2)} per night</p>
+                            <p><strong>Rooms Available:</strong> ${prop.rooms.length}</p>
+                        `;
+                    } else {
+                        pricingContainer.innerHTML = '<p>No pricing information available</p>';
+                    }
+
+                    // Load room details
+                    const roomsContainer = document.getElementById('propertyDetailsRooms');
+                    roomsContainer.innerHTML = '';
+
+                    if (prop.rooms && prop.rooms.length > 0) {
+                        prop.rooms.forEach(room => {
+                            const roomCard = document.createElement('div');
+                            roomCard.className = 'room-card';
+                            roomCard.innerHTML = `
+                                <h6>${room.room_type || 'Unnamed Room'}</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Day Price:</strong> <span class="room-price">₱${parseFloat(room.day_price).toFixed(2)}</span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Overnight Price:</strong> <span class="room-price">₱${parseFloat(room.overnight_price).toFixed(2)}</span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Capacity:</strong> ${room.capacity} person(s)</p>
+                                    </div>
+                                </div>
+                                ${room.amenities && room.amenities.length > 0 ? `
+                                <div class="room-amenities">
+                                    <p class="mb-1"><strong>Room Amenities:</strong></p>
+                                    <div class="amenities-list">
+                                        ${room.amenities.map(a => `
+                                            <span class="amenity-badge">
+                                                <i class="fas fa-check"></i> ${a.amenity}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                ` : ''}
+                            `;
+                            roomsContainer.appendChild(roomCard);
+                        });
+                    } else {
+                        roomsContainer.innerHTML = '<p>No room information available</p>';
+                    }
+
+                    // Initialize map
+                    initPropertyMap(prop);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load property details');
+            });
+        }
+
+        // Initialize Property Map
+        function initPropertyMap(property) {
+            const mapContainer = document.getElementById('propertyMapContainer');
+            mapContainer.innerHTML = '<div id="propertyMap" class="property-map"></div>';
+
+            if (property.coordinates && property.coordinates.length > 0) {
+                const coord = property.coordinates[0];
+                const lat = parseFloat(coord.latitude);
+                const lng = parseFloat(coord.longitude);
+
+                propertyMap = L.map('propertyMap').setView([lat, lng], 15);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(propertyMap);
+
+                L.marker([lat, lng]).addTo(propertyMap)
+                    .bindPopup(`<b>${property.property_name}</b><br>${property.barangay}, ${property.municipality}`);
+
+                setTimeout(() => propertyMap.invalidateSize(), 0);
+            } else {
+                mapContainer.innerHTML = '<div class="alert alert-info">No location data available for this property</div>';
+            }
+        }
 
         // Initialize Add Property Map
         function initMap() {
@@ -942,31 +1116,6 @@
             });
 
             setTimeout(() => editMap.invalidateSize(), 0);
-        }
-
-        // Initialize Property Map in Details Modal
-        function initPropertyMap(property) {
-            const mapContainer = document.getElementById('propertyMapContainer');
-            mapContainer.innerHTML = '<div id="propertyMap" style="height: 100%; width: 100%;"></div>';
-
-            if (property.coordinates && property.coordinates.length > 0) {
-                const coord = property.coordinates[0];
-                const lat = parseFloat(coord.latitude);
-                const lng = parseFloat(coord.longitude);
-
-                const propertyMap = L.map('propertyMap').setView([lat, lng], 15);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(propertyMap);
-
-                L.marker([lat, lng]).addTo(propertyMap)
-                    .bindPopup(`<b>${property.property_name}</b><br>${property.barangay}, ${property.municipality}`);
-
-                setTimeout(() => propertyMap.invalidateSize(), 0);
-            } else {
-                mapContainer.innerHTML = '<p class="text-muted text-center py-4">No location data available</p>';
-            }
         }
 
         // Image preview for Add Property
@@ -1206,137 +1355,6 @@
             document.getElementById('editRoomsContainer').appendChild(div);
         }
 
-        // Show Property Details Modal
-        function showPropertyDetails(propertyId) {
-            fetch(`/property/${propertyId}`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.property) {
-                    const prop = data.property;
-
-                    // Set basic info
-                    document.getElementById('propertyDetailsName').textContent = prop.property_name;
-                    document.getElementById('propertyDetailsLocation').textContent = `${prop.barangay}, ${prop.municipality}`;
-                    document.getElementById('propertyDetailsDescription').textContent = prop.description;
-
-                    // Set status
-                    const statusBadge = document.getElementById('propertyDetailsStatus');
-                    statusBadge.textContent = prop.status;
-                    statusBadge.className = `badge bg-${prop.status === 'ACTIVE' ? 'success' : 'warning'}`;
-
-                    // Load images
-                    const carouselInner = document.getElementById('propertyDetailsCarouselInner');
-                    carouselInner.innerHTML = '';
-
-                    if (prop.images && prop.images.length > 0) {
-                        prop.images.forEach((image, index) => {
-                            const carouselItem = document.createElement('div');
-                            carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-                            carouselItem.innerHTML = `
-                                <img src="/static/uploads/properties/${image.image_path}"
-                                     class="d-block w-100"
-                                     alt="${prop.property_name} image ${index + 1}">
-                            `;
-                            carouselInner.appendChild(carouselItem);
-                        });
-                    } else {
-                        carouselInner.innerHTML = `
-                            <div class="carousel-item active">
-                                <img src="https://via.placeholder.com/800x400?text=No+Image+Available"
-                                     class="d-block w-100"
-                                     alt="No image available">
-                            </div>
-                        `;
-                    }
-
-                    // Load amenities
-                    const amenitiesContainer = document.getElementById('propertyDetailsAmenities');
-                    amenitiesContainer.innerHTML = '';
-
-                    if (prop.amenities && prop.amenities.length > 0) {
-                        prop.amenities.forEach(amenity => {
-                            const amenityBadge = document.createElement('span');
-                            amenityBadge.className = 'amenity-badge';
-                            amenityBadge.innerHTML = `<i class="fas fa-check me-1"></i> ${amenity.amenity}`;
-                            amenitiesContainer.appendChild(amenityBadge);
-                        });
-                    } else {
-                        amenitiesContainer.innerHTML = '<p>No amenities listed</p>';
-                    }
-
-                    // Load pricing info
-                    const pricingContainer = document.getElementById('propertyDetailsPricing');
-
-                    if (prop.rooms && prop.rooms.length > 0) {
-                        const minPrice = Math.min(...prop.rooms.map(r => parseFloat(r.overnight_price)));
-                        const maxPrice = Math.max(...prop.rooms.map(r => parseFloat(r.overnight_price)));
-
-                        pricingContainer.innerHTML = `
-                            <p><strong>Price Range:</strong> ₱${minPrice.toFixed(2)} - ₱${maxPrice.toFixed(2)} per night</p>
-                            <p><strong>Rooms Available:</strong> ${prop.rooms.length}</p>
-                        `;
-                    } else {
-                        pricingContainer.innerHTML = '<p>No pricing information available</p>';
-                    }
-
-                    // Load room details
-                    const roomsContainer = document.getElementById('propertyDetailsRooms');
-                    roomsContainer.innerHTML = '';
-
-                    if (prop.rooms && prop.rooms.length > 0) {
-                        prop.rooms.forEach(room => {
-                            const roomCard = document.createElement('div');
-                            roomCard.className = 'room-card';
-                            roomCard.innerHTML = `
-                                <h6>${room.room_type || 'Unnamed Room'}</h6>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <p><strong>Day Price:</strong> <span class="room-price">₱${parseFloat(room.day_price).toFixed(2)}</span></p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><strong>Overnight Price:</strong> <span class="room-price">₱${parseFloat(room.overnight_price).toFixed(2)}</span></p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><strong>Capacity:</strong> ${room.capacity} person(s)</p>
-                                    </div>
-                                </div>
-                                ${room.amenities && room.amenities.length > 0 ? `
-                                <div class="room-amenities">
-                                    <p class="mb-1"><strong>Room Amenities:</strong></p>
-                                    <div class="amenities-list">
-                                        ${room.amenities.map(a => `
-                                            <span class="amenity-badge">
-                                                <i class="fas fa-check"></i> ${a.amenity}
-                                            </span>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                ` : ''}
-                            `;
-                            roomsContainer.appendChild(roomCard);
-                        });
-                    } else {
-                        roomsContainer.innerHTML = '<p>No room information available</p>';
-                    }
-
-                    // Show the modal
-                    const modal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
-                    modal.show();
-
-                    // Initialize map after modal is shown
-                    modal._element.addEventListener('shown.bs.modal', function() {
-                        initPropertyMap(prop);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to load property details');
-            });
-        }
-
         // Add Property Form Submission
         document.getElementById('propertyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1491,15 +1509,55 @@
             document.getElementById('editMap').style.height = '300px';
         });
 
-        // Make property cards clickable
+        // Initialize property card click handlers
         document.addEventListener('DOMContentLoaded', function() {
+            // Click handler for property cards
             document.querySelectorAll('.property-card').forEach(card => {
                 card.addEventListener('click', function(e) {
-                    // Don't open details if clicking edit/delete buttons or their children
-                    if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
-                        const propertyId = this.querySelector('.edit-btn').getAttribute('data-id');
+                    // Check if the click was on the edit or delete buttons or their children
+                    const isEditButton = e.target.closest('.edit-btn');
+                    const isDeleteButton = e.target.closest('.delete-btn');
+
+                    if (!isEditButton && !isDeleteButton) {
+                        const propertyId = this.getAttribute('data-property-id');
                         showPropertyDetails(propertyId);
                     }
+                });
+            });
+
+            // Click handler for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const propertyId = this.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this property?')) {
+                        fetch(`/property/${propertyId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.reload();
+                            } else {
+                                alert('Error deleting property');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred');
+                        });
+                    }
+                });
+            });
+
+            // Click handler for edit buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const propertyId = this.getAttribute('data-id');
+                    openEditModal(propertyId);
                 });
             });
         });
