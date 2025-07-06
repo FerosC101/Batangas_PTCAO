@@ -183,7 +183,7 @@ def mto_registration():
                 gender=form_data['gender'],
                 birthday=birthday,
                 username=form_data['username'],
-                is_active=False  # Requires admin approval
+                is_active=True  # Requires admin approval
             )
 
             # Set password using bcrypt
