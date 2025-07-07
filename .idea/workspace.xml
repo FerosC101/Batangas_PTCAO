@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="Card property not working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_Dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_Dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_Reports.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/ADMIN_Reports.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/Mapping.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/test_pages/Mapping.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,6 +199,7 @@
       <workItem from="1751684469372" duration="4048000" />
       <workItem from="1751784142191" duration="2486000" />
       <workItem from="1751793205946" duration="1919000" />
+      <workItem from="1751854523133" duration="5263000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <option name="closed" value="true" />
@@ -577,7 +577,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751784152548</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="Card property not working">
+      <option name="closed" value="true" />
+      <created>1751854564114</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1751854564114</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
