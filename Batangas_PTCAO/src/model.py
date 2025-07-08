@@ -74,7 +74,7 @@ class PropertyImage(db.Model):
 class Room(db.Model):
     __tablename__ = 'room'
 
-    room_id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
     room_type = db.Column(db.String(50))
     day_price = db.Column(db.Numeric(10, 2))
@@ -88,7 +88,7 @@ class Room(db.Model):
 class Amenity(db.Model):
     __tablename__ = 'amenities'
 
-    amenity_id = db.Column(db.Integer, primary_key=True)
+    amenity_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=True)
     room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), nullable=True)
     amenity = db.Column(db.String(255), nullable=False)
@@ -112,8 +112,8 @@ class LongLat(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
-    longitude = db.Column(db.Integer, nullable=False)
-    latitude = db.Column(db.Integer, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
 
     property = db.relationship('Property', back_populates='coordinates')
 

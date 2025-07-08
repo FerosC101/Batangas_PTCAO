@@ -30,13 +30,11 @@ def mto_events():
             flash('User not found', 'error')
             return redirect(url_for('dashboard.mto_dashboard'))
 
-        # Get upcoming events from the user's municipality
         upcoming_events = Event.query.filter(
             Event.end_date >= datetime.now().date(),
             Event.municipality == current_user.municipality
         ).order_by(Event.start_date.asc()).all()
 
-        # Get past events from the user's municipality
         past_events = Event.query.filter(
             Event.end_date < datetime.now().date(),
             Event.municipality == current_user.municipality

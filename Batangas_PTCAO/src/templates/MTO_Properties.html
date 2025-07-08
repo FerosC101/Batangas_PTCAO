@@ -537,14 +537,14 @@
                             </span>
                             {% endfor %}
                         </div>
-
                         <div class="property-footer">
                             <div>
                                 {% if property.rooms %}
-                                    {% set min_price = property.rooms|min(attribute='overnight_price') %}
-                                    {% set max_price = property.rooms|max(attribute='overnight_price') %}
+                                    {% set overnight_prices = property.rooms|map(attribute='overnight_price')|list %}
+                                    {% set min_price = overnight_prices|min %}
+                                    {% set max_price = overnight_prices|max %}
                                     <span class="price-range">
-                                        ₱{{ "%.2f"|format(min_price.overnight_price) }} - ₱{{ "%.2f"|format(max_price.overnight_price) }}
+                                        ₱{{ "%.2f"|format(min_price) }} - ₱{{ "%.2f"|format(max_price) }}
                                     </span>
                                     <span class="text-muted">/ night</span>
                                 {% else %}
@@ -890,11 +890,10 @@
         // Show Property Details Modal
         function showPropertyDetails(propertyId) {
             currentPropertyId = propertyId;
-
-            // Show loading state
             const modal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
             modal.show();
 
+            // Show loading state
             document.getElementById('propertyDetailsCarouselInner').innerHTML = `
                 <div class="carousel-item active h-100">
                     <div class="d-flex justify-content-center align-items-center h-100">
@@ -916,7 +915,7 @@
                     // Set basic info
                     document.getElementById('propertyDetailsName').textContent = prop.property_name;
                     document.getElementById('propertyDetailsLocation').textContent = `${prop.barangay}, ${prop.municipality}`;
-                    document.getElementById('propertyDetailsDescription').textContent = prop.description;
+                    document.getElementById('propertyDetailsDescription').textContent = prop.description || 'No description available';
 
                     // Set status
                     const statusBadge = document.getElementById('propertyDetailsStatus');
@@ -939,6 +938,15 @@
                             `;
                             carouselInner.appendChild(carouselItem);
                         });
+
+                        // Only show controls if there are multiple images
+                        if (prop.images.length > 1) {
+                            document.querySelector('#propertyDetailsCarousel .carousel-control-prev').style.display = 'block';
+                            document.querySelector('#propertyDetailsCarousel .carousel-control-next').style.display = 'block';
+                        } else {
+                            document.querySelector('#propertyDetailsCarousel .carousel-control-prev').style.display = 'none';
+                            document.querySelector('#propertyDetailsCarousel .carousel-control-next').style.display = 'none';
+                        }
                     } else {
                         carouselInner.innerHTML = `
                             <div class="carousel-item active h-100">
@@ -948,6 +956,8 @@
                                      style="object-fit: cover;">
                             </div>
                         `;
+                        document.querySelector('#propertyDetailsCarousel .carousel-control-prev').style.display = 'none';
+                        document.querySelector('#propertyDetailsCarousel .carousel-control-next').style.display = 'none';
                     }
 
                     // Load amenities
@@ -967,14 +977,16 @@
 
                     // Load pricing info
                     const pricingContainer = document.getElementById('propertyDetailsPricing');
+                    pricingContainer.innerHTML = '';
 
                     if (prop.rooms && prop.rooms.length > 0) {
                         const minPrice = Math.min(...prop.rooms.map(r => parseFloat(r.overnight_price)));
                         const maxPrice = Math.max(...prop.rooms.map(r => parseFloat(r.overnight_price)));
+                        const totalRooms = prop.rooms.length;
 
                         pricingContainer.innerHTML = `
                             <p><strong>Price Range:</strong> ₱${minPrice.toFixed(2)} - ₱${maxPrice.toFixed(2)} per night</p>
-                            <p><strong>Rooms Available:</strong> ${prop.rooms.length}</p>
+                            <p><strong>Rooms Available:</strong> ${totalRooms}</p>
                         `;
                     } else {
                         pricingContainer.innerHTML = '<p>No pricing information available</p>';

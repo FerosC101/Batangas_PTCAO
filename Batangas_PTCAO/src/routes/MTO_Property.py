@@ -106,30 +106,18 @@ def get_properties():
 @properties_bp.route('/<int:property_id>', methods=['GET'])
 @jwt_required()
 def get_property(property_id):
-    """Get a single property by ID"""
+    """Get a single property by ID with all related data"""
     try:
-        property = Property.query.get_or_404(property_id)
+        property = Property.query.options(
+            db.joinedload(Property.images),
+            db.joinedload(Property.amenities),
+            db.joinedload(Property.rooms).joinedload(Room.amenities),
+            db.joinedload(Property.coordinates),
+            db.joinedload(Property.typical_locations)
+        ).get_or_404(property_id)
 
-        rooms_data = []
-        for room in property.rooms:
-            room_data = {
-                'room_id': room.room_id,
-                'room_type': room.room_type,
-                'day_price': float(room.day_price),
-                'overnight_price': float(room.overnight_price),
-                'capacity': room.capacity,
-                'amenities': [amenity.amenity for amenity in room.amenities]
-            }
-            rooms_data.append(room_data)
-
-        coordinates = []
-        for coord in property.coordinates:
-            coordinates.append({
-                'longitude': coord.longitude,
-                'latitude': coord.latitude
-            })
-
-        result = {
+        # Prepare property data
+        property_data = {
             'property_id': property.property_id,
             'property_name': property.property_name,
             'barangay': property.barangay,
@@ -137,19 +125,32 @@ def get_property(property_id):
             'accommodation_type': property.accommodation_type,
             'status': property.status.value,
             'description': property.description,
-            'amenities': [amenity.amenity for amenity in property.amenities],
-            'typical_locations': [location.location for location in property.typical_locations],
-            'coordinates': coordinates,
-            'rooms': rooms_data,
-            'rating': 4.5,
-            'image_url': f"/static/uploads/properties/{property.property_image}" if property.property_image else None
+            'images': [{'id': img.id, 'image_path': img.image_path} for img in property.images],
+            'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in property.amenities if a.room_id is None],
+            'coordinates': [{'id': c.id, 'longitude': c.longitude, 'latitude': c.latitude} for c in property.coordinates],
+            'typical_locations': [{'id': tl.id, 'location': tl.location} for tl in property.typical_locations],
+            'rooms': []
         }
+
+        # Prepare room data
+        for room in property.rooms:
+            room_data = {
+                'room_id': room.room_id,
+                'room_type': room.room_type,
+                'day_price': float(room.day_price),
+                'overnight_price': float(room.overnight_price),
+                'capacity': room.capacity,
+                'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in room.amenities]
+            }
+            property_data['rooms'].append(room_data)
 
         return jsonify({
             'status': 'success',
-            'property': result
+            'property': property_data
         }), 200
+
     except Exception as e:
+        current_app.logger.error(f"Error fetching property: {str(e)}")
         return jsonify({
             'status': 'error',
             'message': str(e)
@@ -166,124 +167,98 @@ def create_property():
         if not user or not user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        # Handle both form data (for files) and JSON
-        if request.files:
-            data = request.form.to_dict()
-            files = request.files.getlist('property_images')
-        else:
-            data = request.get_json()
-            files = []
+        # Handle form data
+        data = request.form.to_dict()
+        files = request.files.getlist('property_images')
 
-        # Validate required fields
-        required_fields = ['property_name', 'barangay', 'municipality', 'accommodation_type']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'status': 'error',
-                    'message': f'Missing required field: {field}'
-                }), 400
-
-        # Create property - no explicit transaction begin needed
+        # Create property
         new_property = Property(
             property_name=data['property_name'],
             barangay=data['barangay'],
-            municipality=data['municipality'],
+            municipality=user.municipality,
             accommodation_type=data['accommodation_type'],
             status=PropertyStatus(data.get('status', 'ACTIVE')),
             description=data.get('description')
         )
 
         db.session.add(new_property)
-        db.session.flush()  # This generates the ID
-
-        # Handle file uploads
-        if files:
-            for file in files:
-                if file and allowed_file(file.filename):
-                    ext = file.filename.rsplit('.', 1)[1].lower()
-                    filename = f"{secure_filename(data['property_name']).replace(' ', '_')}_{uuid.uuid4().hex[:8]}.{ext}"
-                    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                    file.save(file_path)
-
-                    db.session.add(PropertyImage(
-                        property_id=new_property.property_id,
-                        image_path=filename
-                    ))
-
-        # Handle amenities
-        if 'amenities' in data and isinstance(data['amenities'], list):
-            for amenity in data['amenities']:
-                db.session.add(Amenity(
-                    property_id=new_property.property_id,
-                    amenity=amenity
-                ))
-
-        # Handle typical locations
-        if 'typical_locations' in data and isinstance(data['typical_locations'], list):
-            for location in data['typical_locations']:
-                db.session.add(TypicalLocation(
-                    property_id=new_property.property_id,
-                    location=location
-                ))
+        db.session.flush()  # Generate the ID
 
         # Handle coordinates
-        if 'coordinates' in data and isinstance(data['coordinates'], list):
-            for coord in data['coordinates']:
-                if 'longitude' in coord and 'latitude' in coord:
-                    db.session.add(LongLat(
-                        property_id=new_property.property_id,
-                        longitude=float(coord['longitude']),  # Ensure float conversion
-                        latitude=float(coord['latitude'])  # Ensure float conversion
-                    ))
+        if 'longitude' in data and 'latitude' in data:
+            db.session.add(LongLat(
+                property_id=new_property.property_id,
+                longitude=float(data['longitude']),
+                latitude=float(data['latitude'])
+            ))
+
+        # Handle file uploads
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(f"{new_property.property_id}_{file.filename}")
+                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                db.session.add(PropertyImage(
+                    property_id=new_property.property_id,
+                    image_path=filename
+                ))
+
+        # Handle amenities
+        amenities = request.form.getlist('amenities[]')
+        for amenity in amenities:
+            if amenity.strip():
+                db.session.add(Amenity(
+                    property_id=new_property.property_id,
+                    amenity=amenity.strip()
+                ))
 
         # Handle rooms
-        if 'rooms' in data and isinstance(data['rooms'], list):
-            for room_data in data['rooms']:
-                room = Room(
-                    property_id=new_property.property_id,
-                    room_type=room_data.get('room_type'),
-                    day_price=float(room_data.get('day_price', 0)),  # Convert to float
-                    overnight_price=float(room_data.get('overnight_price', 0)),  # Convert to float
-                    capacity=int(room_data.get('capacity', 1))  # Convert to int
-                )
-                db.session.add(room)
-                db.session.flush()  # Generate room ID
+        room_indices = set()
+        for key in request.form.keys():
+            if key.startswith('rooms['):
+                index = key.split('[')[1].split(']')[0]
+                room_indices.add(index)
 
-                if 'amenities' in room_data and isinstance(room_data['amenities'], list):
-                    for amenity in room_data['amenities']:
-                        db.session.add(Amenity(
-                            room_id=room.room_id,
-                            property_id=new_property.property_id,
-                            amenity=amenity
-                        ))
+        for index in room_indices:
+            room = Room(
+                property_id=new_property.property_id,
+                room_type=request.form.get(f'rooms[{index}][room_type]'),
+                day_price=float(request.form.get(f'rooms[{index}][day_price]', 0)),
+                overnight_price=float(request.form.get(f'rooms[{index}][overnight_price]', 0)),
+                capacity=int(request.form.get(f'rooms[{index}][capacity]', 1))
+            )
+            db.session.add(room)
+            db.session.flush()
+
+        amenities = request.form.getlist('amenities[]')
+        for amenity in amenities:
+            if amenity.strip():  # Skip empty amenities
+                amenity_record = Amenity(
+                    property_id=new_property.property_id,
+                    amenity=amenity.strip()
+                )
+                db.session.add(amenity_record)
+                db.session.flush()
 
         db.session.commit()
 
         return jsonify({
-            'status': 'success',
-            'message': 'Property created successfully',
-            'property_id': new_property.property_id
-        }), 201
+                'status': 'success',
+                'message': 'Property created successfully',
+                'property_id': new_property.property_id
+            }), 201
 
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        current_app.logger.error(f"Database error: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'message': 'Database error occurred'
-        }), 500
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Unexpected error: {str(e)}")
+        current_app.logger.error(f"Error creating property: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': 'An unexpected error occurred'
+            'message': str(e)
         }), 500
+
 
 @properties_bp.route('/update/<int:property_id>', methods=['POST'])
 @jwt_required()
 def update_property(property_id):
-    """Update an existing property"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -292,60 +267,85 @@ def update_property(property_id):
         if property.municipality != user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        if 'property_image' in request.files:
-            file = request.files['property_image']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"{property_id}_{file.filename}")
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                property.property_image = filename
+        # Handle form data
+        data = request.form.to_dict()
+        files = request.files.getlist('property_images')
 
-        data = request.form.to_dict() or request.get_json()
-
+        # Update basic property info
         property.property_name = data.get('property_name', property.property_name)
         property.barangay = data.get('barangay', property.barangay)
         property.accommodation_type = data.get('accommodation_type', property.accommodation_type)
         property.status = PropertyStatus(data.get('status', property.status.value))
         property.description = data.get('description', property.description)
 
-        # Update coordinates
-        if 'coordinates' in data and isinstance(data['coordinates'], list):
-            property.coordinates = []
-            for coord in data['coordinates']:
-                property.coordinates.append(LongLat(
-                    longitude=coord['longitude'],
-                    latitude=coord['latitude']
+        if 'longitude' in data and 'latitude' in data:
+            LongLat.query.filter_by(property_id=property_id).delete()
+            db.session.add(LongLat(
+                property_id=property_id,
+                longitude=float(data['longitude']),
+                latitude=float(data['latitude'])
+            ))
+
+        amenities = request.form.getlist('amenities[]')
+        if amenities:
+            Amenity.query.filter_by(property_id=property_id, room_id=None).delete()
+            for amenity in amenities:
+                if amenity:
+                    db.session.add(Amenity(
+                        property_id=property_id,
+                        amenity=amenity
+                    ))
+
+        # Handle rooms
+        room_indices = set()
+        for key in request.form.keys():
+            if key.startswith('rooms['):
+                index = key.split('[')[1].split(']')[0]
+                room_indices.add(index)
+
+        if room_indices:
+            Room.query.filter_by(property_id=property_id).delete()
+
+            for index in room_indices:
+                room_data = {
+                    'room_type': request.form.get(f'rooms[{index}][room_type]'),
+                    'day_price': request.form.get(f'rooms[{index}][day_price]'),
+                    'overnight_price': request.form.get(f'rooms[{index}][overnight_price]'),
+                    'capacity': request.form.get(f'rooms[{index}][capacity]')
+                }
+
+                if room_data['room_type']:
+                    room = Room(
+                        property_id=property_id,
+                        room_type=room_data['room_type'],
+                        day_price=float(room_data.get('day_price', 0)),
+                        overnight_price=float(room_data.get('overnight_price', 0)),
+                        capacity=int(room_data.get('capacity', 1))
+                    )
+                    db.session.add(room)
+
+        # Handle file uploads
+        for file in files:
+            if file and allowed_file(file.filename):
+                ext = file.filename.rsplit('.', 1)[1].lower()
+                filename = f"{property_id}_{secure_filename(property.property_name)}_{uuid.uuid4().hex[:8]}.{ext}"
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+
+                db.session.add(PropertyImage(
+                    property_id=property_id,
+                    image_path=filename
                 ))
 
-        # Update amenities
-        if 'amenities' in data and isinstance(data['amenities'], list):
-            property.amenities = []
-            for amenity_name in data['amenities']:
-                property.amenities.append(Amenity(amenity=amenity_name))
-
-        # Update rooms
-        if 'rooms' in data and isinstance(data['rooms'], list):
-            property.rooms = []
-            for room_data in data['rooms']:
-                room = Room(
-                    room_type=room_data.get('room_type'),
-                    day_price=room_data.get('day_price'),
-                    overnight_price=room_data.get('overnight_price'),
-                    capacity=room_data.get('capacity')
-                )
-                property.rooms.append(room)
-
         db.session.commit()
+
         return jsonify({
             'status': 'success',
             'message': 'Property updated successfully'
         }), 200
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+
     except Exception as e:
+        db.session.rollback()
         return jsonify({
             'status': 'error',
             'message': str(e)
