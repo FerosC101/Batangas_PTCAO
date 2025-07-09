@@ -893,6 +893,17 @@
             const modal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
             modal.show();
 
+            // Clear previous content
+            document.getElementById('propertyDetailsName').textContent = '';
+            document.getElementById('propertyDetailsLocation').textContent = '';
+            document.getElementById('propertyDetailsDescription').textContent = '';
+            document.getElementById('propertyDetailsStatus').textContent = '';
+            document.getElementById('propertyDetailsCarouselInner').innerHTML = '';
+            document.getElementById('propertyDetailsAmenities').innerHTML = '';
+            document.getElementById('propertyDetailsPricing').innerHTML = '';
+            document.getElementById('propertyDetailsRooms').innerHTML = '';
+            document.getElementById('propertyMapContainer').innerHTML = '';
+
             // Show loading state
             document.getElementById('propertyDetailsCarouselInner').innerHTML = `
                 <div class="carousel-item active h-100">
@@ -907,9 +918,14 @@
             fetch(`/property/${propertyId}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                if(data.property) {
+                if(data.status === 'success' && data.property) {
                     const prop = data.property;
 
                     // Set basic info
@@ -939,13 +955,12 @@
                             carouselInner.appendChild(carouselItem);
                         });
 
-                        // Only show controls if there are multiple images
+                        // Show controls if multiple images
+                        const carouselControls = document.querySelectorAll('#propertyDetailsCarousel .carousel-control');
                         if (prop.images.length > 1) {
-                            document.querySelector('#propertyDetailsCarousel .carousel-control-prev').style.display = 'block';
-                            document.querySelector('#propertyDetailsCarousel .carousel-control-next').style.display = 'block';
+                            carouselControls.forEach(control => control.style.display = 'flex');
                         } else {
-                            document.querySelector('#propertyDetailsCarousel .carousel-control-prev').style.display = 'none';
-                            document.querySelector('#propertyDetailsCarousel .carousel-control-next').style.display = 'none';
+                            carouselControls.forEach(control => control.style.display = 'none');
                         }
                     } else {
                         carouselInner.innerHTML = `
@@ -956,8 +971,9 @@
                                      style="object-fit: cover;">
                             </div>
                         `;
-                        document.querySelector('#propertyDetailsCarousel .carousel-control-prev').style.display = 'none';
-                        document.querySelector('#propertyDetailsCarousel .carousel-control-next').style.display = 'none';
+                        document.querySelectorAll('#propertyDetailsCarousel .carousel-control').forEach(control => {
+                            control.style.display = 'none';
+                        });
                     }
 
                     // Load amenities
@@ -980,8 +996,9 @@
                     pricingContainer.innerHTML = '';
 
                     if (prop.rooms && prop.rooms.length > 0) {
-                        const minPrice = Math.min(...prop.rooms.map(r => parseFloat(r.overnight_price)));
-                        const maxPrice = Math.max(...prop.rooms.map(r => parseFloat(r.overnight_price)));
+                        const overnightPrices = prop.rooms.map(room => parseFloat(room.overnight_price));
+                        const minPrice = Math.min(...overnightPrices);
+                        const maxPrice = Math.max(...overnightPrices);
                         const totalRooms = prop.rooms.length;
 
                         pricingContainer.innerHTML = `
@@ -1032,14 +1049,61 @@
                         roomsContainer.innerHTML = '<p>No room information available</p>';
                     }
 
-                    // Initialize map
-                    initPropertyMap(prop);
+                    // Initialize map if coordinates exist
+                    if (prop.coordinates && prop.coordinates.length > 0) {
+                        const coord = prop.coordinates[0];
+                        initPropertyMap(prop, coord.latitude, coord.longitude);
+                    } else {
+                        document.getElementById('propertyMapContainer').innerHTML = '<div class="alert alert-info">No location data available for this property</div>';
+                    }
+                } else {
+                    throw new Error(data.message || 'Invalid response from server');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to load property details');
+                console.error('Error loading property details:', error);
+                document.getElementById('propertyDetailsCarouselInner').innerHTML = `
+                    <div class="carousel-item active h-100">
+                        <div class="d-flex flex-column justify-content-center align-items-center h-100 text-center p-3">
+                            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                            <h4>Failed to load property details</h4>
+                            <p>${error.message || 'Please try again later'}</p>
+                        </div>
+                    </div>
+                `;
             });
+        }
+
+        // Updated map initialization function
+        function initPropertyMap(property, latitude, longitude) {
+            const mapContainer = document.getElementById('propertyMapContainer');
+            mapContainer.innerHTML = '<div id="propertyMap" class="property-map"></div>';
+
+            // Convert to numbers if needed
+            const lat = parseFloat(latitude);
+            const lng = parseFloat(longitude);
+
+            // Validate coordinates
+            if (isNaN(lat) || isNaN(lng)) {
+                mapContainer.innerHTML = '<div class="alert alert-warning">Invalid location data</div>';
+                return;
+            }
+
+            try {
+                const map = L.map('propertyMap').setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                L.marker([lat, lng]).addTo(map)
+                    .bindPopup(`<b>${property.property_name}</b><br>${property.barangay}, ${property.municipality}`);
+
+                // Fix map sizing issues
+                setTimeout(() => map.invalidateSize(), 100);
+            } catch (e) {
+                console.error('Map initialization error:', e);
+                mapContainer.innerHTML = '<div class="alert alert-danger">Failed to load map</div>';
+            }
         }
 
         // Initialize Property Map
