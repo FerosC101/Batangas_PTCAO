@@ -916,7 +916,10 @@
             `;
 
             fetch(`/property/${propertyId}`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                }
             })
             .then(response => {
                 if (!response.ok) {
@@ -982,10 +985,12 @@
 
                     if (prop.amenities && prop.amenities.length > 0) {
                         prop.amenities.forEach(amenity => {
-                            const amenityBadge = document.createElement('span');
-                            amenityBadge.className = 'amenity-badge';
-                            amenityBadge.innerHTML = `<i class="fas fa-check me-1"></i> ${amenity.amenity}`;
-                            amenitiesContainer.appendChild(amenityBadge);
+                            if (!amenity.room_id) {
+                                const amenityBadge = document.createElement('span');
+                                amenityBadge.className = 'amenity-badge';
+                                amenityBadge.innerHTML = `<i class="fas fa-check me-1"></i> ${amenity.amenity}`;
+                                amenitiesContainer.appendChild(amenityBadge);
+                            }
                         });
                     } else {
                         amenitiesContainer.innerHTML = '<p>No amenities listed</p>';
@@ -1103,31 +1108,6 @@
             } catch (e) {
                 console.error('Map initialization error:', e);
                 mapContainer.innerHTML = '<div class="alert alert-danger">Failed to load map</div>';
-            }
-        }
-
-        // Initialize Property Map
-        function initPropertyMap(property) {
-            const mapContainer = document.getElementById('propertyMapContainer');
-            mapContainer.innerHTML = '<div id="propertyMap" class="property-map"></div>';
-
-            if (property.coordinates && property.coordinates.length > 0) {
-                const coord = property.coordinates[0];
-                const lat = parseFloat(coord.latitude);
-                const lng = parseFloat(coord.longitude);
-
-                propertyMap = L.map('propertyMap').setView([lat, lng], 15);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(propertyMap);
-
-                L.marker([lat, lng]).addTo(propertyMap)
-                    .bindPopup(`<b>${property.property_name}</b><br>${property.barangay}, ${property.municipality}`);
-
-                setTimeout(() => propertyMap.invalidateSize(), 0);
-            } else {
-                mapContainer.innerHTML = '<div class="alert alert-info">No location data available for this property</div>';
             }
         }
 
@@ -1593,6 +1573,7 @@
                     // Check if the click was on the edit or delete buttons or their children
                     const isEditButton = e.target.closest('.edit-btn');
                     const isDeleteButton = e.target.closest('.delete-btn');
+                    const isCarousel = e.target.closest('.carousel-control');
 
                     if (!isEditButton && !isDeleteButton) {
                         const propertyId = this.getAttribute('data-property-id');
