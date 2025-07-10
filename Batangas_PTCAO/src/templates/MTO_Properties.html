@@ -1,3 +1,4 @@
+<!-- [file name]: MTO_Properties.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -356,6 +357,31 @@
             border-radius: 8px;
             margin-top: 15px;
         }
+
+        /* New styles for typical locations */
+        .typical-locations-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .location-tag {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .location-tag button {
+            margin-left: 5px;
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -637,6 +663,11 @@
                             <div class="amenities-list mb-4" id="propertyDetailsAmenities">
                                 <!-- Amenities will be loaded here -->
                             </div>
+
+                            <h5 class="mb-3">Typical Locations</h5>
+                            <div class="typical-locations-container mb-4" id="propertyDetailsLocations">
+                                <!-- Typical locations will be loaded here -->
+                            </div>
                         </div>
 
                         <div class="col-md-4">
@@ -710,6 +741,19 @@
                                 <div class="mb-3">
                                     <label class="form-label">Description</label>
                                     <textarea class="form-control" name="description" rows="3"></textarea>
+                                </div>
+
+                                <!-- Typical Locations Section -->
+                                <div class="mb-3">
+                                    <label class="form-label">Typical Locations</label>
+                                    <select class="form-select mb-2" id="typicalLocationSelect" multiple>
+                                        {% for location in typical_locations %}
+                                        <option value="{{ location }}">{{ location }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Hold Ctrl/Cmd to select multiple locations</small>
+                                    <div id="selectedLocations" class="d-flex flex-wrap gap-2 mt-2"></div>
+                                    <input type="hidden" name="typical_locations[]" id="typicalLocationsHidden">
                                 </div>
 
                                 <div class="mb-3">
@@ -827,6 +871,19 @@
                                     <textarea class="form-control" name="description" id="editDescription" rows="3"></textarea>
                                 </div>
 
+                                <!-- Typical Locations Section for Edit -->
+                                <div class="mb-3">
+                                    <label class="form-label">Typical Locations</label>
+                                    <select class="form-select mb-2" id="editTypicalLocationSelect" multiple>
+                                        {% for location in typical_locations %}
+                                        <option value="{{ location }}">{{ location }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Hold Ctrl/Cmd to select multiple locations</small>
+                                    <div id="editSelectedLocations" class="d-flex flex-wrap gap-2 mt-2"></div>
+                                    <input type="hidden" name="typical_locations[]" id="editTypicalLocationsHidden">
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label">Additional Images</label>
                                     <input type="file" class="form-control" name="property_images" multiple accept="image/*">
@@ -900,6 +957,7 @@
             document.getElementById('propertyDetailsStatus').textContent = '';
             document.getElementById('propertyDetailsCarouselInner').innerHTML = '';
             document.getElementById('propertyDetailsAmenities').innerHTML = '';
+            document.getElementById('propertyDetailsLocations').innerHTML = '';
             document.getElementById('propertyDetailsPricing').innerHTML = '';
             document.getElementById('propertyDetailsRooms').innerHTML = '';
             document.getElementById('propertyMapContainer').innerHTML = '';
@@ -994,6 +1052,21 @@
                         });
                     } else {
                         amenitiesContainer.innerHTML = '<p>No amenities listed</p>';
+                    }
+
+                    // Load typical locations
+                    const locationsContainer = document.getElementById('propertyDetailsLocations');
+                    locationsContainer.innerHTML = '';
+
+                    if (prop.typical_locations && prop.typical_locations.length > 0) {
+                        prop.typical_locations.forEach(location => {
+                            const locationTag = document.createElement('span');
+                            locationTag.className = 'location-tag';
+                            locationTag.textContent = location.location;
+                            locationsContainer.appendChild(locationTag);
+                        });
+                    } else {
+                        locationsContainer.innerHTML = '<p>No typical locations listed</p>';
                     }
 
                     // Load pricing info
@@ -1253,6 +1326,23 @@
                         document.getElementById('editLongitude').value = coord.longitude;
                     }
 
+                    // Handle typical locations
+                    const typicalLocations = prop.typical_locations.map(tl => tl.location);
+                    const locationSelect = document.getElementById('editTypicalLocationSelect');
+                    Array.from(locationSelect.options).forEach(option => {
+                        if (typicalLocations.includes(option.value)) {
+                            option.selected = true;
+                            // Add to selected locations display
+                            const locationTag = document.createElement('span');
+                            locationTag.className = 'location-tag';
+                            locationTag.textContent = option.value;
+                            document.getElementById('editSelectedLocations').appendChild(locationTag);
+                        }
+                    });
+
+                    // Update hidden input for typical locations
+                    document.getElementById('editTypicalLocationsHidden').value = typicalLocations.join(',');
+
                     // Populate amenities
                     const amenitiesContainer = document.getElementById('editAmenitiesContainer');
                     amenitiesContainer.innerHTML = '';
@@ -1416,6 +1506,13 @@
             e.preventDefault();
             const formData = new FormData(e.target);
 
+            // Add typical locations to form data
+            const locationSelect = document.getElementById('typicalLocationSelect');
+            const selectedLocations = Array.from(locationSelect.selectedOptions).map(option => option.value);
+            selectedLocations.forEach(location => {
+                formData.append('typical_locations[]', location);
+            });
+
             try {
                 const response = await fetch('/property', {
                     method: 'POST',
@@ -1441,6 +1538,13 @@
         document.getElementById('editPropertyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
+
+            // Add typical locations to form data
+            const locationSelect = document.getElementById('editTypicalLocationSelect');
+            const selectedLocations = Array.from(locationSelect.selectedOptions).map(option => option.value);
+            selectedLocations.forEach(location => {
+                formData.append('typical_locations[]', location);
+            });
 
             try {
                 // First handle file uploads if any
@@ -1480,6 +1584,7 @@
                         longitude: formData.get('longitude'),
                         latitude: formData.get('latitude')
                     }],
+                    typical_locations: formData.getAll('typical_locations[]'),
                     amenities: formData.getAll('amenities[]').filter(a => a),
                     rooms: []
                 };
@@ -1615,6 +1720,36 @@
                     e.stopPropagation();
                     const propertyId = this.getAttribute('data-id');
                     openEditModal(propertyId);
+                });
+            });
+
+            // Handle typical location selection for add modal
+            const locationSelect = document.getElementById('typicalLocationSelect');
+            locationSelect.addEventListener('change', function() {
+                const selectedLocations = Array.from(this.selectedOptions).map(option => option.value);
+                const container = document.getElementById('selectedLocations');
+                container.innerHTML = '';
+
+                selectedLocations.forEach(location => {
+                    const tag = document.createElement('span');
+                    tag.className = 'location-tag';
+                    tag.textContent = location;
+                    container.appendChild(tag);
+                });
+            });
+
+            // Handle typical location selection for edit modal
+            const editLocationSelect = document.getElementById('editTypicalLocationSelect');
+            editLocationSelect.addEventListener('change', function() {
+                const selectedLocations = Array.from(this.selectedOptions).map(option => option.value);
+                const container = document.getElementById('editSelectedLocations');
+                container.innerHTML = '';
+
+                selectedLocations.forEach(location => {
+                    const tag = document.createElement('span');
+                    tag.className = 'location-tag';
+                    tag.textContent = location;
+                    container.appendChild(tag);
                 });
             });
         });

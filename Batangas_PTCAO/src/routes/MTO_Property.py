@@ -1,3 +1,4 @@
+# [file name]: MTO_Property.py
 import uuid
 
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash, current_app
@@ -15,13 +16,16 @@ properties_bp = Blueprint("properties", __name__, url_prefix="/property")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = 'static/uploads/properties'
 
+
 def init_property_routes(app):
     app.register_blueprint(properties_bp)
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @properties_bp.route('/mto/property')
 @jwt_required()
@@ -36,15 +40,24 @@ def mto_properties():
             return redirect(url_for('dashboard.mto_dashboard'))
 
         properties = Property.query.filter_by(municipality=user.municipality).all()
+
+        # Define typical locations for dropdown
+        typical_locations = [
+            "Beachfront", "Mountain View", "City Center", "Lakeside",
+            "Riverside", "Forest", "Countryside", "Island"
+        ]
+
         return render_template(
             'MTO_Properties.html',
             properties=properties,
             user_id=current_user_id,
-            municipality=user.municipality
+            municipality=user.municipality,
+            typical_locations=typical_locations
         )
     except Exception as e:
         flash(f'Failed to load properties: {str(e)}', 'error')
         return redirect(url_for('dashboard.mto_dashboard'))
+
 
 @properties_bp.route('', methods=['GET'])
 @jwt_required()
@@ -103,10 +116,11 @@ def get_properties():
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/<int:property_id>', methods=['GET'])
 @jwt_required()
 def get_property(property_id):
-    """Get a single property by ID with all related data"""
+    print(f"Fetching property ID: {property_id}")
     try:
         property = Property.query.options(
             db.joinedload(Property.images),
@@ -126,8 +140,10 @@ def get_property(property_id):
             'status': property.status.value,
             'description': property.description,
             'images': [{'id': img.id, 'image_path': img.image_path} for img in property.images],
-            'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in property.amenities if a.room_id is None],
-            'coordinates': [{'id': c.id, 'longitude': c.longitude, 'latitude': c.latitude} for c in property.coordinates],
+            'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in property.amenities if
+                          a.room_id is None],
+            'coordinates': [{'id': c.id, 'longitude': c.longitude, 'latitude': c.latitude} for c in
+                            property.coordinates],
             'typical_locations': [{'id': tl.id, 'location': tl.location} for tl in property.typical_locations],
             'rooms': []
         }
@@ -192,6 +208,15 @@ def create_property():
                 latitude=float(data['latitude'])
             ))
 
+        # Handle typical locations
+        typical_locations = request.form.getlist('typical_locations[]')
+        for location in typical_locations:
+            if location.strip():
+                db.session.add(TypicalLocation(
+                    property_id=new_property.property_id,
+                    location=location.strip()
+                ))
+
         # Handle file uploads
         for file in files:
             if file and allowed_file(file.filename):
@@ -242,10 +267,10 @@ def create_property():
         db.session.commit()
 
         return jsonify({
-                'status': 'success',
-                'message': 'Property created successfully',
-                'property_id': new_property.property_id
-            }), 201
+            'status': 'success',
+            'message': 'Property created successfully',
+            'property_id': new_property.property_id
+        }), 201
 
     except Exception as e:
         db.session.rollback()
@@ -285,6 +310,16 @@ def update_property(property_id):
                 longitude=float(data['longitude']),
                 latitude=float(data['latitude'])
             ))
+
+        # Update typical locations
+        TypicalLocation.query.filter_by(property_id=property_id).delete()
+        typical_locations = request.form.getlist('typical_locations[]')
+        for location in typical_locations:
+            if location.strip():
+                db.session.add(TypicalLocation(
+                    property_id=property_id,
+                    location=location.strip()
+                ))
 
         amenities = request.form.getlist('amenities[]')
         if amenities:
@@ -393,6 +428,7 @@ def upload_property_images(property_id):
         db.session.rollback()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+
 @properties_bp.route('/<int:property_id>', methods=['DELETE'])
 @jwt_required()
 def delete_property(property_id):
@@ -423,6 +459,7 @@ def delete_property(property_id):
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/barangays', methods=['GET'])
 @jwt_required()
 def get_barangays():
@@ -440,6 +477,7 @@ def get_barangays():
             'status': 'error',
             'message': str(e)
         }), 500
+
 
 @properties_bp.route('/municipalities', methods=['GET'])
 @jwt_required()
@@ -459,6 +497,7 @@ def get_municipalities():
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/accommodation-types', methods=['GET'])
 @jwt_required()
 def get_accommodation_types():
@@ -477,6 +516,7 @@ def get_accommodation_types():
             'status': 'error',
             'message': str(e)
         }), 500
+
 
 @properties_bp.route('/<int:property_id>/status', methods=['PATCH'])
 @jwt_required()
