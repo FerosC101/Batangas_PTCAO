@@ -14,13 +14,13 @@ from datetime import datetime
 properties_bp = Blueprint("properties", __name__, url_prefix="/property")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-UPLOAD_FOLDER = 'static/uploads/properties'
+UPLOAD_FOLDER = 'static/uploads/events'
 
 
 def init_property_routes(app):
     app.register_blueprint(properties_bp)
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
 def allowed_file(filename):
@@ -139,7 +139,8 @@ def get_property(property_id):
             'accommodation_type': property.accommodation_type,
             'status': property.status.value,
             'description': property.description,
-            'images': [{'id': img.id, 'image_path': img.image_path} for img in property.images],
+            'images': [{'id': img.id, 'image_path': url_for('static', filename=f'uploads/events/{img.image_path}')} for
+                       img in property.images],
             'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in property.amenities if
                           a.room_id is None],
             'coordinates': [{'id': c.id, 'longitude': c.longitude, 'latitude': c.latitude} for c in
@@ -432,31 +433,50 @@ def upload_property_images(property_id):
 @properties_bp.route('/<int:property_id>', methods=['DELETE'])
 @jwt_required()
 def delete_property(property_id):
-    """Delete a property"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
-        property = Property.query.get_or_404(property_id)
+        if not user:
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
 
+        property = Property.query.get(property_id)
+        if not property:
+            return jsonify({'status': 'error', 'message': 'Property not found'}), 404
+
+        # Verify the property belongs to the user's municipality
         if property.municipality != user.municipality:
-            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+            return jsonify({'status': 'error', 'message': 'Unauthorized to delete this property'}), 403
+
+        # Delete associated images first
+        for image in property.images:
+            try:
+                image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], image.image_path)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+            except Exception as e:
+                current_app.logger.error(f"Error deleting image {image.image_path}: {str(e)}")
+                continue
 
         db.session.delete(property)
         db.session.commit()
+
         return jsonify({
             'status': 'success',
             'message': 'Property deleted successfully'
         }), 200
+
     except SQLAlchemyError as e:
         db.session.rollback()
+        current_app.logger.error(f"Database error deleting property: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'Database error occurred while deleting property'
         }), 500
     except Exception as e:
+        current_app.logger.error(f"Unexpected error deleting property: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'An unexpected error occurred'
         }), 500
 
 

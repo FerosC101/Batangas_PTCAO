@@ -166,13 +166,12 @@
             height: calc(100vh - 70px);
         }
         .map-container {
-            height: 65vh;
+            height: 70vh;
             position: relative;
         }
         #mapView {
             height: 100%;
             width: 100%;
-            z-index: 1;
         }
         .search-overlay {
             position: absolute;
@@ -281,116 +280,26 @@
         .noUi-connect {
             background-color: var(--primary);
         }
-        .map-marker {
-            background-color: var(--primary);
-            border: 3px solid white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+
+        /* Custom marker styles */
+        .custom-marker {
+            background: none !important;
+            border: none !important;
         }
-        .map-marker:hover, .map-marker.active {
-            background-color: var(--accent);
-            transform: scale(1.2);
-        }
-        .property-detail-view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: white;
-            z-index: 20;
-            padding: 20px;
-            overflow-y: auto;
-            display: none;
-        }
-        .property-detail-view.active {
-            display: block;
-        }
-        .detail-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: white;
-            border-radius: 50%;
+
+        .marker-container {
             width: 40px;
             height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        .detail-gallery {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        .gallery-img {
-            width: 100px;
-            height: 70px;
+
+        .marker-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .detail-amenities {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .detail-section {
-            margin-bottom: 20px;
-        }
-        .detail-section-title {
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 10px;
-            position: relative;
-            padding-bottom: 5px;
-        }
-        .detail-section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background-color: var(--accent);
-        }
-        .rating-stars {
-            display: inline-block;
-            margin-left: 10px;
-        }
-        .drawer-scroll-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            z-index: 5;
-        }
-        .drawer-scroll-left {
-            left: 10px;
-        }
-        .drawer-scroll-right {
-            right: 10px;
         }
     </style>
 </head>
@@ -596,297 +505,150 @@
                     <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
-
-            <!-- Property Detail View -->
-            <div class="property-detail-view" id="propertyDetailView">
-                <!-- Keep the existing detail view structure -->
-                <!-- ... -->
-            </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize map
             const map = L.map('mapView').setView([13.7565, 121.0583], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            // Initialize variables
-            let properties = [];
-            const markers = [];
-            const propertyCardsContainer = document.getElementById('propertyCards');
-            let currentProperties = [];
-            let priceSlider;
-
-            // Function to fetch properties from backend
-            async function fetchProperties() {
+            // Main function to load properties
+            async function loadProperties() {
                 try {
-                    const response = await fetch('/api/destinations/map-data');
-                    const data = await response.json();
+                    showLoading(true);
 
-                    if (data.success) {
-                        properties = data.properties;
-                        currentProperties = [...properties];
-                        updatePropertyCards();
-                        updateMarkers();
-
-                        // Set municipality name
-                        document.getElementById('municipalityName').textContent = data.municipality;
-                    } else {
-                        console.error('Failed to fetch properties:', data.message);
-                    }
-                } catch (error) {
-                    console.error('Error fetching properties:', error);
-                }
-            }
-
-            // Function to fetch filter options
-            async function fetchFilterOptions() {
-                try {
-                    const response = await fetch('/api/destinations/filter-options');
-                    const data = await response.json();
-
-                    if (data.success) {
-                        // Populate type filter
-                        const typeFilter = document.getElementById('typeFilter');
-                        data.types.forEach(type => {
-                            const option = document.createElement('option');
-                            option.value = type;
-                            option.textContent = type;
-                            typeFilter.appendChild(option);
-                        });
-
-                        // Populate barangay filter
-                        const barangayFilter = document.getElementById('barangayFilter');
-                        data.barangays.forEach(barangay => {
-                            const option = document.createElement('option');
-                            option.value = barangay;
-                            option.textContent = barangay;
-                            barangayFilter.appendChild(option);
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error fetching filter options:', error);
-                }
-            }
-
-            // Function to generate star rating HTML
-            function generateStarRating(rating) {
-                const fullStars = Math.floor(rating);
-                let halfStar = rating % 1 >= 0.5;
-                let stars = '';
-
-                for (let i = 0; i < 5; i++) {
-                    if (i < fullStars) stars += '<i class="fas fa-star text-warning"></i>';
-                    else if (halfStar) {
-                        stars += '<i class="fas fa-star-half-alt text-warning"></i>';
-                        halfStar = false;
-                    } else {
-                        stars += '<i class="far fa-star text-warning"></i>';
-                    }
-                }
-                return stars;
-            }
-
-            // Function to create property cards
-            function createPropertyCard(property) {
-                const card = document.createElement('div');
-                card.className = 'property-card';
-                card.dataset.id = property.id;
-                card.innerHTML = `
-                    <img src="${property.image}" class="property-img card-img-top" alt="${property.name}" onerror="this.src='https://via.placeholder.com/400x200?text=Property+Image'">
-                    <div class="card-body">
-                        <h5 class="property-title">${property.name}</h5>
-                        <p class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${property.location}</p>
-                        <p class="property-price">₱${property.price.toLocaleString()}</p>
-                        <div class="property-rating">${generateStarRating(property.rating)}</div>
-                        <div class="amenities mt-2">
-                            ${property.amenities.slice(0, 3).map(a => `<span class="amenity-badge">${a}</span>`).join('')}
-                            ${property.amenities.length > 3 ? '<span class="amenity-badge">+ more</span>' : ''}
-                        </div>
-                    </div>
-                `;
-                card.addEventListener('click', () => showPropertyDetail(property));
-                return card;
-            }
-
-            // Function to update map markers
-            function updateMarkers() {
-                // Clear existing markers
-                markers.forEach(marker => map.removeLayer(marker));
-                markers.length = 0;
-
-                // Add new markers
-                currentProperties.forEach(property => {
-                    const marker = L.marker(property.coordinates)
-                        .addTo(map)
-                        .bindPopup(`<b>${property.name}</b><br>${property.type}<br>₱${property.price.toLocaleString()}/night`)
-                        .on('click', () => showPropertyDetail(property));
-                    markers.push(marker);
-                });
-
-                // Adjust map view to show all markers
-                if (currentProperties.length > 0) {
-                    const bounds = L.latLngBounds(currentProperties.map(p => p.coordinates));
-                    map.fitBounds(bounds, { padding: [50, 50] });
-                }
-            }
-
-            // Function to update property cards
-            function updatePropertyCards() {
-                propertyCardsContainer.innerHTML = '';
-                currentProperties.forEach(p => {
-                    propertyCardsContainer.appendChild(createPropertyCard(p));
-                });
-            }
-
-            // Function to show property details
-            function showPropertyDetail(property) {
-                document.getElementById('detailTitle').textContent = property.name;
-                document.getElementById('detailLocation').textContent = property.location;
-                document.getElementById('detailDescription').textContent = property.description;
-                document.getElementById('detailAmenities').innerHTML =
-                    property.amenities.map(a => `<span class="amenity-badge">${a}</span>`).join('');
-                document.getElementById('detailPhone').textContent = property.phone;
-                document.getElementById('detailEmail').textContent = property.email;
-                document.getElementById('detailWebsite').textContent = property.website;
-                document.getElementById('detailWebsite').href = `https://${property.website}`;
-                document.getElementById('detailOvernightRate').textContent = property.overnightRate;
-                document.getElementById('detailDayTourRate').textContent = property.dayTourRate;
-
-                // Update gallery
-                const galleryContainer = document.getElementById('detailGallery');
-                galleryContainer.innerHTML = '';
-                property.gallery.forEach(imgUrl => {
-                    const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.className = 'gallery-img';
-                    img.alt = property.name;
-                    img.onerror = function() {
-                        this.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
-                    };
-                    galleryContainer.appendChild(img);
-                });
-
-                // Show the detail view
-                document.getElementById('propertyDetailView').classList.add('active');
-            }
-
-            // Initialize price slider
-            function initPriceSlider() {
-                priceSlider = document.getElementById('priceRange');
-                noUiSlider.create(priceSlider, {
-                    start: [500, 10000],
-                    connect: true,
-                    range: { min: 500, max: 10000 },
-                    step: 500,
-                    tooltips: [true, true],
-                    format: {
-                        to: function(value) {
-                            return '₱' + Math.round(value).toLocaleString();
-                        },
-                        from: function(value) {
-                            return Number(value.replace(/[^0-9.-]+/g,""));
+                    const response = await fetch('/api/destinations/map-data', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
+                            'Content-Type': 'application/json'
                         }
-                    }
-                });
+                    });
 
-                // Update price display
-                priceSlider.noUiSlider.on('update', function(values, handle) {
-                    if (handle === 0) {
-                        document.getElementById('priceMin').textContent = values[handle];
-                    } else {
-                        document.getElementById('priceMax').textContent = values[handle];
+                    if (!response.ok) {
+                        const error = await response.json().catch(() => null);
+                        throw new Error(error?.message || `HTTP error! status: ${response.status}`);
                     }
-                });
+
+                    const data = await response.json();
+
+                    if (!data.success || !Array.isArray(data.properties)) {
+                        throw new Error('Invalid data format from server');
+                    }
+
+                    const validProperties = data.properties.filter(prop =>
+                        prop.coordinates &&
+                        prop.coordinates.length === 2 &&
+                        !isNaN(prop.coordinates[0]) &&
+                        !isNaN(prop.coordinates[1])
+                    );
+
+                    if (validProperties.length === 0) {
+                        showWarning('No properties found with valid coordinates');
+                        return;
+                    }
+
+                    updateMapMarkers(validProperties);
+
+                } catch (error) {
+                    console.error('Failed to load properties:', error);
+                    showErrorToUser(error.message);
+                    loadFallbackData();
+                } finally {
+                    showLoading(false);
+                }
             }
 
-            // Filter functionality
-            document.getElementById('applyFilters').addEventListener('click', function() {
-                const typeFilter = document.getElementById('typeFilter').value;
-                const barangayFilter = document.getElementById('barangayFilter').value;
-                const searchQuery = document.getElementById('searchInput').value;
-                const [minPrice, maxPrice] = priceSlider.noUiSlider.get().map(val => parseInt(val.replace(/[^0-9]/g, '')));
-                const amenities = Array.from(document.querySelectorAll('.form-check-input:checked'))
-                                    .map(cb => cb.nextElementSibling.textContent);
-
-                currentProperties = properties.filter(property => {
-                    return (typeFilter === 'All Types' || property.type === typeFilter) &&
-                           (barangayFilter === 'All Barangays' || property.location.includes(barangayFilter)) &&
-                           (searchQuery === '' || property.name.toLowerCase().includes(searchQuery.toLowerCase())) &&
-                           property.price >= minPrice && property.price <= maxPrice &&
-                           amenities.every(a => property.amenities.includes(a));
+            function updateMapMarkers(properties) {
+                // Clear existing markers
+                map.eachLayer(layer => {
+                    if (layer instanceof L.Marker) map.removeLayer(layer);
                 });
 
-                updatePropertyCards();
-                updateMarkers();
+                properties.forEach(prop => {
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div class="marker-container">
+                                 <img src="${prop.image || '/static/images/default-property.jpg'}"
+                                      alt="${prop.name}"
+                                      onerror="this.onerror=null;this.src='/static/images/default-property.jpg'">
+                               </div>`,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40]
+                    });
 
-                // Close filter panel
-                document.getElementById('filterPanel').classList.remove('active');
-            });
-
-            // Clear filters
-            document.getElementById('clearFilters').addEventListener('click', function() {
-                document.getElementById('typeFilter').value = 'All Types';
-                document.getElementById('barangayFilter').value = 'All Barangays';
-                document.getElementById('searchInput').value = '';
-                priceSlider.noUiSlider.set([500, 10000]);
-                document.querySelectorAll('.form-check-input').forEach(cb => cb.checked = false);
-
-                currentProperties = [...properties];
-                updatePropertyCards();
-                updateMarkers();
-
-                // Close filter panel
-                document.getElementById('filterPanel').classList.remove('active');
-            });
-
-            // Search button functionality
-            document.getElementById('searchButton').addEventListener('click', function() {
-                const searchQuery = document.getElementById('searchInput').value;
-
-                currentProperties = properties.filter(property => {
-                    return property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           property.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           property.description.toLowerCase().includes(searchQuery.toLowerCase());
+                    L.marker(
+                        [prop.coordinates[0], prop.coordinates[1]],
+                        { icon: icon, interactive: false }
+                    ).addTo(map);
                 });
 
-                updatePropertyCards();
-                updateMarkers();
-            });
-
-            // Initial setup
-            initPriceSlider();
-            fetchProperties();
-            fetchFilterOptions();
-
-            // Event listeners
-            document.querySelector('.detail-close').addEventListener('click', () => {
-                document.getElementById('propertyDetailView').classList.remove('active');
-            });
-
-            document.getElementById('filterToggle').addEventListener('click', () => {
-                document.getElementById('filterPanel').classList.toggle('active');
-            });
-
-            document.querySelectorAll('.drawer-scroll-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const scrollAmount = btn.classList.contains('drawer-scroll-left') ? -300 : 300;
-                    propertyCardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                });
-            });
-
-            // Close filter panel when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('#filterPanel') && !event.target.closest('#filterToggle')) {
-                    document.getElementById('filterPanel').classList.remove('active');
+                if (properties.length > 0) {
+                    const markerGroup = new L.featureGroup(properties.map(p =>
+                        L.marker([p.coordinates[0], p.coordinates[1]])));
+                    map.fitBounds(markerGroup.getBounds().pad(0.2));
                 }
-            });
+            }
+
+            function showLoading(show) {
+                const loader = document.getElementById('loadingIndicator');
+                if (show) {
+                    if (!loader) {
+                        const loaderDiv = document.createElement('div');
+                        loaderDiv.id = 'loadingIndicator';
+                        loaderDiv.className = 'alert alert-info position-absolute top-50 start-50 translate-middle';
+                        loaderDiv.textContent = 'Loading properties...';
+                        document.body.appendChild(loaderDiv);
+                    }
+                } else if (loader) {
+                    loader.remove();
+                }
+            }
+
+            function showWarning(message) {
+                const warning = document.createElement('div');
+                warning.className = 'alert alert-warning position-absolute top-0 start-50 translate-middle-x mt-3';
+                warning.textContent = message;
+                document.body.appendChild(warning);
+                setTimeout(() => warning.remove(), 5000);
+            }
+
+            function showErrorToUser(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3 z-3';
+                errorDiv.innerHTML = `
+                    <strong>Error:</strong> ${message}
+                    <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
+                `;
+                document.body.appendChild(errorDiv);
+            }
+
+            function loadFallbackData() {
+                const fallbackProperties = [
+                    {
+                        id: 1,
+                        name: "Example Resort",
+                        type: "Resort",
+                        location: "San Andres, Batangas",
+                        price: 2500,
+                        rating: 4.5,
+                        amenities: ["Pool", "Restaurant"],
+                        image: "https://via.placeholder.com/400x200?text=Resort",
+                        coordinates: [13.7565, 121.0583]
+                    }
+                ];
+
+                updateMapMarkers(fallbackProperties);
+                showWarning('Showing example data due to loading error');
+            }
+
+            // Initialize
+            loadProperties();
         });
     </script>
 </body>
