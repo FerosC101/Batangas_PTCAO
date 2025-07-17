@@ -539,43 +539,24 @@
         });
 
         // Archive user
-        document.querySelectorAll('.archive-user').forEach(button => {
-            button.addEventListener('click', async () => {
-                if (confirm('Are you sure you want to archive this user?')) {
-                    const userId = button.getAttribute('data-user-id');
-                    try {
-                        const response = await fetch(`/admin/users/${userId}/archive`, {
-                            method: 'PUT'
-                        });
-
-                        if (!response.ok) throw new Error('Failed to archive user');
-
-                        alert('User archived successfully');
-                        window.location.reload();
-                    } catch (error) {
-                        alert(error.message);
-                    }
+        document.querySelectorAll('.archive-user').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (confirm('Archive this user?')) {
+                    const res = await fetch(`/admin/users/${btn.dataset.userId}/archive`, {
+                        method: 'PUT'
+                    });
+                    if (res.ok) location.reload();
                 }
             });
         });
 
-        // Restore user
-        document.querySelectorAll('.restore-user').forEach(button => {
-            button.addEventListener('click', async () => {
-                if (confirm('Are you sure you want to restore this user?')) {
-                    const userId = button.getAttribute('data-user-id');
-                    try {
-                        const response = await fetch(`/admin/users/${userId}/restore`, {
-                            method: 'PUT'
-                        });
-
-                        if (!response.ok) throw new Error('Failed to restore user');
-
-                        alert('User restored successfully');
-                        window.location.reload();
-                    } catch (error) {
-                        alert(error.message);
-                    }
+        document.querySelectorAll('.restore-user').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (confirm('Restore this user?')) {
+                    const res = await fetch(`/admin/users/${btn.dataset.userId}/restore`, {
+                        method: 'PUT'
+                    });
+                    if (res.ok) location.reload();
                 }
             });
         });

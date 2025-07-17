@@ -44,11 +44,21 @@ def init_auth_routes(app):
                 session['account_id'] = "admin"
                 session['account_type'] = "admin"
 
-                response = redirect(url_for('admin_dashboard'))  # Make sure you have this route defined
+                response = redirect(url_for('admin_users'))  # Make sure you have this route defined
                 set_access_cookies(response, access_token)
                 return response
 
             user = User.query.filter_by(email=email).first()
+
+            # Add archive check
+            if user and getattr(user, 'is_archived', False):
+                flash('This account has been archived', 'error')
+                return redirect(url_for('login'))
+
+            # Existing active check remains
+            if user and not user.is_active:
+                flash('Account not yet activated', 'error')
+                return redirect(url_for('login'))
 
             if not user:
                 flash('User not found', 'error')

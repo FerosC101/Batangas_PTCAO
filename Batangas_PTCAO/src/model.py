@@ -30,6 +30,7 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=False)
+    is_archived = db.Column(db.Boolean, nullable=True, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -44,6 +45,12 @@ class User(db.Model):
             return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
         except ValueError as e:
             return False
+
+    @property
+    def status(self):
+        if self.is_active:
+            return "archived"
+        return "active" if self.is_active else "suspended"
 
 class Property(db.Model):
     __tablename__ = 'property'
