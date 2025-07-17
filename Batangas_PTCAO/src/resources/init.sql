@@ -20,6 +20,14 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Add the column with default false and allow NULL for existing records
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT FALSE;
+
+-- Update all existing records to set is_archived = false where it's NULL
+UPDATE users SET is_archived = FALSE WHERE is_archived IS NULL;
+
+-- If you want to make the column NOT NULL after updating existing records
+ALTER TABLE users ALTER COLUMN is_archived SET NOT NULL;
 -- PROPERTY TABLE
 CREATE TABLE property (
     property_id SERIAL PRIMARY KEY,

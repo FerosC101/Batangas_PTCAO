@@ -1,18 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy import or_
-
-from Batangas_PTCAO.src.model import User, db
 from Batangas_PTCAO.src.extension import db
-from sqlalchemy.exc import SQLAlchemyError
+from Batangas_PTCAO.src.model import User
+from sqlalchemy import or_
 from datetime import datetime
 
-admin_users_bp = Blueprint('admin_users', __name__)
 
-def init_admin_users_routes (app):
-    @admin_users_bp.route('/admin/users')
+def init_admin_users_routes(app):
+    @app.route('/admin/users')
     @jwt_required()
     def admin_users():
+        # Get users by status (handles both new and legacy accounts)
         active_users = User.query.filter(
             or_(User.is_archived == False, User.is_archived == None),
             User.is_active == True
@@ -30,24 +28,7 @@ def init_admin_users_routes (app):
                                suspended_users=suspended_users,
                                archived_users=archived_users)
 
-    @admin_users_bp.route('/admin/users/<int:user_id>/archive', methods=['PUT'])
-    @jwt_required()
-    def archive_user(user_id):
-        user = User.query.get_or_404(user_id)
-        user.is_archived = True
-        user.is_active = False
-        db.session.commit()
-        return jsonify({'message': 'User archived successfully'})
-
-    @admin_users_bp.route('/admin/users/<int:user_id>/restore', methods=['PUT'])
-    @jwt_required()
-    def restore_user(user_id):
-        user = User.query.get_or_404(user_id)
-        user.is_archived = False
-        db.session.commit()
-        return jsonify({'message': 'User restored successfully'})
-
-    @admin_users_bp.route('/admin/users/<int:user_id>', methods=['GET'])
+    @app.route('/admin/users/<int:user_id>', methods=['GET'])
     @jwt_required()
     def get_user(user_id):
         user = User.query.get_or_404(user_id)
@@ -55,104 +36,86 @@ def init_admin_users_routes (app):
             'user_id': user.user_id,
             'full_name': user.full_name,
             'municipality': user.municipality,
-            'username': user.username,
+            'id_number': user.id_number,
+            'designation': user.designation,
             'email': user.email,
-            'is_active': user.is_active
+            'gender': user.gender,
+            'birthday': user.birthday.strftime('%Y-%m-%d'),
+            'username': user.username,
+            'is_active': user.is_active,
+            'is_archived': getattr(user, 'is_archived', False)
         })
 
-    @admin_users_bp.route('/admin/users', methods=['POST'])
+    @app.route('/admin/users', methods=['POST'])
     @jwt_required()
     def create_user():
         data = request.form
-        try:
-            # Check if username or email already exists
-            if User.query.filter_by(username=data['username']).first():
-                return jsonify({'error': 'Username already exists'}), 400
-            if User.query.filter_by(email=data['email']).first():
-                return jsonify({'error': 'Email already exists'}), 400
 
-            new_user = User(
-                full_name=data['full_name'],
-                municipality=data['municipality'],
-                id_number=data['id_number'],
-                designation=data['designation'],
-                email=data['email'],
-                gender=data['gender'],
-                birthday=datetime.strptime(data['birthday'], '%Y-%m-%d').date(),
-                username=data['username'],
-                is_active=data.get('is_active', 'false').lower() == 'true'
-            )
-            new_user.set_password(data['password'])
+        # Validate required fields
+        required_fields = ['full_name', 'email', 'username', 'password']
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': 'Missing required fields'}), 400
 
-            db.session.add(new_user)
-            db.session.commit()
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'error': 'Email already exists'}), 400
 
-            return jsonify({'message': 'User created successfully'}), 201
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': str(e)}), 400
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'error': 'Username already exists'}), 400
 
+        # Create new user
+        new_user = User(
+            full_name=data['full_name'],
+            municipality=data.get('municipality', ''),
+            id_number=data.get('id_number', ''),
+            designation=data.get('designation', ''),
+            email=data['email'],
+            gender=data.get('gender', ''),
+            birthday=datetime.strptime(data['birthday'], '%Y-%m-%d').date() if 'birthday' in data else None,
+            username=data['username'],
+            is_active=data.get('is_active', 'false').lower() == 'true',
+            is_archived=False  # New users are never archived
+        )
+        new_user.set_password(data['password'])
 
-    @admin_users_bp.route('/admin/users/<int:user_id>', methods=['PUT'])
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({'message': 'User created successfully'}), 201
+
+    @app.route('/admin/users/<int:user_id>/status', methods=['PUT'])
     @jwt_required()
-    def update_user(user_id):
+    def update_user_status(user_id):
         user = User.query.get_or_404(user_id)
-        data = request.form
+        data = request.get_json()
 
-        try:
-            if 'full_name' in data:
-                user.full_name = data['full_name']
-            if 'municipality' in data:
-                user.municipality = data['municipality']
-            if 'email' in data:
-                if User.query.filter(User.email == data['email'], User.user_id != user_id).first():
-                    return jsonify({'error': 'Email already in use'}), 400
-                user.email = data['email']
-            if 'username' in data:
-                if User.query.filter(User.username == data['username'], User.user_id != user_id).first():
-                    return jsonify({'error': 'Username already in use'}), 400
-                user.username = data['username']
-            if 'is_active' in data:
-                user.is_active = data['is_active'].lower() == 'true'
-            if 'password' in data and data['password']:
-                user.set_password(data['password'])
+        if not data or 'action' not in data:
+            return jsonify({'error': 'Missing action'}), 400
 
-            db.session.commit()
-            return jsonify({'message': 'User updated successfully'})
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': str(e)}), 400
+        action = data['action']
 
+        if action == 'suspend':
+            user.is_active = False
+            if hasattr(user, 'is_archived'):
+                user.is_archived = False
+        elif action == 'activate':
+            user.is_active = True
+            if hasattr(user, 'is_archived'):
+                user.is_archived = False
+        elif action == 'archive' and hasattr(user, 'is_archived'):
+            user.is_active = False
+            user.is_archived = True
+        elif action == 'restore' and hasattr(user, 'is_archived'):
+            user.is_archived = False
+        else:
+            return jsonify({'error': 'Invalid action'}), 400
 
-    @admin_users_bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
+        db.session.commit()
+        return jsonify({'message': f'User status updated: {action}'}), 200
+
+    @app.route('/admin/users/<int:user_id>', methods=['DELETE'])
     @jwt_required()
     def delete_user(user_id):
         user = User.query.get_or_404(user_id)
-
-        try:
-            db.session.delete(user)
-            db.session.commit()
-            return jsonify({'message': 'User deleted successfully'})
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': str(e)}), 400
-
-
-    @admin_users_bp.route('/admin/users/export', methods=['GET'])
-    @jwt_required()
-    def export_users():
-        users = User.query.all()
-        user_list = []
-
-        for user in users:
-            user_list.append({
-                'user_id': user.user_id,
-                'full_name': user.full_name,
-                'municipality': user.municipality,
-                'username': user.username,
-                'email': user.email,
-                'status': 'Active' if user.is_active else 'Inactive',
-                'created_at': user.created_at.strftime('%Y-%m-%d')
-            })
-
-        return jsonify(user_list)
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': 'User deleted successfully'}), 200

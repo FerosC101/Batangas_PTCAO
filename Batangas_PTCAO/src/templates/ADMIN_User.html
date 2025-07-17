@@ -398,6 +398,83 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+
+        // Status update handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Suspend user
+            document.querySelectorAll('.suspend-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Suspend this user?')) {
+                        await updateStatus(this.dataset.userId, 'suspend');
+                    }
+                });
+            });
+
+            // Activate user
+            document.querySelectorAll('.activate-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Activate this user?')) {
+                        await updateStatus(this.dataset.userId, 'activate');
+                    }
+                });
+            });
+
+            // Archive user
+            document.querySelectorAll('.archive-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Archive this user?')) {
+                        await updateStatus(this.dataset.userId, 'archive');
+                    }
+                });
+            });
+
+            // Restore user
+            document.querySelectorAll('.restore-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Restore this user?')) {
+                        await updateStatus(this.dataset.userId, 'restore');
+                    }
+                });
+            });
+
+            // Delete user
+            document.querySelectorAll('.delete-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Permanently delete this user?')) {
+                        try {
+                            const response = await fetch(`/admin/users/${this.dataset.userId}`, {
+                                method: 'DELETE'
+                            });
+                            if (response.ok) location.reload();
+                            else alert('Failed to delete user');
+                        } catch (error) {
+                            alert('Error: ' + error.message);
+                        }
+                    }
+                });
+            });
+        });
+
+        async function updateStatus(userId, action) {
+            try {
+                const response = await fetch(`/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action })
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to update status');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
         // Tab functionality
         document.querySelectorAll('.tab-btn').forEach(button => {
             button.addEventListener('click', () => {
