@@ -266,3 +266,42 @@ class VisitorDataUpload(db.Model):
     records_processed = db.Column(db.Boolean, nullable=False, default=False)
 
     user = db.relationship('User', backref=db.backref('data_uploads', lazy='dynamic'))
+
+class PropertyReport(db.Model):
+    __tablename__ = 'property_reports'
+
+    report_id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    dot_accredited = db.Column(db.Boolean, default=False)
+    dot_accreditation_valid = db.Column(db.Date)
+    ptcao_registered = db.Column(db.Boolean, default=False)
+    ptcao_valid_until = db.Column(db.Date)
+    classification = db.Column(db.String(50))
+    male_employees = db.Column(db.Integer, default=0)
+    female_employees = db.Column(db.Integer, default=0)
+    total_rooms = db.Column(db.Integer, default=0)
+    daytour_capacity = db.Column(db.Integer, default=0)
+    overnight_capacity = db.Column(db.Integer, default=0)
+    report_period_start = db.Column(db.Date, nullable=False)
+    report_period_end = db.Column(db.Date, nullable=False)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    property = db.relationship('Property', backref=db.backref('property_reports', lazy='dynamic'))
+
+class TouristReport(db.Model):
+    __tablename__ = 'tourist_reports'
+
+    report_id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    report_date = db.Column(db.Date, nullable=False)
+    total_daytour_guests = db.Column(db.Integer, default=0)
+    total_overnight_guests = db.Column(db.Integer, default=0)
+    rooms_occupied = db.Column(db.Integer, default=0)
+    foreign_daytour_visitors = db.Column(db.Integer, default=0)
+    foreign_overnight_visitors = db.Column(db.Integer, default=0)
+    male_tourists = db.Column(db.Integer, default=0)
+    female_tourists = db.Column(db.Integer, default=0)
+    total_revenue = db.Column(db.Numeric(12, 2), default=0.00)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    property = db.relationship('Property', backref=db.backref('tourist_reports', lazy='dynamic'))

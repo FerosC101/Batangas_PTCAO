@@ -179,4 +179,64 @@ ALTER TABLE property ALTER COLUMN property_id SET DEFAULT nextval('property_id_s
 SELECT * FROM property ORDER BY property_id DESC LIMIT 1;
 SELECT nextval('property_id_seq');
 
-ALTER TABLE property_images
+
+-- 1. Resort & Property Report Table (for accommodation establishments)
+CREATE TABLE property_reports (
+    report_id SERIAL PRIMARY KEY,
+    property_id INTEGER NOT NULL REFERENCES property(property_id),
+    dot_accredited BOOLEAN DEFAULT FALSE,
+    dot_accreditation_valid DATE,
+    ptcao_registered BOOLEAN DEFAULT FALSE,
+    ptcao_valid_until DATE,
+    classification VARCHAR(50),
+    male_employees INTEGER DEFAULT 0,
+    female_employees INTEGER DEFAULT 0,
+    total_rooms INTEGER DEFAULT 0,
+    daytour_capacity INTEGER DEFAULT 0,
+    overnight_capacity INTEGER DEFAULT 0,
+    report_period_start DATE NOT NULL,
+    report_period_end DATE NOT NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_property FOREIGN KEY(property_id) REFERENCES property(property_id),
+    CONSTRAINT valid_period CHECK (report_period_end >= report_period_start)
+);
+
+-- 2. Tourist Report Table (for visitor statistics)
+CREATE TABLE tourist_reports (
+    report_id SERIAL PRIMARY KEY,
+    property_id INTEGER NOT NULL REFERENCES property(property_id),
+    report_date DATE NOT NULL,
+    total_daytour_guests INTEGER DEFAULT 0,
+    total_overnight_guests INTEGER DEFAULT 0,
+    rooms_occupied INTEGER DEFAULT 0,
+    foreign_daytour_visitors INTEGER DEFAULT 0,
+    foreign_overnight_visitors INTEGER DEFAULT 0,
+    male_tourists INTEGER DEFAULT 0,
+    female_tourists INTEGER DEFAULT 0,
+    total_revenue DECIMAL(12, 2) DEFAULT 0.00,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_property FOREIGN KEY(property_id) REFERENCES property(property_id)
+);
+
+-- Indexes for performance
+CREATE INDEX idx_property_reports_property ON property_reports(property_id);
+CREATE INDEX idx_property_reports_period ON property_reports(report_period_start, report_period_end);
+CREATE INDEX idx_tourist_reports_property ON tourist_reports(property_id);
+CREATE INDEX idx_tourist_reports_date ON tourist_reports(report_date);
+
+-- Monthly summary view for tourist reports
+CREATE OR REPLACE VIEW monthly_tourist_stats AS
+SELECT
+    property_id,
+    DATE_TRUNC('month', report_date) AS month,
+    SUM(total_daytour_guests) AS daytour_visitors,
+    SUM(total_overnight_guests) AS overnight_visitors,
+    SUM(foreign_daytour_visitors) AS foreign_daytour,
+    SUM(foreign_overnight_visitors) AS foreign_overnight,
+    SUM(male_tourists) AS male_visitors,
+    SUM(female_tourists) AS female_visitors,
+    SUM(total_revenue) AS total_revenue
+FROM
+    tourist_reports
+GROUP BY
+    property_id, DATE_TRUNC('month', report_date);
