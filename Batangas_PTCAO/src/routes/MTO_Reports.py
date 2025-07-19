@@ -86,6 +86,25 @@ def get_property_report():
     })
 
 
+@reports_bp.route('/api/reports/property-list', methods=['GET'])
+@jwt_required()
+def get_property_list():
+    current_user = User.query.get(get_jwt_identity())
+
+    properties = Property.query.filter_by(municipality=current_user.municipality).all()
+
+    property_list = [{
+        'property_id': prop.property_id,
+        'property_name': prop.property_name,
+        'barangay': prop.barangay,
+        'type': prop.accommodation_type
+    } for prop in properties]
+
+    return jsonify({
+        'success': True,
+        'data': property_list
+    })
+
 @reports_bp.route('/api/reports/property-data', methods=['GET'])
 @jwt_required()
 def get_property_report_data():
