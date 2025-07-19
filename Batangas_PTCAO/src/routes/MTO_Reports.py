@@ -60,7 +60,7 @@ def get_property_report():
     pagination = query.paginate(page=page, per_page=per_page)
 
     properties = [{
-        'ae_id': prop.property_id,
+        'property_id': prop.property_id,
         'name': prop.property_name,
         'barangay': prop.barangay,
         'type': prop.accommodation_type,
@@ -91,19 +91,21 @@ def get_property_report():
 def get_property_list():
     current_user = User.query.get(get_jwt_identity())
 
+    # Query properties filtered by municipality
     properties = Property.query.filter_by(municipality=current_user.municipality).all()
 
     property_list = [{
         'property_id': prop.property_id,
         'property_name': prop.property_name,
         'barangay': prop.barangay,
-        'type': prop.accommodation_type
+        'accommodation_type': prop.accommodation_type
     } for prop in properties]
 
     return jsonify({
         'success': True,
         'data': property_list
     })
+
 
 @reports_bp.route('/api/reports/property-data', methods=['GET'])
 @jwt_required()
@@ -134,11 +136,10 @@ def get_property_report_data():
     pagination = query.paginate(page=page, per_page=per_page)
 
     reports = [{
-        'ae_id': prop.property_id,
+        'property_id': prop.property_id,
         'name': prop.property_name,
         'barangay': prop.barangay,
         'type': prop.accommodation_type,
-        'total_rooms': prop.total_rooms if hasattr(prop, 'total_rooms') else 0,
         'day_tour_guests': report.total_daytour_guests,
         'overnight_guests': report.total_overnight_guests,
         'total_guests': report.total_daytour_guests + report.total_overnight_guests,
@@ -162,7 +163,7 @@ def get_property_report_data():
 @jwt_required()
 def update_property_report():
     data = request.get_json()
-    property_id = data['ae_id']
+    property_id = data['property_id']
 
     # Find or create report
     report = PropertyReport.query.filter_by(property_id=property_id).first()
@@ -196,23 +197,44 @@ def update_property_report():
 @reports_bp.route('/api/reports/add-tourist', methods=['POST'])
 @jwt_required()
 def add_tourist_report():
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
 
-    report = TouristReport(
-        property_id=data['ae_id'],
-        report_date=datetime.strptime(data['report_date'], '%Y-%m-%d').date(),
-        total_daytour_guests=data['day_tour_guests'],
-        total_overnight_guests=data['overnight_guests'],
-        rooms_occupied=data['rooms_occupied'],
-        foreign_daytour_visitors=data['foreign_daytour'],
-        foreign_overnight_visitors=data['foreign_overnight'],
-        male_tourists=data['male_tourists'],
-        female_tourists=data['female_tourists']
-    )
+        # Validate required fields
+        required_fields = ['property_id', 'report_date', 'day_tour_guests', 'overnight_guests']
+        if not all(field in data for field in required_fields):
+            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
 
-    db.session.add(report)
-    db.session.commit()
-    return jsonify({'success': True})
+        # Create new report
+        report = TouristReport(
+            property_id=data['property_id'],
+            report_date=datetime.strptime(data['report_date'], '%Y-%m-%d').date(),
+            total_daytour_guests=data['day_tour_guests'],
+            total_overnight_guests=data['overnight_guests'],
+            rooms_occupied=data.get('rooms_occupied', 0),
+            foreign_daytour_visitors=data.get('foreign_daytour', 0),
+            foreign_overnight_visitors=data.get('foreign_overnight', 0),
+            male_tourists=data.get('male_tourists', 0),
+            female_tourists=data.get('female_tourists', 0)
+        )
+
+        db.session.add(report)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Tourist report added successfully',
+            'report_id': report.report_id
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'Error adding tourist report: {str(e)}'
+        }), 500
 
 
 @reports_bp.route('/api/reports/upload', methods=['POST'])
@@ -235,19 +257,19 @@ def upload_report():
             if report_type == 'property':
                 for _, row in df.iterrows():
                     report = PropertyReport(
-                        property_id=row['AE-ID'],
-                        dot_accredited=row.get('DOT-Accredited', False),
-                        dot_accreditation_valid=pd.to_datetime(row['DOT-Valid-Until']) if pd.notna(
-                            row.get('DOT-Valid-Until')) else None,
-                        ptcao_registered=row.get('PTCAO-Registered', False),
-                        ptcao_valid_until=pd.to_datetime(row['PTCAO-Valid-Until']) if pd.notna(
-                            row.get('PTCAO-Valid-Until')) else None,
-                        classification=row.get('Classification', ''),
-                        male_employees=row.get('Male-Employees', 0),
-                        female_employees=row.get('Female-Employees', 0),
-                        total_rooms=row.get('Total-Rooms', 0),
-                        daytour_capacity=row.get('Daytour-Capacity', 0),
-                        overnight_capacity=row.get('Overnight-Capacity', 0),
+                        property_id=row['property_id'],
+                        dot_accredited=row.get('dot_accredited', False),
+                        dot_accreditation_valid=pd.to_datetime(row['dot_valid_until']) if pd.notna(
+                            row.get('dot_valid_until')) else None,
+                        ptcao_registered=row.get('ptcao_registered', False),
+                        ptcao_valid_until=pd.to_datetime(row['ptcao_valid_until']) if pd.notna(
+                            row.get('ptcao_valid_until')) else None,
+                        classification=row.get('classification', ''),
+                        male_employees=row.get('male_employees', 0),
+                        female_employees=row.get('female_employees', 0),
+                        total_rooms=row.get('total_rooms', 0),
+                        daytour_capacity=row.get('daytour_capacity', 0),
+                        overnight_capacity=row.get('overnight_capacity', 0),
                         report_period_start=datetime.now().date() - timedelta(days=30),
                         report_period_end=datetime.now().date()
                     )
@@ -256,15 +278,15 @@ def upload_report():
             elif report_type == 'tourist':
                 for _, row in df.iterrows():
                     report = TouristReport(
-                        property_id=row['AE-ID'],
-                        report_date=pd.to_datetime(row['Report-Date']).date(),
-                        total_daytour_guests=row.get('Daytour-Guests', 0),
-                        total_overnight_guests=row.get('Overnight-Guests', 0),
-                        rooms_occupied=row.get('Rooms-Occupied', 0),
-                        foreign_daytour_visitors=row.get('Foreign-Daytour', 0),
-                        foreign_overnight_visitors=row.get('Foreign-Overnight', 0),
-                        male_tourists=row.get('Male-Tourists', 0),
-                        female_tourists=row.get('Female-Tourists', 0)
+                        property_id=row['property_id'],
+                        report_date=pd.to_datetime(row['report_date']).date(),
+                        total_daytour_guests=row.get('day_tour_guests', 0),
+                        total_overnight_guests=row.get('overnight_guests', 0),
+                        rooms_occupied=row.get('rooms_occupied', 0),
+                        foreign_daytour_visitors=row.get('foreign_daytour', 0),
+                        foreign_overnight_visitors=row.get('foreign_overnight', 0),
+                        male_tourists=row.get('male_tourists', 0),
+                        female_tourists=row.get('female_tourists', 0)
                     )
                     db.session.add(report)
 

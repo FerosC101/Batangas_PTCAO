@@ -305,12 +305,12 @@
 
                 <!-- Tabs -->
                 <div class="mb-4">
-                    <button class="tab-btn active" data-tab="tourist-report">Resort & Property Report</button>
-                    <button class="tab-btn" data-tab="property-report">Tourist Report</button>
+                    <button class="tab-btn active" data-tab="property-report">Resort & Property Report</button>
+                    <button class="tab-btn" data-tab="tourist-report">Tourist Report</button>
                 </div>
 
-                <!-- Tourist Report Tab -->
-                <div id="tourist-report" class="tab-content active">
+                <!-- Resort & Property Report Tab -->
+                <div id="property-report" class="tab-content active">
                     <div class="report-filter d-flex">
                         <div class="filter-group">
                             <label>Date Range:</label>
@@ -400,8 +400,8 @@
                     </div>
                 </div>
 
-                <!-- Property Report Tab -->
-                <div id="property-report" class="tab-content">
+                <!-- Tourist Report Tab -->
+                <div id="tourist-report" class="tab-content">
                     <div class="report-filter d-flex">
                         <div class="filter-group">
                             <label>Date Range:</label>
@@ -442,7 +442,6 @@
                                             <th>AE Name</th>
                                             <th>Barangay</th>
                                             <th>Type-Class</th>
-                                            <th>Total Rooms</th>
                                             <th>Total Guest Check In Day Tour</th>
                                             <th>Total Guest Check In Overnight</th>
                                             <th>Total No. of Guest Check In</th>
@@ -744,8 +743,8 @@
 
             function initPage() {
                 loadBarangays();
-                loadTouristReport();
                 loadPropertyReport();
+                loadTouristReport();
                 loadPropertiesForModal();
                 setupEventListeners();
 
@@ -782,17 +781,6 @@
                                 option2.textContent = `${property.property_id} - ${property.property_name} (${property.barangay})`;
                                 touristSelect.appendChild(option2);
                             });
-
-                            // Add manual entry option
-                            const manualOption1 = document.createElement('option');
-                            manualOption1.value = 'manual';
-                            manualOption1.textContent = 'Enter Property ID Manually';
-                            propertySelect.appendChild(manualOption1);
-
-                            const manualOption2 = document.createElement('option');
-                            manualOption2.value = 'manual';
-                            manualOption2.textContent = 'Enter Property ID Manually';
-                            touristSelect.appendChild(manualOption2);
                         } else {
                             showError('Failed to load properties');
                         }
@@ -819,7 +807,7 @@
                     });
             }
 
-            function loadTouristReport(page = 1) {
+            function loadPropertyReport(page = 1) {
                 const params = new URLSearchParams({
                     ...currentFilters,
                     page: page,
@@ -830,14 +818,14 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            renderTouristReport(data.data);
-                            updatePagination(data, 'tourist');
+                            renderPropertyReport(data.data);
+                            updatePagination(data, 'property');
                         }
                     })
-                    .catch(error => showError('Error loading tourist report: ' + error));
+                    .catch(error => showError('Error loading property report: ' + error));
             }
 
-            function loadPropertyReport(page = 1) {
+            function loadTouristReport(page = 1) {
                 const params = new URLSearchParams({
                     ...currentPropFilters,
                     page: page,
@@ -848,20 +836,20 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            renderPropertyReport(data.data);
-                            updatePagination(data, 'property');
+                            renderTouristReport(data.data);
+                            updatePagination(data, 'tourist');
                         }
                     })
-                    .catch(error => showError('Error loading property report: ' + error));
+                    .catch(error => showError('Error loading tourist report: ' + error));
             }
 
-            function renderTouristReport(data) {
+            function renderPropertyReport(data) {
                 reportTableBody.innerHTML = '';
 
                 if (data.length === 0) {
                     reportTableBody.innerHTML = `
                         <tr>
-                            <td colspan="16" class="text-center py-4">No tourist report data found</td>
+                            <td colspan="16" class="text-center py-4">No property report data found</td>
                         </tr>
                     `;
                     return;
@@ -869,10 +857,10 @@
 
                 data.forEach(property => {
                     const row = document.createElement('tr');
-                    row.dataset.id = property.ae_id;
+                    row.dataset.id = property.property_id;
 
                     row.innerHTML = `
-                        <td>${property.ae_id}</td>
+                        <td>${property.property_id}</td>
                         <td>${property.name}</td>
                         <td>${property.barangay}</td>
                         <td>${property.type}</td>
@@ -905,13 +893,13 @@
                 });
             }
 
-            function renderPropertyReport(data) {
+            function renderTouristReport(data) {
                 propReportTableBody.innerHTML = '';
 
                 if (data.length === 0) {
                     propReportTableBody.innerHTML = `
                         <tr>
-                            <td colspan="14" class="text-center py-4">No property report data found</td>
+                            <td colspan="13" class="text-center py-4">No tourist report data found</td>
                         </tr>
                     `;
                     return;
@@ -919,14 +907,13 @@
 
                 data.forEach(report => {
                     const row = document.createElement('tr');
-                    row.dataset.id = report.ae_id;
+                    row.dataset.id = report.property_id;
 
                     row.innerHTML = `
-                        <td>${report.ae_id}</td>
+                        <td>${report.property_id}</td>
                         <td>${report.name}</td>
                         <td>${report.barangay}</td>
                         <td>${report.type}</td>
-                        <td>${report.total_rooms}</td>
                         <td>${report.day_tour_guests}</td>
                         <td>${report.overnight_guests}</td>
                         <td>${report.day_tour_guests + report.overnight_guests}</td>
@@ -954,7 +941,7 @@
             }
 
             function updatePagination(data, type) {
-                if (type === 'tourist') {
+                if (type === 'property') {
                     totalPages = data.pages;
                     pageInfo.textContent = `Page ${data.current_page} of ${totalPages}`;
 
@@ -970,13 +957,13 @@
             }
 
             function editPropertyReport(propertyId) {
-                fetch(`/api/reports/properties?ae_id=${propertyId}`)
+                fetch(`/api/reports/properties?property_id=${propertyId}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success && data.data.length > 0) {
                             const property = data.data[0];
 
-                            document.getElementById('propertySelect').value = property.ae_id;
+                            document.getElementById('propertySelect').value = property.property_id;
                             document.getElementById('dotAccredited').value = property.dot_accredited ? 'true' : 'false';
                             document.getElementById('dotValidUntil').value = property.dot_valid || '';
                             document.getElementById('ptcaoRegistered').value = property.ptcao_registered ? 'true' : 'false';
@@ -995,13 +982,13 @@
             }
 
             function editTouristReport(propertyId) {
-                fetch(`/api/reports/property-data?ae_id=${propertyId}&per_page=1`)
+                fetch(`/api/reports/property-data?property_id=${propertyId}&per_page=1`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success && data.data.length > 0) {
                             const report = data.data[0];
 
-                            document.getElementById('touristPropertySelect').value = report.ae_id;
+                            document.getElementById('touristPropertySelect').value = report.property_id;
                             document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
                             document.getElementById('dayTourGuests').value = report.day_tour_guests;
                             document.getElementById('overnightGuests').value = report.overnight_guests;
@@ -1037,7 +1024,7 @@
                         type: document.getElementById('typeFilter').value
                     };
                     currentPage = 1;
-                    loadTouristReport();
+                    loadPropertyReport();
                 });
 
                 document.getElementById('applyPropFilters').addEventListener('click', () => {
@@ -1046,35 +1033,35 @@
                         type: document.getElementById('propTypeFilter').value
                     };
                     currentPropPage = 1;
-                    loadPropertyReport();
+                    loadTouristReport();
                 });
 
                 // Pagination
                 document.getElementById('prevPage').addEventListener('click', () => {
                     if (currentPage > 1) {
                         currentPage--;
-                        loadTouristReport(currentPage);
+                        loadPropertyReport(currentPage);
                     }
                 });
 
                 document.getElementById('nextPage').addEventListener('click', () => {
                     if (currentPage < totalPages) {
                         currentPage++;
-                        loadTouristReport(currentPage);
+                        loadPropertyReport(currentPage);
                     }
                 });
 
                 document.getElementById('propPrevPage').addEventListener('click', () => {
                     if (currentPropPage > 1) {
                         currentPropPage--;
-                        loadPropertyReport(currentPropPage);
+                        loadTouristReport(currentPropPage);
                     }
                 });
 
                 document.getElementById('propNextPage').addEventListener('click', () => {
                     if (currentPropPage < propTotalPages) {
                         currentPropPage++;
-                        loadPropertyReport(currentPropPage);
+                        loadTouristReport(currentPropPage);
                     }
                 });
 
@@ -1082,21 +1069,21 @@
                 document.getElementById('rowsPerPage').addEventListener('change', (e) => {
                     rowsPerPage = parseInt(e.target.value);
                     currentPage = 1;
-                    loadTouristReport();
+                    loadPropertyReport();
                 });
 
                 document.getElementById('propRowsPerPage').addEventListener('change', (e) => {
                     propRowsPerPage = parseInt(e.target.value);
                     currentPropPage = 1;
-                    loadPropertyReport();
+                    loadTouristReport();
                 });
 
                 // Export
                 exportBtn.addEventListener('click', () => {
                     const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-                    const endpoint = activeTab === 'tourist-report'
-                        ? '/api/reports/export-tourist'
-                        : '/api/reports/export-property';
+                    const endpoint = activeTab === 'property-report'
+                        ? '/api/reports/export-property'
+                        : '/api/reports/export-tourist';
 
                     window.open(endpoint, '_blank');
                 });
@@ -1109,46 +1096,15 @@
                 // Add Report
                 addReportBtn.addEventListener('click', function() {
                     const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-                    if (activeTab === 'tourist-report') {
-                        // Reset form and set default date
+                    if (activeTab === 'property-report') {
+                        // Property Report tab -> open Property Report modal
+                        document.getElementById('propertyReportForm').reset();
+                        propertyReportModal.show();
+                    } else {
+                        // Tourist Report tab -> open Tourist Report modal
                         document.getElementById('touristReportForm').reset();
                         document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
                         touristReportModal.show();
-                    } else {
-                        // Reset form
-                        document.getElementById('propertyReportForm').reset();
-                        propertyReportModal.show();
-                    }
-                });
-
-                // Handle manual property ID entry
-                document.getElementById('propertySelect').addEventListener('change', function() {
-                    if (this.value === 'manual') {
-                        const manualId = prompt('Please enter the Property ID:');
-                        if (manualId) {
-                            const newOption = document.createElement('option');
-                            newOption.value = manualId;
-                            newOption.textContent = manualId + ' (Manual Entry)';
-                            this.appendChild(newOption);
-                            this.value = manualId;
-                        } else {
-                            this.value = '';
-                        }
-                    }
-                });
-
-                document.getElementById('touristPropertySelect').addEventListener('change', function() {
-                    if (this.value === 'manual') {
-                        const manualId = prompt('Please enter the Property ID:');
-                        if (manualId) {
-                            const newOption = document.createElement('option');
-                            newOption.value = manualId;
-                            newOption.textContent = manualId + ' (Manual Entry)';
-                            this.appendChild(newOption);
-                            this.value = manualId;
-                        } else {
-                            this.value = '';
-                        }
                     }
                 });
 
@@ -1174,9 +1130,9 @@
 
                             // Reload the appropriate report
                             if (reportType === 'property') {
-                                loadTouristReport();
-                            } else {
                                 loadPropertyReport();
+                            } else {
+                                loadTouristReport();
                             }
                         } else {
                             showError(data.message || 'Failed to upload report');
@@ -1187,22 +1143,28 @@
 
                 // Submit Property Report
                 submitPropertyReport.addEventListener('click', function() {
+                    const submitBtn = document.getElementById('submitPropertyReport');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+
                     const data = {
-                        ae_id: document.getElementById('propertySelect').value,
+                        property_id: document.getElementById('propertySelect').value,
                         dot_accredited: document.getElementById('dotAccredited').value === 'true',
                         dot_valid: document.getElementById('dotValidUntil').value,
                         ptcao_registered: document.getElementById('ptcaoRegistered').value === 'true',
                         ptcao_valid: document.getElementById('ptcaoValidUntil').value,
                         classification: document.getElementById('classification').value,
-                        male_employees: parseInt(document.getElementById('maleEmployees').value),
-                        female_employees: parseInt(document.getElementById('femaleEmployees').value),
-                        total_rooms: parseInt(document.getElementById('totalRooms').value),
-                        daytour_capacity: parseInt(document.getElementById('daytourCapacity').value),
-                        overnight_capacity: parseInt(document.getElementById('overnightCapacity').value)
+                        male_employees: parseInt(document.getElementById('maleEmployees').value) || 0,
+                        female_employees: parseInt(document.getElementById('femaleEmployees').value) || 0,
+                        total_rooms: parseInt(document.getElementById('totalRooms').value) || 0,
+                        daytour_capacity: parseInt(document.getElementById('daytourCapacity').value) || 0,
+                        overnight_capacity: parseInt(document.getElementById('overnightCapacity').value) || 0
                     };
 
-                    if (!data.ae_id) {
+                    if (!data.property_id) {
                         showError('Please select a property');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
                         return;
                     }
 
@@ -1218,35 +1180,48 @@
                         if (data.success) {
                             showSuccess('Property report submitted successfully');
                             propertyReportModal.hide();
-                            loadTouristReport();
+                            loadPropertyReport();
                         } else {
                             showError(data.message || 'Failed to submit property report');
                         }
                     })
-                    .catch(error => showError('Error submitting property report: ' + error));
+                    .catch(error => showError('Error submitting property report: ' + error))
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                    });
                 });
 
                 // Submit Tourist Report
                 submitTouristReport.addEventListener('click', function() {
+                    const submitBtn = document.getElementById('submitTouristReport');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+
                     const data = {
-                        ae_id: document.getElementById('touristPropertySelect').value,
+                        property_id: document.getElementById('touristPropertySelect').value,
                         report_date: document.getElementById('reportDate').value,
-                        day_tour_guests: parseInt(document.getElementById('dayTourGuests').value),
-                        overnight_guests: parseInt(document.getElementById('overnightGuests').value),
-                        rooms_occupied: parseInt(document.getElementById('roomsOccupied').value),
-                        foreign_daytour: parseInt(document.getElementById('foreignDaytour').value),
-                        foreign_overnight: parseInt(document.getElementById('foreignOvernight').value),
-                        male_tourists: parseInt(document.getElementById('maleTourists').value),
-                        female_tourists: parseInt(document.getElementById('femaleTourists').value)
+                        day_tour_guests: parseInt(document.getElementById('dayTourGuests').value) || 0,
+                        overnight_guests: parseInt(document.getElementById('overnightGuests').value) || 0,
+                        rooms_occupied: parseInt(document.getElementById('roomsOccupied').value) || 0,
+                        foreign_daytour: parseInt(document.getElementById('foreignDaytour').value) || 0,
+                        foreign_overnight: parseInt(document.getElementById('foreignOvernight').value) || 0,
+                        male_tourists: parseInt(document.getElementById('maleTourists').value) || 0,
+                        female_tourists: parseInt(document.getElementById('femaleTourists').value) || 0
                     };
 
-                    if (!data.ae_id) {
+                    // Validate inputs
+                    if (!data.property_id) {
                         showError('Please select a property');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
                         return;
                     }
 
                     if (!data.report_date) {
                         showError('Please select a report date');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
                         return;
                     }
 
@@ -1262,12 +1237,20 @@
                         if (data.success) {
                             showSuccess('Tourist report submitted successfully');
                             touristReportModal.hide();
-                            loadPropertyReport();
+                            document.getElementById('touristReportForm').reset();
+                            loadTouristReport();
                         } else {
                             showError(data.message || 'Failed to submit tourist report');
                         }
                     })
-                    .catch(error => showError('Error submitting tourist report: ' + error));
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showError('Error submitting tourist report: ' + error.message);
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                    });
                 });
             }
 
