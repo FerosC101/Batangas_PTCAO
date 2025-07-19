@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
@@ -23,141 +25,164 @@ def mto_reports():
     return render_template('MTO_Reports.html')
 
 
-# Resort & Property Report Endpoints
 @reports_bp.route('/api/reports/properties', methods=['GET'])
 @jwt_required()
 def get_property_report():
-    current_user = User.query.get(get_jwt_identity())
+    try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 401
 
-    # Get filters
-    date_range = request.args.get('date_range', 'all')
-    barangay = request.args.get('barangay', 'all')
-    prop_type = request.args.get('type', 'all')
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
+        # Get filters
+        date_range = request.args.get('date_range', 'all')
+        barangay = request.args.get('barangay', 'all')
+        prop_type = request.args.get('type', 'all')
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
 
-    query = db.session.query(Property, PropertyReport) \
-        .outerjoin(PropertyReport, Property.property_id == PropertyReport.property_id) \
-        .filter(Property.municipality == current_user.municipality)
+        query = db.session.query(Property, PropertyReport) \
+            .outerjoin(PropertyReport, Property.property_id == PropertyReport.property_id) \
+            .filter(Property.municipality == current_user.municipality)
 
-    if barangay != 'all':
-        query = query.filter(Property.barangay == barangay)
-    if prop_type != 'all':
-        query = query.filter(Property.accommodation_type == prop_type)
+        if barangay != 'all':
+            query = query.filter(Property.barangay == barangay)
+        if prop_type != 'all':
+            query = query.filter(Property.accommodation_type == prop_type)
 
-    # Date filtering
-    if date_range != 'all':
-        today = datetime.now().date()
-        if date_range == 'last_week':
-            start_date = today - timedelta(days=7)
-        elif date_range == 'last_month':
-            start_date = today - timedelta(days=30)
-        query = query.filter(or_(
-            PropertyReport.report_period_start >= start_date,
-            PropertyReport.report_period_start == None
-        ))
+        # Date filtering
+        if date_range != 'all':
+            today = datetime.now().date()
+            if date_range == 'last_week':
+                start_date = today - timedelta(days=7)
+            elif date_range == 'last_month':
+                start_date = today - timedelta(days=30)
+            query = query.filter(or_(
+                PropertyReport.report_period_start >= start_date,
+                PropertyReport.report_period_start == None
+            ))
 
-    pagination = query.paginate(page=page, per_page=per_page)
+        pagination = query.paginate(page=page, per_page=per_page)
 
-    properties = [{
-        'property_id': prop.property_id,
-        'name': prop.property_name,
-        'barangay': prop.barangay,
-        'type': prop.accommodation_type,
-        'dot_accredited': report.dot_accredited if report else False,
-        'dot_valid': report.dot_accreditation_valid.strftime(
-            '%Y-%m-%d') if report and report.dot_accreditation_valid else '',
-        'ptcao_registered': report.ptcao_registered if report else False,
-        'ptcao_valid': report.ptcao_valid_until.strftime('%Y-%m-%d') if report and report.ptcao_valid_until else '',
-        'classification': report.classification if report else '',
-        'male_employees': report.male_employees if report else 0,
-        'female_employees': report.female_employees if report else 0,
-        'total_rooms': report.total_rooms if report else 0,
-        'daytour_capacity': report.daytour_capacity if report else 0,
-        'overnight_capacity': report.overnight_capacity if report else 0
-    } for prop, report in pagination.items]
+        properties = [{
+            'property_id': prop.property_id,
+            'name': prop.property_name,
+            'barangay': prop.barangay,
+            'type': prop.accommodation_type,
+            'dot_accredited': report.dot_accredited if report else False,
+            'dot_valid': report.dot_accreditation_valid.strftime(
+                '%Y-%m-%d') if report and report.dot_accreditation_valid else '',
+            'ptcao_registered': report.ptcao_registered if report else False,
+            'ptcao_valid': report.ptcao_valid_until.strftime('%Y-%m-%d') if report and report.ptcao_valid_until else '',
+            'classification': report.classification if report else '',
+            'male_employees': report.male_employees if report else 0,
+            'female_employees': report.female_employees if report else 0,
+            'total_employees': (report.male_employees if report else 0) + (report.female_employees if report else 0),
+            'daytour_capacity': report.daytour_capacity if report else 0,
+            'overnight_capacity': report.overnight_capacity if report else 0,
+            'total_rooms': report.total_rooms if report else 0
+        } for prop, report in pagination.items]
 
-    return jsonify({
-        'success': True,
-        'data': properties,
-        'total': pagination.total,
-        'pages': pagination.pages,
-        'current_page': page
-    })
+        return jsonify({
+            'success': True,
+            'data': properties,
+            'total': pagination.total,
+            'pages': pagination.pages,
+            'current_page': page
+        })
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Error loading property report: {str(e)}'
+        }), 500
 
 
 @reports_bp.route('/api/reports/property-list', methods=['GET'])
 @jwt_required()
 def get_property_list():
-    current_user = User.query.get(get_jwt_identity())
+    try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 401
 
-    # Query properties filtered by municipality
-    properties = Property.query.filter_by(municipality=current_user.municipality).all()
+        properties = Property.query.filter_by(municipality=current_user.municipality).all()
 
-    property_list = [{
-        'property_id': prop.property_id,
-        'property_name': prop.property_name,
-        'barangay': prop.barangay,
-        'accommodation_type': prop.accommodation_type
-    } for prop in properties]
-
-    return jsonify({
-        'success': True,
-        'data': property_list
-    })
-
+        return jsonify({
+            'success': True,
+            'data': [{
+                'property_id': prop.property_id,
+                'property_name': prop.property_name,
+                'barangay': prop.barangay,
+                'accommodation_type': prop.accommodation_type
+            } for prop in properties]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading properties: {str(e)}'
+        }), 500
 
 @reports_bp.route('/api/reports/property-data', methods=['GET'])
 @jwt_required()
 def get_property_report_data():
-    current_user = User.query.get(get_jwt_identity())
+    try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 401
 
-    # Get filters
-    date_range = request.args.get('date_range', 'all')
-    prop_type = request.args.get('type', 'all')
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
+        # Get filters
+        date_range = request.args.get('date_range', 'all')
+        prop_type = request.args.get('type', 'all')
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
 
-    query = db.session.query(Property, TouristReport) \
-        .join(TouristReport, Property.property_id == TouristReport.property_id) \
-        .filter(Property.municipality == current_user.municipality)
+        query = db.session.query(Property, TouristReport) \
+            .join(TouristReport, Property.property_id == TouristReport.property_id) \
+            .filter(Property.municipality == current_user.municipality)
 
-    if prop_type != 'all':
-        query = query.filter(Property.accommodation_type == prop_type)
+        if prop_type != 'all':
+            query = query.filter(Property.accommodation_type == prop_type)
 
-    if date_range != 'all':
-        today = datetime.now().date()
-        if date_range == 'last_week':
-            start_date = today - timedelta(days=7)
-        elif date_range == 'last_month':
-            start_date = today - timedelta(days=30)
-        query = query.filter(TouristReport.report_date >= start_date)
+        if date_range != 'all':
+            today = datetime.now().date()
+            if date_range == 'last_week':
+                start_date = today - timedelta(days=7)
+            elif date_range == 'last_month':
+                start_date = today - timedelta(days=30)
+            query = query.filter(TouristReport.report_date >= start_date)
 
-    pagination = query.paginate(page=page, per_page=per_page)
+        pagination = query.paginate(page=page, per_page=per_page)
 
-    reports = [{
-        'property_id': prop.property_id,
-        'name': prop.property_name,
-        'barangay': prop.barangay,
-        'type': prop.accommodation_type,
-        'day_tour_guests': report.total_daytour_guests,
-        'overnight_guests': report.total_overnight_guests,
-        'total_guests': report.total_daytour_guests + report.total_overnight_guests,
-        'rooms_occupied': report.rooms_occupied,
-        'foreign_daytour': report.foreign_daytour_visitors,
-        'foreign_overnight': report.foreign_overnight_visitors,
-        'male_tourists': report.male_tourists,
-        'female_tourists': report.female_tourists
-    } for prop, report in pagination.items]
+        reports = [{
+            'property_id': prop.property_id,
+            'name': prop.property_name,
+            'barangay': prop.barangay,
+            'type': prop.accommodation_type,
+            'day_tour_guests': report.total_daytour_guests,
+            'overnight_guests': report.total_overnight_guests,
+            'total_guests': report.total_daytour_guests + report.total_overnight_guests,
+            'rooms_occupied': report.rooms_occupied,
+            'foreign_daytour': report.foreign_daytour_visitors,
+            'foreign_overnight': report.foreign_overnight_visitors,
+            'male_tourists': report.male_tourists,
+            'female_tourists': report.female_tourists
+        } for prop, report in pagination.items]
 
-    return jsonify({
-        'success': True,
-        'data': reports,
-        'total': pagination.total,
-        'pages': pagination.pages,
-        'current_page': page
-    })
+        return jsonify({
+            'success': True,
+            'data': reports,
+            'total': pagination.total,
+            'pages': pagination.pages,
+            'current_page': page
+        })
 
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Error loading tourist report: {str(e)}'
+        }), 500
 
 @reports_bp.route('/api/reports/update-property', methods=['POST'])
 @jwt_required()

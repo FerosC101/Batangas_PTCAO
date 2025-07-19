@@ -753,42 +753,34 @@
             }
 
             function loadPropertiesForModal() {
-                fetch('/api/reports/property-list')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            const propertySelect = document.getElementById('propertySelect');
-                            const touristSelect = document.getElementById('touristPropertySelect');
+                console.log("Attempting to fetch properties...");
 
-                            // Clear existing options
-                            propertySelect.innerHTML = '<option value="">Select Property</option>';
-                            touristSelect.innerHTML = '<option value="">Select Property</option>';
-
-                            // Add properties to both dropdowns
-                            data.data.forEach(property => {
-                                const option1 = document.createElement('option');
-                                option1.value = property.property_id;
-                                option1.textContent = `${property.property_id} - ${property.property_name} (${property.barangay})`;
-                                propertySelect.appendChild(option1);
-
-                                const option2 = document.createElement('option');
-                                option2.value = property.property_id;
-                                option2.textContent = `${property.property_id} - ${property.property_name} (${property.barangay})`;
-                                touristSelect.appendChild(option2);
-                            });
-                        } else {
-                            showError('Failed to load properties');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading properties:', error);
-                        showError('Error loading properties: ' + error.message);
-                    });
+                fetch('/mto/api/reports/property-list', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // If using JWT
+                    }
+                })
+                .then(response => {
+                    console.log("Received response:", response);
+                    if (!response.ok) {
+                        console.error("Response not OK - Status:", response.status);
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Received data:", data);
+                    if (data.success) {
+                        // Populate your dropdowns here
+                    } else {
+                        showError(data.message || 'Failed to load properties');
+                    }
+                })
+                .catch(error => {
+                    console.error("Full error:", error);
+                    showError('Error loading properties: ' + error.message);
+                });
             }
 
             function loadBarangays() {
@@ -815,14 +807,24 @@
                 });
 
                 fetch(`/api/reports/properties?${params.toString()}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             renderPropertyReport(data.data);
                             updatePagination(data, 'property');
+                        } else {
+                            showError(data.message || 'Failed to load property report');
                         }
                     })
-                    .catch(error => showError('Error loading property report: ' + error));
+                    .catch(error => {
+                        console.error('Error loading property report:', error);
+                        showError('Error loading property report: ' + error.message);
+                    });
             }
 
             function loadTouristReport(page = 1) {
@@ -833,14 +835,24 @@
                 });
 
                 fetch(`/api/reports/property-data?${params.toString()}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             renderTouristReport(data.data);
                             updatePagination(data, 'tourist');
+                        } else {
+                            showError(data.message || 'Failed to load tourist report');
                         }
                     })
-                    .catch(error => showError('Error loading tourist report: ' + error));
+                    .catch(error => {
+                        console.error('Error loading tourist report:', error);
+                        showError('Error loading tourist report: ' + error.message);
+                    });
             }
 
             function renderPropertyReport(data) {
