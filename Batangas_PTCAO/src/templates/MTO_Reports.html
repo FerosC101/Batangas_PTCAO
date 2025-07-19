@@ -549,7 +549,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Property</label>
                                     <select class="form-select" id="propertySelect" required>
-                                        <option value="">Select Property</option>
+                                        <option value="">Loading properties...</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -639,7 +639,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Property</label>
                                     <select class="form-select" id="touristPropertySelect" required>
-                                        <option value="">Select Property</option>
+                                        <option value="">Loading properties...</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -746,53 +746,14 @@
                 loadBarangays();
                 loadTouristReport();
                 loadPropertyReport();
-                loadProperties();
+                loadPropertiesForModal();
                 setupEventListeners();
+
+                // Set default date to today for tourist report
+                document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
             }
 
-            function loadBarangays() {
-                fetch('/api/visitors/barangays')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const select = document.getElementById('barangayFilter');
-                            data.data.forEach(barangay => {
-                                const option = document.createElement('option');
-                                option.value = barangay;
-                                option.textContent = barangay;
-                                select.appendChild(option);
-                            });
-                        }
-                    });
-            }
-
-            document.getElementById('propertySelect').addEventListener('change', function() {
-                if (this.value === 'manual') {
-                    const manualId = prompt('Please enter the Property ID:');
-                    if (manualId) {
-                        const newOption = document.createElement('option');
-                        newOption.value = manualId;
-                        newOption.textContent = manualId + ' (Manual Entry)';
-                        this.appendChild(newOption);
-                        this.value = manualId;
-                    }
-                }
-            });
-
-            document.getElementById('touristPropertySelect').addEventListener('change', function() {
-                if (this.value === 'manual') {
-                    const manualId = prompt('Please enter the Property ID:');
-                    if (manualId) {
-                        const newOption = document.createElement('option');
-                        newOption.value = manualId;
-                        newOption.textContent = manualId + ' (Manual Entry)';
-                        this.appendChild(newOption);
-                        this.value = manualId;
-                    }
-                }
-            });
-
-            function loadProperties() {
+            function loadPropertiesForModal() {
                 fetch('/api/reports/property-list')
                     .then(response => {
                         if (!response.ok) {
@@ -821,6 +782,17 @@
                                 option2.textContent = `${property.property_id} - ${property.property_name} (${property.barangay})`;
                                 touristSelect.appendChild(option2);
                             });
+
+                            // Add manual entry option
+                            const manualOption1 = document.createElement('option');
+                            manualOption1.value = 'manual';
+                            manualOption1.textContent = 'Enter Property ID Manually';
+                            propertySelect.appendChild(manualOption1);
+
+                            const manualOption2 = document.createElement('option');
+                            manualOption2.value = 'manual';
+                            manualOption2.textContent = 'Enter Property ID Manually';
+                            touristSelect.appendChild(manualOption2);
                         } else {
                             showError('Failed to load properties');
                         }
@@ -828,13 +800,22 @@
                     .catch(error => {
                         console.error('Error loading properties:', error);
                         showError('Error loading properties: ' + error.message);
+                    });
+            }
 
-                        // Fallback - show error but still allow manual ID entry
-                        const propertySelect = document.getElementById('propertySelect');
-                        const touristSelect = document.getElementById('touristPropertySelect');
-
-                        propertySelect.innerHTML += '<option value="manual">Enter Property ID Manually</option>';
-                        touristSelect.innerHTML += '<option value="manual">Enter Property ID Manually</option>';
+            function loadBarangays() {
+                fetch('/api/visitors/barangays')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const select = document.getElementById('barangayFilter');
+                            data.data.forEach(barangay => {
+                                const option = document.createElement('option');
+                                option.value = barangay;
+                                option.textContent = barangay;
+                                select.appendChild(option);
+                            });
+                        }
                     });
             }
 
@@ -1137,6 +1118,37 @@
                         // Reset form
                         document.getElementById('propertyReportForm').reset();
                         propertyReportModal.show();
+                    }
+                });
+
+                // Handle manual property ID entry
+                document.getElementById('propertySelect').addEventListener('change', function() {
+                    if (this.value === 'manual') {
+                        const manualId = prompt('Please enter the Property ID:');
+                        if (manualId) {
+                            const newOption = document.createElement('option');
+                            newOption.value = manualId;
+                            newOption.textContent = manualId + ' (Manual Entry)';
+                            this.appendChild(newOption);
+                            this.value = manualId;
+                        } else {
+                            this.value = '';
+                        }
+                    }
+                });
+
+                document.getElementById('touristPropertySelect').addEventListener('change', function() {
+                    if (this.value === 'manual') {
+                        const manualId = prompt('Please enter the Property ID:');
+                        if (manualId) {
+                            const newOption = document.createElement('option');
+                            newOption.value = manualId;
+                            newOption.textContent = manualId + ' (Manual Entry)';
+                            this.appendChild(newOption);
+                            this.value = manualId;
+                        } else {
+                            this.value = '';
+                        }
                     }
                 });
 
