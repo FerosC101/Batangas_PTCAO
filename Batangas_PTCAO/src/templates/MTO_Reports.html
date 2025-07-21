@@ -755,32 +755,42 @@
             function loadPropertiesForModal() {
                 console.log("Attempting to fetch properties...");
 
-                fetch('/mto/api/reports/property-list', {
+                fetch('/mto/properties', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // If using JWT
                     }
                 })
-                .then(response => {
-                    console.log("Received response:", response);
-                    if (!response.ok) {
-                        console.error("Response not OK - Status:", response.status);
-                        return response.text().then(text => { throw new Error(text) });
-                    }
-                    return response.json();
-                })
                 .then(data => {
-                    console.log("Received data:", data);
                     if (data.success) {
-                        // Populate your dropdowns here
+                        const propertySelect = document.getElementById('propertySelect');
+                        const touristPropertySelect = document.getElementById('touristPropertySelect');
+
+                        // Clear existing options
+                        propertySelect.innerHTML = '';
+                        touristPropertySelect.innerHTML = '';
+
+                        // Add default option
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Select a property';
+                        propertySelect.appendChild(defaultOption);
+                        touristPropertySelect.appendChild(defaultOption.cloneNode(true));
+
+                        // Add properties
+                        data.data.forEach(property => {
+                            const option = document.createElement('option');
+                            option.value = property.id;
+                            option.textContent = `${property.name} (${property.barangay})`;
+                            propertySelect.appendChild(option);
+
+                            const option2 = option.cloneNode(true);
+                            touristPropertySelect.appendChild(option2);
+                        });
                     } else {
                         showError(data.message || 'Failed to load properties');
                     }
                 })
-                .catch(error => {
-                    console.error("Full error:", error);
-                    showError('Error loading properties: ' + error.message);
-                });
             }
 
             function loadBarangays() {
