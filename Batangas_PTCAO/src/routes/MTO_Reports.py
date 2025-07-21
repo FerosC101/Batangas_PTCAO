@@ -33,17 +33,19 @@ def get_property_report():
         if not current_user:
             return jsonify({'success': False, 'message': 'User not found'}), 401
 
-        # Get filters
+        # Get filters from request
         date_range = request.args.get('date_range', 'all')
         barangay = request.args.get('barangay', 'all')
         prop_type = request.args.get('type', 'all')
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 10))
 
+        # Build query
         query = db.session.query(Property, PropertyReport) \
             .outerjoin(PropertyReport, Property.property_id == PropertyReport.property_id) \
             .filter(Property.municipality == current_user.municipality)
 
+        # Apply filters
         if barangay != 'all':
             query = query.filter(Property.barangay == barangay)
         if prop_type != 'all':
@@ -61,16 +63,17 @@ def get_property_report():
                 PropertyReport.report_period_start == None
             ))
 
+        # Pagination
         pagination = query.paginate(page=page, per_page=per_page)
 
+        # Format response
         properties = [{
             'property_id': prop.property_id,
             'name': prop.property_name,
             'barangay': prop.barangay,
             'type': prop.accommodation_type,
             'dot_accredited': report.dot_accredited if report else False,
-            'dot_valid': report.dot_accreditation_valid.strftime(
-                '%Y-%m-%d') if report and report.dot_accreditation_valid else '',
+            'dot_valid': report.dot_accreditation_valid.strftime('%Y-%m-%d') if report and report.dot_accreditation_valid else '',
             'ptcao_registered': report.ptcao_registered if report else False,
             'ptcao_valid': report.ptcao_valid_until.strftime('%Y-%m-%d') if report and report.ptcao_valid_until else '',
             'classification': report.classification if report else '',
@@ -89,6 +92,12 @@ def get_property_report():
             'pages': pagination.pages,
             'current_page': page
         })
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Error loading property report: {str(e)}'
+        }), 500
 
     except Exception as e:
         traceback.print_exc()

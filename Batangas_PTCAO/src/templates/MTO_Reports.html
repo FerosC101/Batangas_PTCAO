@@ -816,7 +816,7 @@
                     per_page: rowsPerPage
                 });
 
-                fetch(`/api/reports/properties?${params.toString()}`)
+                fetch(`/mto/api/reports/properties?${params.toString()}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -844,7 +844,7 @@
                     per_page: propRowsPerPage
                 });
 
-                fetch(`/api/reports/property-data?${params.toString()}`)
+                fetch(`/mto/api/reports/property-data?${params.toString()}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
