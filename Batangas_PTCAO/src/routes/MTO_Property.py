@@ -201,6 +201,26 @@ def create_property():
         db.session.add(new_property)
         db.session.flush()  # Generate the ID
 
+        from Batangas_PTCAO.src.model import PropertyReport
+        property_report = PropertyReport(
+            property_id=new_property.property_id,
+            dot_accredited=data.get('dot_accredited', 'false').lower() == 'true',
+            dot_accreditation_valid=datetime.strptime(data['dot_valid_until'], '%Y-%m-%d').date() if data.get(
+                'dot_valid_until') else None,
+            ptcao_registered=data.get('ptcao_registered', 'false').lower() == 'true',
+            ptcao_valid_until=datetime.strptime(data['ptcao_valid_until'], '%Y-%m-%d').date() if data.get(
+                'ptcao_valid_until') else None,
+            classification=data.get('classification'),
+            male_employees=int(data.get('male_employees', 0)),
+            female_employees=int(data.get('female_employees', 0)),
+            total_rooms=int(data.get('total_rooms', 0)),
+            daytour_capacity=int(data.get('daytour_capacity', 0)),
+            overnight_capacity=int(data.get('overnight_capacity', 0)),
+            report_period_start=datetime.now().date(),
+            report_period_end=datetime.now().date()
+        )
+        db.session.add(property_report)
+
         # Handle coordinates
         if 'longitude' in data and 'latitude' in data:
             db.session.add(LongLat(
@@ -578,5 +598,71 @@ def change_property_status(property_id):
     except Exception as e:
         return jsonify({
             'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@properties_bp.route('/<int:property_id>/report', methods=['GET'])
+@jwt_required()
+def get_property_report(property_id):
+    try:
+        from Batangas_PTCAO.src.model import PropertyReport
+        report = PropertyReport.query.filter_by(property_id=property_id).first()
+
+        if not report:
+            return jsonify({
+                'status': 'error',
+                'message': 'Report not found'
+            }), 404
+
+        return jsonify({
+            'status': 'success',
+            'report': {
+                'dot_accredited': report.dot_accredited,
+                'dot_accreditation_valid': report.dot_accreditation_valid.strftime(
+                    '%Y-%m-%d') if report.dot_accreditation_valid else None,
+                'ptcao_registered': report.ptcao_registered,
+                'ptcao_valid_until': report.ptcao_valid_until.strftime(
+                    '%Y-%m-%d') if report.ptcao_valid_until else None,
+                'classification': report.classification,
+                'male_employees': report.male_employees,
+                'female_employees': report.female_employees,
+                'total_employees': report.male_employees + report.female_employees,
+                'total_rooms': report.total_rooms,
+                'daytour_capacity': report.daytour_capacity,
+                'overnight_capacity': report.overnight_capacity
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@properties_bp.route('/mto/properties', methods=['GET'])
+@jwt_required()
+def get_mto_properties():
+    try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 401
+
+        properties = Property.query.filter_by(municipality=current_user.municipality).all()
+
+        properties_data = [{
+            'id': prop.property_id,
+            'name': prop.property_name,
+            'barangay': prop.barangay,
+            'type': prop.accommodation_type
+        } for prop in properties]
+
+        return jsonify({
+            'success': True,
+            'data': properties_data
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
             'message': str(e)
         }), 500

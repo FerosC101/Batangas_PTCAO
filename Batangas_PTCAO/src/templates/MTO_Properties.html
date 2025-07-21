@@ -755,6 +755,67 @@
                                     <textarea class="form-control" name="description" rows="3"></textarea>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label">DOT Accredited</label>
+                                    <select class="form-select" name="dot_accredited">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">DOT Accreditation Valid Until</label>
+                                    <input type="date" class="form-control" name="dot_valid_until">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">PTCAO Registered</label>
+                                    <select class="form-select" name="ptcao_registered">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">PTCAO Valid Until</label>
+                                    <input type="date" class="form-control" name="ptcao_valid_until">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Classification</label>
+                                    <select class="form-select" name="classification">
+                                        <option value="">Select Classification</option>
+                                        <option value="Luxury">Luxury</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Economy">Economy</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Male Employees</label>
+                                    <input type="number" class="form-control" name="male_employees" min="0" value="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Female Employees</label>
+                                    <input type="number" class="form-control" name="female_employees" min="0" value="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Total Rooms</label>
+                                    <input type="number" class="form-control" name="total_rooms" min="0" value="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Daytour Capacity</label>
+                                    <input type="number" class="form-control" name="daytour_capacity" min="0" value="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Overnight Capacity</label>
+                                    <input type="number" class="form-control" name="overnight_capacity" min="0" value="0">
+                                </div>
+
                                 <!-- Typical Locations Section -->
                                 <div class="mb-3">
                                     <label class="form-label">Typical Locations</label>
@@ -1316,6 +1377,8 @@
         // Open Edit Modal
         function openEditModal(propertyId) {
             currentPropertyId = propertyId;
+
+            // First fetch property data
             fetch(`/property/${propertyId}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
             })
@@ -1392,9 +1455,33 @@
 
                     // Initialize map
                     initEditMap();
+
+                    // Now fetch the report data
+                    return fetch(`/property/${propertyId}/report`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
+                    });
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(reportData => {
+                if(reportData.report) {
+                    const report = reportData.report;
+                    document.getElementById('editDotAccredited').value = report.dot_accredited ? 'true' : 'false';
+                    document.getElementById('editDotValidUntil').value = report.dot_accreditation_valid || '';
+                    document.getElementById('editPtcaoRegistered').value = report.ptcao_registered ? 'true' : 'false';
+                    document.getElementById('editPtcaoValidUntil').value = report.ptcao_valid_until || '';
+                    document.getElementById('editClassification').value = report.classification || '';
+                    document.getElementById('editMaleEmployees').value = report.male_employees || 0;
+                    document.getElementById('editFemaleEmployees').value = report.female_employees || 0;
+                    document.getElementById('editTotalRooms').value = report.total_rooms || 0;
+                    document.getElementById('editDaytourCapacity').value = report.daytour_capacity || 0;
+                    document.getElementById('editOvernightCapacity').value = report.overnight_capacity || 0;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Failed to load property data: ' + error.message);
+            });
         }
 
         // Delete property image

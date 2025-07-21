@@ -753,45 +753,61 @@
             }
 
             function loadPropertiesForModal() {
-                console.log("Attempting to fetch properties...");
-
-                fetch('/mto/properties', {
+                fetch('/property/mto/properties', {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` // If using JWT
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
                     }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch properties');
+                    }
+                    return response.json();
                 })
                 .then(data => {
                     if (data.success) {
-                        const propertySelect = document.getElementById('propertySelect');
-                        const touristPropertySelect = document.getElementById('touristPropertySelect');
+                        // Update property select for tourist report
+                        const touristSelect = document.getElementById('touristPropertySelect');
+                        touristSelect.innerHTML = '<option value="">Select Property</option>';
 
-                        // Clear existing options
-                        propertySelect.innerHTML = '';
-                        touristPropertySelect.innerHTML = '';
-
-                        // Add default option
-                        const defaultOption = document.createElement('option');
-                        defaultOption.value = '';
-                        defaultOption.textContent = 'Select a property';
-                        propertySelect.appendChild(defaultOption);
-                        touristPropertySelect.appendChild(defaultOption.cloneNode(true));
-
-                        // Add properties
                         data.data.forEach(property => {
                             const option = document.createElement('option');
                             option.value = property.id;
                             option.textContent = `${property.name} (${property.barangay})`;
-                            propertySelect.appendChild(option);
-
-                            const option2 = option.cloneNode(true);
-                            touristPropertySelect.appendChild(option2);
+                            touristSelect.appendChild(option);
                         });
+
+                        // Also update property select for property report if needed
+                        const propertySelect = document.getElementById('propertySelect');
+                        if (propertySelect) {
+                            propertySelect.innerHTML = '<option value="">Select Property</option>';
+                            data.data.forEach(property => {
+                                const option = document.createElement('option');
+                                option.value = property.id;
+                                option.textContent = `${property.name} (${property.barangay})`;
+                                propertySelect.appendChild(option);
+                            });
+                        }
                     } else {
                         showError(data.message || 'Failed to load properties');
                     }
                 })
+                .catch(error => {
+                    console.error('Error loading properties:', error);
+                    showError('Error loading properties: ' + error.message);
+                });
             }
+
+            // Call this when the modal is shown
+            document.getElementById('addTouristReportModal').addEventListener('shown.bs.modal', function() {
+                loadPropertiesForModal();
+                document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+            });
+
+            document.getElementById('addPropertyReportModal').addEventListener('shown.bs.modal', function() {
+                loadPropertiesForModal();
+            });
 
             function loadBarangays() {
                 fetch('/api/visitors/barangays')
@@ -1004,7 +1020,7 @@
             }
 
             function editTouristReport(propertyId) {
-                fetch(`/api/reports/property-data?property_id=${propertyId}&per_page=1`)
+                fetch(`/mto/api/reports/property-data?property_id=${propertyId}&per_page=1`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success && data.data.length > 0) {
@@ -1190,14 +1206,17 @@
                         return;
                     }
 
-                    fetch('/api/reports/update-property', {
+                    apiFetch('/mto/api/reports/add-tourist', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
                         body: JSON.stringify(data)
                     })
-                    .then(response => response.json())
+
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             showSuccess('Property report submitted successfully');
@@ -1246,15 +1265,17 @@
                         submitBtn.innerHTML = 'Submit Report';
                         return;
                     }
-
-                    fetch('/api/reports/add-tourist', {
+                    apiFetch('/mto/api/reports/add-tourist', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
                         body: JSON.stringify(data)
                     })
-                    .then(response => response.json())
+
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             showSuccess('Tourist report submitted successfully');
@@ -1267,7 +1288,7 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        showError('Error submitting tourist report: ' + error.message);
+                        showError(error.message || 'Error submitting tourist report');
                     })
                     .finally(() => {
                         submitBtn.disabled = false;
@@ -1288,6 +1309,33 @@
                 bootstrap.Toast.getOrCreateInstance(toast).show();
             }
         });
+
+        function apiFetch(url, options = {}) {
+            // Ensure headers exist
+            options.headers = options.headers || {};
+            // Add JWT token
+            options.headers['Authorization'] = `Bearer ${localStorage.getItem('jwt_token')}`;
+            // Set content type if body exists
+            if (options.body && !options.headers['Content-Type']) {
+                options.headers['Content-Type'] = 'application/json';
+            }
+
+            return fetch(url, options)
+                .then(async response => {
+                    const contentType = response.headers.get('content-type');
+                    const isJson = contentType && contentType.includes('application/json');
+
+                    if (!response.ok) {
+                        // Try to parse error as JSON first
+                        const error = isJson
+                            ? await response.json()
+                            : { message: await response.text() };
+                        throw error;
+                    }
+
+                    return isJson ? response.json() : response.text();
+                });
+        }
     </script>
 </body>
 </html>
