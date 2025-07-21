@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import joinedload
+
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import Property, User, LongLat, Amenity, Room
 from sqlalchemy.exc import SQLAlchemyError
@@ -25,32 +27,36 @@ def get_map_data():
                 'message': 'User municipality not found'
             }), 400
 
-        # Query with eager loading
+        # Updated query with proper eager loading
         properties = Property.query.filter_by(
             municipality=user.municipality,
             status='ACTIVE'
         ).options(
             joinedload(Property.coordinates),
             joinedload(Property.amenities),
-            joinedload(Property.rooms)
+            joinedload(Property.rooms),
+            joinedload(Property.images)  # Load images
         ).all()
 
         result = []
         for prop in properties:
-            # Skip if no coordinates
             if not prop.coordinates:
                 continue
 
-            # Get first coordinate set
             coord = prop.coordinates[0]
 
-            # Calculate price range
+            # Get prices
             prices = [r.overnight_price for r in prop.rooms if r.overnight_price is not None]
             min_price = min(prices) if prices else 0
             max_price = max(prices) if prices else 0
 
-            # Get amenities (only property-level amenities)
+            # Get amenities
             amenities = [a.amenity for a in prop.amenities if a.room_id is None]
+
+            # Get first image if available
+            image = None
+            if prop.images and len(prop.images) > 0:
+                image = url_for('static', filename=f'uploads/events/{prop.images[0].image_path}')
 
             result.append({
                 'id': prop.property_id,
@@ -58,8 +64,8 @@ def get_map_data():
                 'type': prop.accommodation_type,
                 'location': f"{prop.barangay}, {prop.municipality}",
                 'price': float(min_price),
-                'rating': 4.5,  # Default value
-                'image': f"/static/uploads/properties/{prop.property_image}" if prop.property_image else None,
+                'rating': 4.5,
+                'image': image,  # Use the image path
                 'coordinates': [float(coord.latitude), float(coord.longitude)],
                 'amenities': amenities
             })
@@ -76,7 +82,6 @@ def get_map_data():
             'success': False,
             'message': 'Failed to load property data'
         }), 500
-
 
 @destinations_bp.route('/api/debug/properties')
 def debug_properties():
