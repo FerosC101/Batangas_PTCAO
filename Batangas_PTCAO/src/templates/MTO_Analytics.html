@@ -787,6 +787,62 @@
         function printPage() {
             window.print();
         }
+        document.addEventListener('DOMContentLoaded', function() {
+        // Load property analytics
+            fetch('/api/analytics/property')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update property stats cards
+                        document.getElementById('totalProperties').textContent = data.data.total_reports;
+                        document.getElementById('avgEmployees').textContent =
+                            `${data.data.avg_male_employees}M / ${data.data.avg_female_employees}F`;
+                        document.getElementById('totalRooms').textContent = data.data.total_rooms;
+                        document.getElementById('dotAccredited').textContent = data.data.dot_accredited;
+                    }
+                });
+
+            // Load tourist analytics
+            function loadTouristAnalytics(period = 'month') {
+                fetch(`/api/analytics/tourist?period=${period}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update tourist stats
+                            document.getElementById('totalVisitors').textContent =
+                                data.data.daytour_visitors + data.data.overnight_visitors;
+                            document.getElementById('visitorBreakdown').textContent =
+                                `${data.data.daytour_visitors} Day / ${data.data.overnight_visitors} Night`;
+                            document.getElementById('foreignVisitors').textContent =
+                                `${data.data.foreign_daytour + data.data.foreign_overnight}`;
+                            document.getElementById('genderBreakdown').textContent =
+                                `${data.data.male_tourists}M / ${data.data.female_tourists}F`;
+                        }
+                    });
+            }
+
+            // Load trends
+            fetch('/api/analytics/trends')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderVisitorTrendsChart(data.data);
+                    }
+                });
+
+            // Period selector
+            document.querySelectorAll('.period-selector').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const period = this.dataset.period;
+                    loadTouristAnalytics(period);
+                    document.querySelectorAll('.period-selector').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Initial load
+            loadTouristAnalytics();
+        });
     </script>
 </body>
 </html>

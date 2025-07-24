@@ -22,6 +22,13 @@ def create_app():
                 template_folder=os.path.join(os.path.dirname(__file__), 'templates'),
                 static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 
+    @app.template_filter('number_format')
+    def number_format(value):
+        try:
+            return "{:,}".format(int(value))
+        except (ValueError, TypeError):
+            return values
+
     # Configurations
     app.config.from_object(Config)
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'fallback-secret-key')
@@ -59,6 +66,7 @@ def create_app():
         return 'File type not allowed', 400
 
     return app
+
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

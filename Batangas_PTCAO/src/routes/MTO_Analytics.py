@@ -1,19 +1,33 @@
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request, render_template, current_app, redirect, flash, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import (
     User,
     Property,
-    VisitorStatistics,
+    PropertyReport,
+    TouristReport,
     BarangayMonthlyStatistics,
-    PropertyMonthlyStatistics
+    PropertyMonthlyStatistics, VisitorStatistics
 )
 
 analytics_bp = Blueprint('analytics', __name__, template_folder='templates')
 
+
 def init_analytics_routes(app):
     app.register_blueprint(analytics_bp, url_prefix='/mto')
+
+
+def get_time_period(period):
+    today = datetime.now().date()
+    if period == 'week':
+        return today - timedelta(days=7)
+    elif period == 'month':
+        return today - timedelta(days=30)
+    elif period == 'year':
+        return today - timedelta(days=365)
+    else:  # Default to month
+        return today - timedelta(days=30)
 
 
 @analytics_bp.route('/analytics')
@@ -21,251 +35,227 @@ def init_analytics_routes(app):
 def mto_analytics():
     current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)
-    municipality = user.municipality
+    if not user:
+        flash('User not found', 'error')
+        return redirect(url_for('auth.login'))
 
-    # Get initial data to render the template
+    municipality = user.municipality
     today = datetime.now().date()
     last_30_days = today - timedelta(days=30)
 
-    summary_stats = {
-        'total_visitors': get_visitor_count(last_30_days, today, municipality=municipality),
-        'local_visitors': get_visitor_count(last_30_days, today, 'Local', municipality),
-        'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign', municipality),
-        'overnight_stays': get_stay_count(last_30_days, today, 'Overnight', municipality)
+    # Initialize visitor stats without revenue
+    visitor_stats = {
+        'total_visitors': 0,
+        'local_visitors': 0,
+        'foreign_visitors': 0,
+        'daytour_visitors': 0,
+        'overnight_visitors': 0
     }
+
+    try:
+        # Get visitor statistics from TouristReport (without revenue)
+        tourist_stats = db.session.query(
+            db.func.sum(TouristReport.total_daytour_guests).label('daytour'),
+            db.func.sum(TouristReport.total_overnight_guests).label('overnight')
+        ).join(
+            Property,
+            Property.property_id == TouristReport.property_id
+        ).filter(
+            Property.municipality == municipality,
+            TouristReport.report_date.between(last_30_days, today)
+        ).first()
+
+        if tourist_stats:
+            visitor_stats.update({
+                'daytour_visitors': tourist_stats.daytour or 0,
+                'overnight_visitors': tourist_stats.overnight or 0
+            })
+
+        # Get visitor counts from VisitorStatistics
+        visitor_counts = db.session.query(
+            db.func.sum(VisitorStatistics.count).label('total'),
+            db.func.sum(db.case(
+                [(VisitorStatistics.visitor_type == 'Local', VisitorStatistics.count)],
+                else_=0
+            )).label('local'),
+            db.func.sum(db.case(
+                [(VisitorStatistics.visitor_type == 'Foreign', VisitorStatistics.count)],
+                else_=0
+            )).label('foreign')
+        ).join(
+            Property,
+            Property.property_id == VisitorStatistics.property_id
+        ).filter(
+            Property.municipality == municipality,
+            VisitorStatistics.report_date.between(last_30_days, today)
+        ).first()
+
+        if visitor_counts:
+            visitor_stats.update({
+                'total_visitors': visitor_counts.total or 0,
+                'local_visitors': visitor_counts.local or 0,
+                'foreign_visitors': visitor_counts.foreign or 0
+            })
+
+    except Exception as e:
+        current_app.logger.error(f"Error loading analytics data: {str(e)}")
+        flash('Error loading analytics data', 'error')
 
     return render_template(
         'MTO_Analytics.html',
-        summary_stats=summary_stats,
+        visitor_stats=visitor_stats,
         municipality=municipality,
-        user_id=current_user_id
+        current_year=today.year,
+        current_month=today.month
     )
 
-
-@analytics_bp.route('/api/analytics/summary', methods=['GET'])
+@analytics_bp.route('/api/analytics/property', methods=['GET'])
 @jwt_required()
-def get_analytics_summary():
+def get_property_analytics():
     try:
-        # Get current user's municipality
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
         municipality = user.municipality
 
-        # Calculate date ranges
-        today = datetime.now().date()
-        last_30_days = today - timedelta(days=30)
-        last_6_months = today - timedelta(days=180)
+        # Get property reports summary
+        reports = db.session.query(
+            db.func.count(PropertyReport.property_id).label('total_reports'),
+            db.func.avg(PropertyReport.male_employees).label('avg_male'),
+            db.func.avg(PropertyReport.female_employees).label('avg_female'),
+            db.func.sum(PropertyReport.total_rooms).label('total_rooms'),
+            db.func.sum(PropertyReport.daytour_capacity).label('daytour_cap'),
+            db.func.sum(PropertyReport.overnight_capacity).label('overnight_cap')
+        ).join(
+            Property,
+            Property.property_id == PropertyReport.property_id
+        ).filter(
+            Property.municipality == municipality
+        ).first()
 
-        # Get summary statistics for the user's municipality
-        summary_stats = {
-            'total_visitors': get_visitor_count(last_30_days, today, municipality=municipality),
-            'local_visitors': get_visitor_count(last_30_days, today, 'Local', municipality),
-            'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign', municipality),
-            'overnight_stays': get_stay_count(last_30_days, today, 'Overnight', municipality)
-        }
+        # Get accreditation stats
+        accreditation = db.session.query(
+            db.func.count(db.case(
+                [(PropertyReport.dot_accredited == True, 1)],
+                else_=None
+            )).label('dot_accredited'),
+            db.func.count(db.case(
+                [(PropertyReport.ptcao_registered == True, 1)],
+                else_=None
+            )).label('ptcao_registered')
+        ).join(
+            Property,
+            Property.property_id == PropertyReport.property_id
+        ).filter(
+            Property.municipality == municipality
+        ).first()
 
         return jsonify({
             'success': True,
-            'data': summary_stats
+            'data': {
+                'total_reports': reports.total_reports or 0,
+                'avg_male_employees': round(reports.avg_male or 0, 1),
+                'avg_female_employees': round(reports.avg_female or 0, 1),
+                'total_rooms': reports.total_rooms or 0,
+                'daytour_capacity': reports.daytour_cap or 0,
+                'overnight_capacity': reports.overnight_cap or 0,
+                'dot_accredited': accreditation.dot_accredited or 0,
+                'ptcao_registered': accreditation.ptcao_registered or 0
+            }
         }), 200
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
-@analytics_bp.route('/api/analytics/visitor-trends', methods=['GET'])
+@analytics_bp.route('/api/analytics/tourist', methods=['GET'])
 @jwt_required()
-def get_analytics_visitor_trends():
+def get_tourist_analytics():
     try:
-        # Get current user's municipality
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
         municipality = user.municipality
 
-        # Get period parameter (default: 6months)
-        period = request.args.get('period', '6months')
+        period = request.args.get('period', 'month')
+        start_date = get_time_period(period)
+        end_date = datetime.now().date()
 
-        # Calculate date range
-        today = datetime.now().date()
-
-        if period == '3months':
-            start_date = today - timedelta(days=90)
-        elif period == 'year':
-            start_date = today - timedelta(days=365)
-        else:  # 6months
-            start_date = today - timedelta(days=180)
-
-        # Get monthly visitor trends for the municipality
-        trends = db.session.query(
-            BarangayMonthlyStatistics.year,
-            BarangayMonthlyStatistics.month,
-            db.func.sum(BarangayMonthlyStatistics.local_visitors).label('local_visitors'),
-            db.func.sum(BarangayMonthlyStatistics.foreign_visitors).label('foreign_visitors')
+        # Get tourist reports summary
+        reports = db.session.query(
+            db.func.sum(TouristReport.total_daytour_guests).label('daytour'),
+            db.func.sum(TouristReport.total_overnight_guests).label('overnight'),
+            db.func.sum(TouristReport.foreign_daytour_visitors).label('foreign_day'),
+            db.func.sum(TouristReport.foreign_overnight_visitors).label('foreign_night'),
+            db.func.sum(TouristReport.male_tourists).label('male'),
+            db.func.sum(TouristReport.female_tourists).label('female'),
+            db.func.sum(TouristReport.total_revenue).label('revenue'),
+            db.func.avg(TouristReport.rooms_occupied).label('avg_occupancy')
         ).join(
             Property,
-            Property.barangay == BarangayMonthlyStatistics.barangay
+            Property.property_id == TouristReport.property_id
         ).filter(
             Property.municipality == municipality,
-            (
-                    (BarangayMonthlyStatistics.year > start_date.year) |
-                    (
-                            (BarangayMonthlyStatistics.year == start_date.year) &
-                            (BarangayMonthlyStatistics.month >= start_date.month)
-                    )
-            )
+            TouristReport.report_date.between(start_date, end_date)
+        ).first()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'daytour_visitors': reports.daytour or 0,
+                'overnight_visitors': reports.overnight or 0,
+                'foreign_daytour': reports.foreign_day or 0,
+                'foreign_overnight': reports.foreign_night or 0,
+                'male_tourists': reports.male or 0,
+                'female_tourists': reports.female or 0,
+                'total_revenue': float(reports.revenue) if reports.revenue else 0,
+                'avg_occupancy': round(reports.avg_occupancy or 0, 1),
+                'period': period
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@analytics_bp.route('/api/analytics/trends', methods=['GET'])
+@jwt_required()
+def get_visitor_trends():
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        municipality = user.municipality
+
+        # Get monthly trends
+        trends = db.session.query(
+            db.func.extract('year', TouristReport.report_date).label('year'),
+            db.func.extract('month', TouristReport.report_date).label('month'),
+            db.func.sum(TouristReport.total_daytour_guests + TouristReport.total_overnight_guests).label('total')
+        ).join(
+            Property,
+            Property.property_id == TouristReport.property_id
+        ).filter(
+            Property.municipality == municipality,
+            db.func.extract('year', TouristReport.report_date) >= datetime.now().year - 1
         ).group_by(
-            BarangayMonthlyStatistics.year,
-            BarangayMonthlyStatistics.month
+            'year', 'month'
         ).order_by(
-            BarangayMonthlyStatistics.year,
-            BarangayMonthlyStatistics.month
+            'year', 'month'
         ).all()
 
-        # Format the data for the chart
+        # Format for chart
         labels = []
-        local_data = []
-        foreign_data = []
-
+        data = []
         for trend in trends:
-            month_name = datetime(2000, trend.month, 1).strftime('%b')
-            labels.append(f"{month_name} {trend.year}")
-            local_data.append(trend.local_visitors)
-            foreign_data.append(trend.foreign_visitors)
+            month_name = datetime(2000, int(trend.month), 1).strftime('%b')
+            labels.append(f"{month_name} {int(trend.year)}")
+            data.append(int(trend.total or 0))
 
         return jsonify({
             'success': True,
             'data': {
                 'labels': labels,
-                'local_visitors': local_data,
-                'foreign_visitors': foreign_data
-            },
-            'period': period
+                'visitors': data
+            }
         }), 200
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@analytics_bp.route('/api/analytics/top-destinations', methods=['GET'])
-@jwt_required()
-def get_analytics_top_destinations():
-    try:
-        # Get current user's municipality
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-        municipality = user.municipality
-
-        # Get period parameter (default: month)
-        period = request.args.get('period', 'month')
-
-        # Calculate date range
-        today = datetime.now().date()
-
-        if period == 'week':
-            start_date = today - timedelta(days=7)
-            month = today.month
-            year = today.year
-        elif period == 'year':
-            start_date = today - timedelta(days=365)
-            month = None
-            year = today.year
-        else:  # month
-            start_date = today - timedelta(days=30)
-            month = today.month
-            year = today.year
-
-        # Get top destinations by barangay for the municipality
-        query = db.session.query(
-            Property.barangay,
-            db.func.sum(PropertyMonthlyStatistics.total_visitors).label('total_visitors'),
-            db.func.sum(PropertyMonthlyStatistics.local_visitors).label('local_visitors'),
-            db.func.sum(PropertyMonthlyStatistics.foreign_visitors).label('foreign_visitors')
-        ).join(
-            PropertyMonthlyStatistics,
-            PropertyMonthlyStatistics.property_id == Property.property_id
-        ).filter(
-            Property.municipality == municipality
-        )
-
-        if month:
-            query = query.filter(
-                PropertyMonthlyStatistics.month == month
-            )
-
-        query = query.filter(
-            PropertyMonthlyStatistics.year == year
-        ).group_by(
-            Property.barangay
-        ).order_by(
-            db.desc('total_visitors')
-        ).limit(5)
-
-        top_destinations = query.all()
-
-        result = []
-        for dest in top_destinations:
-            total = dest.total_visitors or 0
-            local = dest.local_visitors or 0
-            foreign = dest.foreign_visitors or 0
-
-            if total > 0:
-                local_percent = round((local / total) * 100)
-                foreign_percent = 100 - local_percent
-            else:
-                local_percent = 0
-                foreign_percent = 0
-
-            # Calculate change percentage (simplified - in real app compare with previous period)
-            change_percent = 8  # Example value - would be calculated in real app
-
-            result.append({
-                'barangay': dest.barangay,
-                'total_visitors': total,
-                'local_visitors': local,
-                'foreign_visitors': foreign,
-                'local_percent': local_percent,
-                'foreign_percent': foreign_percent,
-                'change_percent': change_percent,
-                'change_direction': 'up' if change_percent >= 0 else 'down'
-            })
-
-        return jsonify({
-            'success': True,
-            'data': result,
-            'period': period
-        }), 200
-
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-def get_visitor_count(start_date, end_date, visitor_type=None, municipality=None):
-    query = db.session.query(db.func.sum(VisitorStatistics.count)).join(
-        Property,
-        Property.property_id == VisitorStatistics.property_id
-    ).filter(
-        VisitorStatistics.report_date.between(start_date, end_date)
-    )
-
-    if visitor_type:
-        query = query.filter(VisitorStatistics.visitor_type == visitor_type)
-
-    if municipality:
-        query = query.filter(Property.municipality == municipality)
-
-    return query.scalar() or 0
-
-
-def get_stay_count(start_date, end_date, stay_type, municipality=None):
-    query = db.session.query(db.func.sum(VisitorStatistics.count)).join(
-        Property,
-        Property.property_id == VisitorStatistics.property_id
-    ).filter(
-        VisitorStatistics.report_date.between(start_date, end_date),
-        VisitorStatistics.stay_type == stay_type
-    )
-
-    if municipality:
-        query = query.filter(Property.municipality == municipality)
-
-    return query.scalar() or 0

@@ -9,7 +9,9 @@ from Batangas_PTCAO.src.model import (
     BarangayMonthlyStatistics,
     PropertyMonthlyStatistics,
     VisitorRecord,
-    VisitorDataUpload
+    VisitorDataUpload,
+    PropertyReport,
+    TouristReport
 )
 import pandas as pd
 import os
@@ -21,7 +23,6 @@ dashboard_bp = Blueprint('dashboard', __name__)
 
 def init_dashboard_routes(app):
     app.register_blueprint(dashboard_bp)
-    # Ensure upload folder exists
     upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'uploads')
     os.makedirs(upload_folder, exist_ok=True)
     app.config['UPLOAD_FOLDER'] = upload_folder
@@ -33,12 +34,117 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 
+def get_property_stats(municipality):
+    """Get aggregated property statistics for the dashboard"""
+    try:
+        stats = db.session.query(
+            db.func.count(Property.property_id).label('total_properties'),
+            db.func.sum(PropertyReport.total_rooms).label('total_rooms'),
+            db.func.sum(PropertyReport.daytour_capacity).label('daytour_capacity'),
+            db.func.sum(PropertyReport.overnight_capacity).label('overnight_capacity')
+        ).outerjoin(
+            PropertyReport,
+            PropertyReport.property_id == Property.property_id
+        ).filter(
+            Property.municipality == municipality,
+            Property.status == 'ACTIVE'
+        ).first()
+
+        return {
+            'total_properties': stats.total_properties or 0,
+            'total_rooms': stats.total_rooms or 0,
+            'daytour_capacity': stats.daytour_capacity or 0,
+            'overnight_capacity': stats.overnight_capacity or 0
+        }
+    except Exception as e:
+        current_app.logger.error(f"Error in get_property_stats: {str(e)}")
+        return {
+            'total_properties': 0,
+            'total_rooms': 0,
+            'daytour_capacity': 0,
+            'overnight_capacity': 0
+        }
+
+
+def get_visitor_stats(municipality, days=30):
+    """Get visitor statistics for the dashboard"""
+    try:
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=days)
+
+        # Initialize default values
+        result = {
+            'total_visitors': 0,
+            'local_visitors': 0,
+            'foreign_visitors': 0,
+            'daytour_visitors': 0,
+            'overnight_visitors': 0,
+            'revenue': 0
+        }
+
+        # From TouristReport
+        tourist_stats = db.session.query(
+            db.func.sum(TouristReport.total_daytour_guests).label('daytour'),
+            db.func.sum(TouristReport.total_overnight_guests).label('overnight'),
+            db.func.sum(TouristReport.total_revenue).label('revenue')
+        ).join(
+            Property,
+            Property.property_id == TouristReport.property_id
+        ).filter(
+            Property.municipality == municipality,
+            TouristReport.report_date.between(start_date, end_date)
+        ).first()
+
+        if tourist_stats:
+            result.update({
+                'daytour_visitors': tourist_stats.daytour or 0,
+                'overnight_visitors': tourist_stats.overnight or 0,
+                'revenue': float(tourist_stats.revenue) if tourist_stats.revenue else 0
+            })
+
+        # From VisitorStatistics
+        visitor_stats = db.session.query(
+            db.func.sum(VisitorStatistics.count).label('total'),
+            db.func.sum(db.case(
+                [(VisitorStatistics.visitor_type == 'Local', VisitorStatistics.count)],
+                else_=0
+            )).label('local'),
+            db.func.sum(db.case(
+                [(VisitorStatistics.visitor_type == 'Foreign', VisitorStatistics.count)],
+                else_=0
+            )).label('foreign')
+        ).join(
+            Property,
+            Property.property_id == VisitorStatistics.property_id
+        ).filter(
+            Property.municipality == municipality,
+            VisitorStatistics.report_date.between(start_date, end_date)
+        ).first()
+
+        if visitor_stats:
+            result.update({
+                'total_visitors': visitor_stats.total or 0,
+                'local_visitors': visitor_stats.local or 0,
+                'foreign_visitors': visitor_stats.foreign or 0
+            })
+
+        return result
+
+    except Exception as e:
+        current_app.logger.error(f"Error in get_visitor_stats: {str(e)}")
+        return {
+            'total_visitors': 0,
+            'local_visitors': 0,
+            'foreign_visitors': 0,
+            'daytour_visitors': 0,
+            'overnight_visitors': 0,
+            'revenue': 0
+        }
+
 @dashboard_bp.route('/mto/dashboard')
 @jwt_required()
 def mto_dashboard():
-    """Render the MTO Dashboard with all necessary statistics and data"""
     try:
-        # Get current user identity
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
         if not user:
@@ -47,60 +153,77 @@ def mto_dashboard():
 
         municipality = user.municipality
 
-        # Calculate date ranges
-        today = datetime.now().date()
-        last_30_days = today - timedelta(days=30)
-        last_7_days = today - timedelta(days=7)
-
-        # 1. Get summary statistics filtered by municipality
-        summary_stats = {
-            'total_properties': Property.query.filter_by(
-                status='Active',
-                municipality=municipality
-            ).count(),
-            'total_visitors': get_visitor_count(last_30_days, today, municipality=municipality),
-            'local_visitors': get_visitor_count(last_30_days, today, 'Local', municipality),
-            'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign', municipality),
-            'new_properties': Property.query.filter(
-                Property.registration_date >= last_30_days,
-                Property.municipality == municipality
-            ).count()
+        # Initialize default values
+        property_stats = {
+            'total_properties': 0,
+            'total_rooms': 0,
+            'daytour_capacity': 0,
+            'overnight_capacity': 0
         }
 
-        # 2. Get top 5 destinations in the municipality
-        top_destinations = get_top_destinations(municipality=municipality, limit=5)
-
-        # 3. Get recent visitor trends (weekly) for the municipality
-        visitor_trends = get_visitor_trends(last_7_days, today, municipality)
-
-        # 4. Get property status distribution for the municipality
-        status_distribution = {
-            'Active': Property.query.filter_by(
-                status='Active',
-                municipality=municipality
-            ).count(),
-            'Maintenance': Property.query.filter_by(
-                status='Maintenance',
-                municipality=municipality
-            ).count()
+        visitor_stats = {
+            'total_visitors': 0,
+            'local_visitors': 0,
+            'foreign_visitors': 0,
+            'daytour_visitors': 0,
+            'overnight_visitors': 0,
+            'revenue': 0
         }
+
+        # Get property statistics if available
+        try:
+            property_stats = get_property_stats(municipality)
+        except Exception as e:
+            current_app.logger.error(f"Error getting property stats: {str(e)}")
+
+        # Get visitor statistics if available (last 30 days)
+        try:
+            visitor_stats = get_visitor_stats(municipality)
+        except Exception as e:
+            current_app.logger.error(f"Error getting visitor stats: {str(e)}")
+
+        # Get top 5 destinations
+        top_destinations = []
+        try:
+            top_destinations = db.session.query(
+                Property.property_name,
+                Property.barangay,
+                db.func.sum(TouristReport.total_daytour_guests + TouristReport.total_overnight_guests).label(
+                    'total_visitors')
+            ).join(
+                TouristReport,
+                TouristReport.property_id == Property.property_id
+            ).filter(
+                Property.municipality == municipality,
+                TouristReport.report_date >= datetime.now().date() - timedelta(days=30)
+            ).group_by(
+                Property.property_id,
+                Property.property_name,
+                Property.barangay
+            ).order_by(
+                db.desc('total_visitors')
+            ).limit(5).all()
+        except Exception as e:
+            current_app.logger.error(f"Error getting top destinations: {str(e)}")
 
         # Get recent uploads
-        recent_uploads = VisitorDataUpload.query.filter_by(
-            municipality=municipality
-        ).order_by(
-            VisitorDataUpload.upload_date.desc()
-        ).limit(5).all()
+        recent_uploads = []
+        try:
+            recent_uploads = VisitorDataUpload.query.filter_by(
+                municipality=municipality
+            ).order_by(
+                VisitorDataUpload.upload_date.desc()
+            ).limit(5).all()
+        except Exception as e:
+            current_app.logger.error(f"Error getting recent uploads: {str(e)}")
 
         return render_template(
             'MTO_Dashboard.html',
-            current_date=today.strftime('%B %d, %Y'),
-            summary=summary_stats,  # Make sure this is passed
+            current_date=datetime.now().strftime('%B %d, %Y'),
+            property_stats=property_stats,
+            visitor_stats=visitor_stats,
             top_destinations=top_destinations,
-            visitor_trends=visitor_trends,
-            status_distribution=status_distribution,
             recent_uploads=recent_uploads,
-            user_id=current_user_id,
             municipality=municipality
         )
 
@@ -108,7 +231,6 @@ def mto_dashboard():
         current_app.logger.error(f"Error loading MTO dashboard: {str(e)}")
         flash('Failed to load dashboard data', 'error')
         return redirect(url_for('auth.login'))
-
 
 @dashboard_bp.route('/mto/dashboard/upload', methods=['POST'])
 @jwt_required()
@@ -214,6 +336,10 @@ def get_visitor_count(start_date, end_date, visitor_type=None, municipality=None
 
 
 def get_top_destinations(municipality=None, limit=5):
+    # Calculate date range for the last 30 days
+    today = datetime.now().date()
+    last_30_days = today - timedelta(days=30)
+
     query = db.session.query(
         Property.property_id,
         Property.property_name,
@@ -240,6 +366,8 @@ def get_top_destinations(municipality=None, limit=5):
     ).join(
         VisitorStatistics,
         VisitorStatistics.property_id == Property.property_id
+    ).filter(
+        VisitorStatistics.report_date.between(last_30_days, today)
     ).group_by(
         Property.property_id,
         Property.property_name,
@@ -254,7 +382,6 @@ def get_top_destinations(municipality=None, limit=5):
         query = query.filter(Property.municipality == municipality)
 
     return query.all()
-
 
 def get_visitor_trends(start_date, end_date, municipality=None):
     query = db.session.query(
@@ -394,10 +521,7 @@ def get_top_destinations_api():
     municipality = user.municipality
 
     try:
-        # Get time period parameter
-        period = request.args.get('period', 'month')  # month, week, year
-
-        # Determine date range based on period
+        period = request.args.get('period', 'month')
         today = datetime.now().date()
 
         if period == 'week':
@@ -410,34 +534,36 @@ def get_top_destinations_api():
         # Get top destinations by barangay
         top_destinations = db.session.query(
             Property.barangay,
+            Property.property_name,
             db.func.sum(PropertyMonthlyStatistics.total_visitors).label('total_visitors'),
             db.func.sum(PropertyMonthlyStatistics.local_visitors).label('local_visitors'),
-            db.func.sum(PropertyMonthlyStatistics.foreign_visitors).label('foreign_visitors')
+            db.func.sum(PropertyMonthlyStatistics.foreign_visitors).label('foreign_visitors'),
+            db.func.sum(PropertyMonthlyStatistics.day_tour_visitors).label('day_tour_visitors'),
+            db.func.sum(PropertyMonthlyStatistics.overnight_visitors).label('overnight_visitors')
         ).join(
             PropertyMonthlyStatistics,
             PropertyMonthlyStatistics.property_id == Property.property_id
         ).filter(
-            PropertyMonthlyStatistics.year == start_date.year,
-            PropertyMonthlyStatistics.month == start_date.month,
-            Property.municipality == municipality
+            Property.municipality == municipality,
+            PropertyMonthlyStatistics.year == today.year,
+            PropertyMonthlyStatistics.month == today.month
         ).group_by(
-            Property.barangay
+            Property.barangay,
+            Property.property_name
         ).order_by(
             db.desc('total_visitors')
         ).limit(5).all()
 
         result = []
         for dest in top_destinations:
-            local_percent = round((dest.local_visitors / dest.total_visitors) * 100) if dest.total_visitors else 0
-            foreign_percent = 100 - local_percent
-
             result.append({
                 'barangay': dest.barangay,
-                'total_visitors': dest.total_visitors,
-                'local_visitors': dest.local_visitors,
-                'foreign_visitors': dest.foreign_visitors,
-                'local_percent': local_percent,
-                'foreign_percent': foreign_percent
+                'property_name': dest.property_name,
+                'total_visitors': dest.total_visitors or 0,
+                'local_visitors': dest.local_visitors or 0,
+                'foreign_visitors': dest.foreign_visitors or 0,
+                'day_tour_visitors': dest.day_tour_visitors or 0,
+                'overnight_visitors': dest.overnight_visitors or 0
             })
 
         return jsonify({
@@ -448,7 +574,6 @@ def get_top_destinations_api():
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-
 
 @dashboard_bp.route('/api/dashboard/visitor-trends', methods=['GET'])
 @jwt_required()
