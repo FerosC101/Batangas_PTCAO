@@ -44,7 +44,7 @@ def init_auth_routes(app):
                 session['account_id'] = "admin"
                 session['account_type'] = "admin"
 
-                response = redirect(url_for('admin_users'))  # Make sure you have this route defined
+                response = redirect(url_for('admin_users.admin_users'))  # Make sure you have this route defined
                 set_access_cookies(response, access_token)
                 return response
 

@@ -116,10 +116,6 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
-        .badge-revenue {
-            background-color: #6f42c1;
-            color: white;
-        }
         .dataTables_wrapper .dataTables_filter input {
             border: 1px solid #dee2e6;
             border-radius: 4px;
@@ -132,16 +128,22 @@
     <header class="top-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="#" class="logo-text">
-                    <img src="/static/images/logo.png" alt="Logo" class="me-2" width="40" height="40">
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
                     Batangas Explorer - Admin Panel
                 </a>
                 <div class="d-flex align-items-center">
-                    <div class="user-profile">
-                        <div class="user-avatar">
-                            <i class="fas fa-user-shield"></i>
-                        </div>
-                        <span class="d-none d-md-inline">Admin User</span>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            Admin User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -161,10 +163,9 @@
                         <i class="fas fa-users-cog"></i>
                         <span>Users</span>
                     </a>
-
                     <a href="/admin/reports" class="sidebar-link active">
                         <i class="fas fa-chart-pie"></i>
-                        <span>Documents</span>
+                        <span>Reports</span>
                     </a>
                 </div>
             </div>
@@ -205,11 +206,10 @@
                                             <th>Local Visitors</th>
                                             <th>Foreign Visitors</th>
                                             <th>Total Visitors</th>
-                                            <th>Revenue</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Data will be loaded via AJAX -->
+                                        <!-- Data loaded via AJAX -->
                                     </tbody>
                                 </table>
                             </div>
@@ -228,14 +228,13 @@
                                             <th>Property ID</th>
                                             <th>Property Name</th>
                                             <th>Municipality</th>
+                                            <th>Barangay</th>
                                             <th>Type</th>
-                                            <th>Visitors</th>
-                                            <th>Revenue</th>
-                                            <th>Rating</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Data will be loaded via AJAX -->
+                                        <!-- Data loaded via AJAX -->
                                     </tbody>
                                 </table>
                             </div>
@@ -256,12 +255,11 @@
                                             <th>Municipality</th>
                                             <th>Designation</th>
                                             <th>Join Date</th>
-                                            <th>Last Login</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Data will be loaded via AJAX -->
+                                        <!-- Data loaded via AJAX -->
                                     </tbody>
                                 </table>
                             </div>
@@ -310,13 +308,7 @@
                     { data: 'municipality' },
                     { data: 'local_visitors' },
                     { data: 'foreign_visitors' },
-                    { data: 'total_visitors' },
-                    {
-                        data: 'revenue',
-                        render: function(data) {
-                            return '₱' + data.toLocaleString();
-                        }
-                    }
+                    { data: 'total_visitors' }
                 ],
                 order: [[0, 'desc']],
                 pageLength: 10
@@ -334,22 +326,11 @@
                     { data: 'property_id' },
                     { data: 'property_name' },
                     { data: 'municipality' },
+                    { data: 'barangay' },
                     { data: 'type' },
-                    { data: 'visitors' },
-                    {
-                        data: 'revenue',
-                        render: function(data) {
-                            return '₱' + data.toLocaleString();
-                        }
-                    },
-                    {
-                        data: 'rating',
-                        render: function(data) {
-                            return data + ' ★';
-                        }
-                    }
+                    { data: 'status' }
                 ],
-                order: [[4, 'desc']],
+                order: [[0, 'asc']],
                 pageLength: 10
             });
         }
@@ -367,13 +348,11 @@
                     { data: 'municipality' },
                     { data: 'designation' },
                     { data: 'join_date' },
-                    { data: 'last_login' },
                     {
                         data: 'status',
                         render: function(data) {
                             let badgeClass = 'status-active';
                             if (data === 'Suspended') badgeClass = 'status-suspended';
-                            if (data === 'Inactive') badgeClass = 'status-inactive';
                             return '<span class="' + badgeClass + '">' + data + '</span>';
                         }
                     }

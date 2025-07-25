@@ -155,19 +155,27 @@
         <div class="row">
             <!-- Admin Sidebar -->
             <div class="col-lg-2 px-0">
+                <!-- In the sidebar section -->
                 <div class="sidebar">
-                    <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="sidebar-link active">
+                    <!-- Existing links -->
+                    <a href="/admin/dashboard" class="sidebar-link active">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="{{ url_for('admin_users') }}" class="sidebar-link">
+
+                    <a href="/admin/users" class="sidebar-link">
                         <i class="fas fa-users-cog"></i>
                         <span>Users</span>
                     </a>
-                    <a href="{{ url_for('reports.mto_reports') }}" class="sidebar-link">
-                        <i class="fas fa-file-invoice"></i>
+
+                    <!-- Add this link for Reports -->
+                    <a href="/admin/reports" class="sidebar-link">
+                        <i class="fas fa-chart-pie"></i>
                         <span>Reports</span>
                     </a>
+
+                    <!-- Other existing links -->
+
                 </div>
             </div>
 
@@ -298,7 +306,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5 class="card-title mb-0">Recent User Registrations</h5>
-                                    <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                                    <a href="{{ url_for('admin_users.admin_users') }}" class="btn btn-sm btn-outline-primary">View All</a>
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-hover">

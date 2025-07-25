@@ -9,7 +9,7 @@ from datetime import datetime
 def init_admin_users_routes(app):
     admin_users_bp = Blueprint('admin_users', __name__)
 
-    @app.route('/users')
+    @admin_users_bp.route('/users')
     @jwt_required()
     def admin_users():
         active_users = User.query.filter(
@@ -29,7 +29,7 @@ def init_admin_users_routes(app):
                                suspended_users=suspended_users,
                                archived_users=archived_users)
 
-    @app.route('/admin/users/<int:user_id>', methods=['GET'])
+    @admin_users_bp.route('/users/<int:user_id>', methods=['GET'])
     @jwt_required()
     def get_user(user_id):
         user = User.query.get_or_404(user_id)
@@ -47,7 +47,7 @@ def init_admin_users_routes(app):
             'is_archived': getattr(user, 'is_archived', False)
         })
 
-    @app.route('/admin/users', methods=['POST'])
+    @admin_users_bp.route('/users', methods=['POST'])
     @jwt_required()
     def create_user():
         data = request.form
@@ -83,7 +83,7 @@ def init_admin_users_routes(app):
 
         return jsonify({'message': 'User created successfully'}), 201
 
-    @app.route('/admin/users/<int:user_id>/status', methods=['PUT'])
+    @admin_users_bp.route('/users/<int:user_id>/status', methods=['PUT'])
     @jwt_required()
     def update_user_status(user_id):
         user = User.query.get_or_404(user_id)
@@ -113,7 +113,7 @@ def init_admin_users_routes(app):
         db.session.commit()
         return jsonify({'message': f'User status updated: {action}'}), 200
 
-    @app.route('/admin/users/<int:user_id>', methods=['DELETE'])
+    @admin_users_bp.route('/users/<int:user_id>', methods=['DELETE'])
     @jwt_required()
     def delete_user(user_id):
         user = User.query.get_or_404(user_id)
