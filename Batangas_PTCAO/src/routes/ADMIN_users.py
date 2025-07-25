@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for
+from flask import render_template, request, jsonify, redirect, url_for, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import User
@@ -7,10 +7,11 @@ from datetime import datetime
 
 
 def init_admin_users_routes(app):
-    @app.route('/admin/users')
+    admin_users_bp = Blueprint('admin_users', __name__)
+
+    @app.route('/users')
     @jwt_required()
     def admin_users():
-        # Get users by status (handles both new and legacy accounts)
         active_users = User.query.filter(
             or_(User.is_archived == False, User.is_archived == None),
             User.is_active == True
@@ -119,3 +120,5 @@ def init_admin_users_routes(app):
         db.session.delete(user)
         db.session.commit()
         return jsonify({'message': 'User deleted successfully'}), 200
+
+    app.register_blueprint(admin_users_bp, url_prefix='/admin')

@@ -1206,7 +1206,7 @@
                         return;
                     }
 
-                    apiFetch('/mto/api/reports/add-tourist', {
+                    apiFetch('/mto/api/reports/update-property', {
                         method: 'POST',
                         body: JSON.stringify(data)
                     })
@@ -1234,68 +1234,66 @@
                 });
 
                 // Submit Tourist Report
-                submitTouristReport.addEventListener('click', function() {
+                submitTouristReport.addEventListener('click', async function() {
                     const submitBtn = document.getElementById('submitTouristReport');
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
 
-                    const data = {
-                        property_id: document.getElementById('touristPropertySelect').value,
-                        report_date: document.getElementById('reportDate').value,
-                        day_tour_guests: parseInt(document.getElementById('dayTourGuests').value) || 0,
-                        overnight_guests: parseInt(document.getElementById('overnightGuests').value) || 0,
-                        rooms_occupied: parseInt(document.getElementById('roomsOccupied').value) || 0,
-                        foreign_daytour: parseInt(document.getElementById('foreignDaytour').value) || 0,
-                        foreign_overnight: parseInt(document.getElementById('foreignOvernight').value) || 0,
-                        male_tourists: parseInt(document.getElementById('maleTourists').value) || 0,
-                        female_tourists: parseInt(document.getElementById('femaleTourists').value) || 0
-                    };
+                    try {
+                        const data = {
+                            property_id: document.getElementById('touristPropertySelect').value,
+                            report_date: document.getElementById('reportDate').value,
+                            day_tour_guests: parseInt(document.getElementById('dayTourGuests').value) || 0,
+                            overnight_guests: parseInt(document.getElementById('overnightGuests').value) || 0,
+                            rooms_occupied: parseInt(document.getElementById('roomsOccupied').value) || 0,
+                            foreign_daytour: parseInt(document.getElementById('foreignDaytour').value) || 0,
+                            foreign_overnight: parseInt(document.getElementById('foreignOvernight').value) || 0,
+                            male_tourists: parseInt(document.getElementById('maleTourists').value) || 0,
+                            female_tourists: parseInt(document.getElementById('femaleTourists').value) || 0
+                        };
 
-                    // Validate inputs
-                    if (!data.property_id) {
-                        showError('Please select a property');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'Submit Report';
-                        return;
-                    }
+                        // Validate inputs
+                        if (!data.property_id) {
+                            throw new Error('Please select a property');
+                        }
+                        if (!data.report_date) {
+                            throw new Error('Please select a report date');
+                        }
 
-                    if (!data.report_date) {
-                        showError('Please select a report date');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'Submit Report';
-                        return;
-                    }
-                    apiFetch('/mto/api/reports/add-tourist', {
-                        method: 'POST',
-                        body: JSON.stringify(data)
-                    })
+                        const response = await fetch('/mto/api/reports/add-tourist', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                            },
+                            body: JSON.stringify(data)
+                        });
 
-                    .then(response => {
+                        // Check if response is JSON
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            const text = await response.text();
+                            throw new Error(text || 'Invalid server response');
+                        }
+
+                        const result = await response.json();
+
                         if (!response.ok) {
-                            return response.json().then(err => { throw err; });
+                            throw new Error(result.message || 'Failed to submit tourist report');
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            showSuccess('Tourist report submitted successfully');
-                            touristReportModal.hide();
-                            document.getElementById('touristReportForm').reset();
-                            loadTouristReport();
-                        } else {
-                            showError(data.message || 'Failed to submit tourist report');
-                        }
-                    })
-                    .catch(error => {
+
+                        showSuccess('Tourist report submitted successfully');
+                        touristReportModal.hide();
+                        document.getElementById('touristReportForm').reset();
+                        loadTouristReport();
+                    } catch (error) {
                         console.error('Error:', error);
                         showError(error.message || 'Error submitting tourist report');
-                    })
-                    .finally(() => {
+                    } finally {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = 'Submit Report';
-                    });
+                    }
                 });
-            }
 
             function showSuccess(message) {
                 const toast = document.getElementById('successToast');
