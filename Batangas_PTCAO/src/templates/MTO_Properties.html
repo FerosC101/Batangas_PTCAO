@@ -401,25 +401,22 @@
     <header class="top-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="#" class="logo-text">
-                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
-                    Batangas Explorer - MTO
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    Batangas Explorer - MTO Panel
                 </a>
-
                 <div class="d-flex align-items-center">
-                    <div class="position-relative me-3">
-                        <i class="fas fa-bell fa-lg"></i>
-                        <span class="notification-badge">5</span>
-                    </div>
-                    <div class="position-relative me-3">
-                        <i class="fas fa-envelope fa-lg"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
-                    <div class="user-profile">
-                        <div class="user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <span class="d-none d-md-inline">MTO Admin</span>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            MTO User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -432,7 +429,7 @@
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
-        <a href="/mto/destinations " class="sidebar-link">
+        <a href="/mto/destinations" class="sidebar-link">
             <i class="fas fa-map-marked-alt"></i>
             <span>Destinations</span>
         </a>
@@ -452,17 +449,9 @@
             <i class="fas fa-calendar-alt"></i>
             <span>Events</span>
         </a>
-        <a href="#" class="sidebar-link">
-            <i class="fas fa-bullhorn"></i>
-            <span>Announcements</span>
-        </a>
         <a href="/mto/reports" class="sidebar-link">
             <i class="fas fa-file-alt"></i>
             <span>Reports</span>
-        </a>
-        <a href="#" class="sidebar-link">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
         </a>
     </div>
 
