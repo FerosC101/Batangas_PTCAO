@@ -25,12 +25,6 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def init_announcement_routes(app):
-    app.register_blueprint(announcement_bp)
-    app.config['ANNOUNCEMENT_UPLOAD_FOLDER'] = os.path.join(
-        os.path.dirname(__file__), '..', 'static', 'uploads', 'announcements'
-    )
-    os.makedirs(app.config['ANNOUNCEMENT_UPLOAD_FOLDER'], exist_ok=True)
 
 
 @announcement_bp.route('/')
@@ -118,15 +112,14 @@ def get_announcements():
 @announcement_bp.route('/api/announcements', methods=['POST'])
 @jwt_required()
 def create_announcement():
-    """Create a new announcement for the MTO's municipality"""
     try:
         current_user = User.query.get(get_jwt_identity())
         if not current_user:
             return jsonify({'success': False, 'message': 'User not found'}), 404
 
-        # Debug: Log form data
-        current_app.logger.debug(f"Form data: {request.form}")
-        current_app.logger.debug(f"Files: {request.files}")
+        # Check if the request has form data
+        if not request.form:
+            return jsonify({'success': False, 'message': 'No form data received'}), 400
 
         # Get form data
         title = request.form.get('title')
@@ -134,8 +127,10 @@ def create_announcement():
         is_active = request.form.get('is_active', 'false').lower() == 'true'
 
         # Validate required fields
-        if not title or not content:
-            return jsonify({'success': False, 'message': 'Title and content are required'}), 400
+        if not title:
+            return jsonify({'success': False, 'message': 'Title is required'}), 400
+        if not content:
+            return jsonify({'success': False, 'message': 'Content is required'}), 400
 
         # Handle file upload
         image = None
@@ -143,10 +138,14 @@ def create_announcement():
             file = request.files['image']
             if file and file.filename != '' and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file_path = os.path.join(
-                    current_app.config['ANNOUNCEMENT_UPLOAD_FOLDER'],
-                    filename
-                )
+                # Make filename unique
+                filename = f"{datetime.now().timestamp()}_{filename}"
+                upload_folder = current_app.config['ANNOUNCEMENT_UPLOAD_FOLDER']
+
+                # Ensure upload folder exists
+                os.makedirs(upload_folder, exist_ok=True)
+
+                file_path = os.path.join(upload_folder, filename)
                 file.save(file_path)
                 image = filename
 
@@ -167,11 +166,52 @@ def create_announcement():
             'message': 'Announcement created successfully',
             'announcement_id': new_announcement.id
         }), 201
+
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Error creating announcement: {str(e)}")
-        return jsonify({'success': False, 'message': str(e)}), 500
+        current_app.logger.error(f"Error creating announcement: {str(e)}", exc_info=True)
+        return jsonify({'success': False, 'message': 'Server error: ' + str(e)}), 500
 
+
+# Add this route to your MTO_Announcement.py file
+
+@announcement_bp.route('/api/announcements/<int:announcement_id>', methods=['GET'])
+@jwt_required()
+def get_single_announcement(announcement_id):
+    """Get a single announcement by ID"""
+    try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
+        announcement = Announcement.query.filter_by(
+            id=announcement_id,
+            municipality=current_user.municipality
+        ).first()
+
+        if not announcement:
+            return jsonify({'success': False, 'message': 'Announcement not found'}), 404
+
+        # Format announcement data
+        announcement_data = {
+            'id': announcement.id,
+            'title': announcement.title,
+            'content': announcement.content,
+            'image_url': url_for('static',
+                                 filename=f'uploads/announcements/{announcement.image}') if announcement.image else None,
+            'image_filename': announcement.image,
+            'created_at': announcement.created_at.strftime('%b %d, %Y'),
+            'is_active': announcement.is_active
+        }
+
+        return jsonify({
+            'success': True,
+            'data': announcement_data
+        }), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Error getting announcement: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 @announcement_bp.route('/api/announcements/<int:announcement_id>', methods=['PUT'])
 @jwt_required()
 def update_announcement(announcement_id):
