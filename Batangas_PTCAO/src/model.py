@@ -305,3 +305,18 @@ class TouristReport(db.Model):
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     property = db.relationship('Property', backref=db.backref('tourist_reports', lazy='dynamic'))
+
+# Add to model.py (at the end)
+class Announcement(db.Model):
+    __tablename__ = 'announcements'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255))
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    municipality = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return f'<Announcement {self.title}>'

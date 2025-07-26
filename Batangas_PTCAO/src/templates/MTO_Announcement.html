@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - MTO Announcements</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text:hover {
+            color: white;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: 100%;
+            position: fixed;
+            top: 72px;
+            width: 16.66667%;
+            overflow-y: auto;
+            z-index: 999;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .main-container {
+            margin-top: 70px;
+            margin-left: 16.66667%;
+            padding: 20px;
+            width: calc(100% - 16.66667%);
+        }
+        .announcement-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .announcement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .image-preview {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+        }
+        .empty-state {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .action-buttons .btn {
+            padding: 0.375rem 0.75rem;
+        }
+        .municipality-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    Batangas Explorer - MTO Panel
+                </a>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            MTO User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/mto/dashboard" class="sidebar-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span> Dashboard</span>
+        </a>
+        <a href="/mto/destinations" class="sidebar-link">
+            <i class="fas fa-map-marked-alt"></i>
+            <span> Destinations</span>
+        </a>
+        <a href="/property/mto/property" class="sidebar-link">
+            <i class="fas fa-hotel"></i>
+            <span> Properties</span>
+        </a>
+        <a href="/mto/visitors" class="sidebar-link">
+            <i class="fas fa-users"></i>
+            <span> Visitors</span>
+        </a>
+        <a href="/mto/analytics" class="sidebar-link">
+            <i class="fas fa-chart-line"></i>
+            <span> Analytics</span>
+        </a>
+        <a href="/mto/announcements" class="sidebar-link active">
+            <i class="fas fa-bullhorn"></i>
+            <span> Announcements</span>
+        </a>
+        <a href="/mto/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span> Events</span>
+        </a>
+        <a href="#" class="sidebar-link">
+            <i class="fas fa-file-alt"></i>
+            <span> Reports</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="section-title mb-0">Announcements Management</h1>
+            <div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAnnouncementModal">
+                    <i class="fas fa-plus me-1"></i> Create Announcement
+                </button>
+            </div>
+        </div>
+
+        <!-- Municipality Badge -->
+        <div class="mb-4">
+            <span class="municipality-badge">
+                <i class="fas fa-map-marker-alt me-1"></i> {{ municipality }}
+            </span>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Search announcements..." id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-end gap-2">
+                    <select class="form-select w-auto" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                    <button class="btn btn-outline-secondary" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements List -->
+        <div class="row" id="announcementsContainer">
+            {% if announcements %}
+                {% for announcement in announcements %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card announcement-card h-100">
+                        {% if announcement.image %}
+                        <div class="position-relative">
+                            <img src="{{ url_for('static', filename='uploads/announcements/' + announcement.image) }}"
+                                 class="card-img-top image-preview" alt="Announcement Image">
+                            <span class="badge rounded-pill bg-{% if announcement.is_active %}success{% else %}secondary{% endif %} status-badge">
+                                {% if announcement.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ announcement.title }}</h5>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-calendar me-1"></i>{{ announcement.created_at.strftime('%b %d, %Y') }}
+                            </p>
+                            <p class="card-text">{{ announcement.content|truncate(150) }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 pt-0">
+                            <div class="d-flex justify-content-end gap-2 action-buttons">
+                                <button class="btn btn-sm btn-outline-{% if announcement.is_active %}warning{% else %}success{% endif %} toggle-status"
+                                        data-id="{{ announcement.id }}"
+                                        data-status="{{ announcement.is_active }}"
+                                        title="{% if announcement.is_active %}Deactivate{% else %}Activate{% endif %}">
+                                    <i class="fas fa-toggle-{% if announcement.is_active %}on{% else %}off{% endif %}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary edit-announcement"
+                                        data-id="{{ announcement.id }}"
+                                        data-title="{{ announcement.title }}"
+                                        data-content="{{ announcement.content }}"
+                                        data-image="{{ announcement.image if announcement.image else '' }}"
+                                        data-status="{{ announcement.is_active }}"
+                                        title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-announcement"
+                                        data-id="{{ announcement.id }}"
+                                        title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                        <h4 class="mb-2">No Announcements Yet</h4>
+                        <p class="text-muted mb-4">Create your first announcement to share important information with visitors</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAnnouncementModal">
+                            <i class="fas fa-plus me-2"></i>Create Announcement
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        {% if announcements %}
+        <nav aria-label="Announcements pagination">
+            <ul class="pagination justify-content-center mt-4">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+
+    <!-- Create Announcement Modal -->
+    <div class="modal fade" id="createAnnouncementModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Create New Announcement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="createAnnouncementForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image (Optional)</label>
+                            <input class="form-control" type="file" id="image" name="image" accept="image/*">
+                            <div class="form-text">Allowed formats: JPG, PNG, GIF. Max size: 2MB.</div>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="is_active" name="is_active" checked>
+                            <label class="form-check-label" for="is_active">Active Announcement</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Create Announcement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Announcement Modal -->
+    <div class="modal fade" id="editAnnouncementModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Edit Announcement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editAnnouncementForm" enctype="multipart/form-data">
+                    <input type="hidden" id="edit_id" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_content" class="form-label">Content <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="edit_content" name="content" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_image" class="form-label">Image (Optional)</label>
+                            <input class="form-control" type="file" id="edit_image" name="image" accept="image/*">
+                            <div class="form-text">Leave empty to keep current image.</div>
+                            <div id="currentImageContainer" class="mt-2"></div>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="edit_is_active" name="is_active">
+                            <label class="form-check-label" for="edit_is_active">Active Announcement</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteAnnouncementModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this announcement? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // JavaScript from the original file remains the same
+        // Just replace bi- icons with fas fa- icons where needed
+        $(document).ready(function() {
+            // Handle create announcement form submission
+            $('#createAnnouncementForm').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                // Add is_active status to form data
+                const isActive = $('#is_active').is(':checked');
+                formData.append('is_active', isActive);
+
+                $.ajax({
+                    url: '/mto/announcements/api/announcements',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,  // Important for file uploads
+                    contentType: false,   // Important for file uploads
+                    beforeSend: function() {
+                        $('#createAnnouncementModal').find('button[type="submit"]').prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#createAnnouncementModal').modal('hide');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'An error occurred';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        alert('Error: ' + errorMsg);
+                    },
+                    complete: function() {
+                        $('#createAnnouncementModal').find('button[type="submit"]').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Handle edit button click
+            $(document).on('click', '.edit-announcement', function() {
+                const id = $(this).data('id');
+                const title = $(this).data('title');
+                const content = $(this).data('content');
+                const image = $(this).data('image');
+                const isActive = $(this).data('status');
+
+                $('#edit_id').val(id);
+                $('#edit_title').val(title);
+                $('#edit_content').val(content);
+                $('#edit_is_active').prop('checked', isActive);
+
+                // Show current image if exists
+                $('#currentImageContainer').empty();
+                if (image) {
+                    $('#currentImageContainer').html(`
+                        <p class="mb-1">Current Image:</p>
+                        <img src="/static/uploads/announcements/${image}"
+                             class="img-thumbnail" style="max-height: 150px;">
+                    `);
+                }
+
+                $('#editAnnouncementModal').modal('show');
+            });
+
+            // Handle edit form submission
+            $('#editAnnouncementForm').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const id = $('#edit_id').val();
+
+                $.ajax({
+                    url: `/mto/announcements/api/announcements/${id}`,
+                    type: 'PUT',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        $('#editAnnouncementModal').find('button[type="submit"]').prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#editAnnouncementModal').modal('hide');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseJSON.message);
+                    },
+                    complete: function() {
+                        $('#editAnnouncementModal').find('button[type="submit"]').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Handle delete button click
+            $(document).on('click', '.delete-announcement', function() {
+                const id = $(this).data('id');
+                $('#deleteAnnouncementModal').data('id', id).modal('show');
+            });
+
+            // Handle delete confirmation
+            $('#confirmDelete').on('click', function() {
+                const id = $('#deleteAnnouncementModal').data('id');
+
+                $.ajax({
+                    url: `/mto/announcements/api/announcements/${id}`,
+                    type: 'DELETE',
+                    beforeSend: function() {
+                        $('#confirmDelete').prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#deleteAnnouncementModal').modal('hide');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseJSON.message);
+                    },
+                    complete: function() {
+                        $('#confirmDelete').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Handle toggle status
+            $(document).on('click', '.toggle-status', function() {
+                const id = $(this).data('id');
+                const currentStatus = $(this).data('status');
+
+                $.ajax({
+                    url: `/mto/announcements/api/announcements/${id}/status`,
+                    type: 'PATCH',
+                    beforeSend: function() {
+                        $(`.toggle-status[data-id="${id}"]`).prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseJSON.message);
+                    },
+                    complete: function() {
+                        $(`.toggle-status[data-id="${id}"]`).prop('disabled', false);
+                    }
+                });
+            });
+
+            // Handle search and filter
+            $('#searchInput, #statusFilter').on('change keyup', function() {
+                const searchTerm = $('#searchInput').val().toLowerCase();
+                const statusFilter = $('#statusFilter').val();
+
+                $.ajax({
+                    url: '/mto/announcements/api/announcements',
+                    type: 'GET',
+                    data: {
+                        status: statusFilter
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const announcements = response.data.announcements;
+                            let filteredAnnouncements = announcements;
+
+                            if (searchTerm) {
+                                filteredAnnouncements = announcements.filter(announcement =>
+                                    announcement.title.toLowerCase().includes(searchTerm) ||
+                                    announcement.content.toLowerCase().includes(searchTerm)
+                            }
+
+                            renderAnnouncements(filteredAnnouncements);
+                        }
+                    }
+                });
+            });
+
+            // Handle refresh button
+            $('#refreshBtn').on('click', function() {
+                location.reload();
+            });
+
+            // Function to render announcements
+            function renderAnnouncements(announcements) {
+                const container = $('#announcementsContainer');
+
+                if (announcements.length === 0) {
+                    container.html(`
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                                <h4 class="mb-2">No Announcements Found</h4>
+                                <p class="text-muted mb-4">Try adjusting your search or filter criteria</p>
+                            </div>
+                        </div>
+                    `);
+                    return;
+                }
+
+                let html = '';
+                announcements.forEach(announcement => {
+                    html += `
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card announcement-card h-100">
+                                ${announcement.image_url ? `
+                                <div class="position-relative">
+                                    <img src="${announcement.image_url}"
+                                         class="card-img-top image-preview" alt="Announcement Image">
+                                    <span class="badge rounded-pill bg-${announcement.is_active ? 'success' : 'secondary'} status-badge">
+                                        ${announcement.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                                ` : ''}
+                                <div class="card-body">
+                                    <h5 class="card-title">${announcement.title}</h5>
+                                    <p class="card-text text-muted small mb-2">
+                                        <i class="fas fa-calendar me-1"></i>${announcement.created_at}
+                                    </p>
+                                    <p class="card-text">${announcement.content.substring(0, 150)}${announcement.content.length > 150 ? '...' : ''}</p>
+                                </div>
+                                <div class="card-footer bg-white border-top-0 pt-0">
+                                    <div class="d-flex justify-content-end gap-2 action-buttons">
+                                        <button class="btn btn-sm btn-outline-${announcement.is_active ? 'warning' : 'success'} toggle-status"
+                                                data-id="${announcement.id}"
+                                                data-status="${announcement.is_active}"
+                                                title="${announcement.is_active ? 'Deactivate' : 'Activate'}">
+                                            <i class="fas fa-toggle-${announcement.is_active ? 'on' : 'off'}"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary edit-announcement"
+                                                data-id="${announcement.id}"
+                                                data-title="${announcement.title}"
+                                                data-content="${announcement.content}"
+                                                data-image="${announcement.image_url ? announcement.image_url.split('/').pop() : ''}"
+                                                data-status="${announcement.is_active}"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-announcement"
+                                                data-id="${announcement.id}"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.html(html);
+            }
+        });
+    </script>
+</body>
+</html>

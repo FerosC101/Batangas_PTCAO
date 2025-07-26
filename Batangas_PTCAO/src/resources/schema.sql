@@ -191,3 +191,15 @@ CREATE TABLE tourist_reports (
     total_revenue NUMERIC(12, 2) DEFAULT 0.00,
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE announcements (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    content TEXT NOT NULL,
+    image VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    municipality VARCHAR(100) NOT NULL
+);
+
+CREATE INDEX idx_announcements_municipality ON announcements(municipality);
