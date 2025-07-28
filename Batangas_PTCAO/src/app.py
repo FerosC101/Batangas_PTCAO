@@ -8,6 +8,7 @@ from Batangas_PTCAO.src.config import Config
 from datetime import timedelta
 
 from Batangas_PTCAO.src.routes.MTO_Announcement import init_mto_announcement_routes
+from Batangas_PTCAO.src.routes.PTCAO_Dashboard import init_ptcao_dashboard_routes
 # Import route initializers
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
 from Batangas_PTCAO.src.routes.MTO import init_mto_routes
@@ -65,6 +66,7 @@ def create_app():
     init_admin_users_routes(app)
     init_admin_dashboard_routes(app)
     init_admin_reports_routes(app)
+    init_ptcao_dashboard_routes(app)
 
 
     # Static file serving route

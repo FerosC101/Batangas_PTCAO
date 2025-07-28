@@ -16,6 +16,8 @@ def init_auth_routes(app):
     # Built-in admin account credentials
     ADMIN_EMAIL = "admin@ptcao.gov.ph"
     ADMIN_PASSWORD = "Admin@1234"
+    PTCAO_EMAIL = "ptcao@ptcao.gov.ph"
+    PTCAO_PASSWORD = "Ptcao@1234"
 
     @app.route('/')
     def home():
@@ -45,6 +47,14 @@ def init_auth_routes(app):
                 session['account_type'] = "admin"
 
                 response = redirect(url_for('admin_users.admin_users'))  # Make sure you have this route defined
+                set_access_cookies(response, access_token)
+                return response
+
+            if email == PTCAO_EMAIL and password == PTCAO_PASSWORD:
+                access_token = create_access_token(identity="ptcao")
+                session['account_id'] = "ptcao"
+                session['account_type'] = "ptcao"
+                response = redirect(url_for('ptcao_dashboard.ptcao_dashboard'))
                 set_access_cookies(response, access_token)
                 return response
 
