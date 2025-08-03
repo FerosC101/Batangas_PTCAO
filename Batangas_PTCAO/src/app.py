@@ -24,6 +24,8 @@ from Batangas_PTCAO.src.routes.MTO_Reports import init_reports_routes
 from Batangas_PTCAO.src.routes.ADMIN_users import init_admin_users_routes  # New import
 from Batangas_PTCAO.src.routes.ADMIN_dashboard import init_admin_dashboard_routes
 from Batangas_PTCAO.src.routes.ADMIN_reports import init_admin_reports_routes
+from Batangas_PTCAO.src.routes.tourist import init_tourist_routes
+
 
 def create_app():
     app = Flask(__name__,
@@ -71,6 +73,7 @@ def create_app():
     init_ptcao_dashboard_routes(app)
     init_ptcao_destinations_routes(app)
     init_ptcao_property_routes(app)
+    init_tourist_routes(app)
 
     # Static file serving route
     @app.route('/static/<path:filename>')

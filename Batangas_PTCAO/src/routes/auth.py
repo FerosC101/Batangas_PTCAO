@@ -23,6 +23,11 @@ def init_auth_routes(app):
     def home():
         return render_template('Login.html')
 
+    # Add this to auth.py after the existing routes
+    @app.route('/tourist')
+    def tourist_home():
+        return render_template('Home.html')
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
