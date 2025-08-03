@@ -6,7 +6,6 @@
     <title>Batangas Explorer - PTCAO Municipalities</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css" />
     <style>
         :root {
             --primary: #003366;
@@ -443,10 +442,10 @@
                 <div class="summary-label">Total Visitors (This Month)</div>
             </div>
             <div class="summary-card">
-                <div class="summary-icon text-warning">
+                <div class="summary-icon text-info">
                     <i class="fas fa-bed"></i>
                 </div>
-                <div class="summary-number text-warning" id="totalRooms">0</div>
+                <div class="summary-number text-info" id="totalRooms">0</div>
                 <div class="summary-label">Total Rooms</div>
             </div>
         </div>
@@ -826,28 +825,7 @@
         });
     </script>
 </body>
-</html>Visitors</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">${municipality.totalRooms}</span>
-                                <span>Rooms</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="municipality-body">
-                        <div class="property-count-badge">
-                            <i class="fas fa-hotel me-2"></i>
-                            ${municipality.propertyCount} Registered Properties
-                        </div>
-
-                        <div class="recent-reports">
-                            <div class="report-item">
-                                <span>Total Rooms:</span>
-                                <span class="report-value">${municipality.totalRooms}</span>
-                            </div>
-                            <div class="report-item">
-                                <span>Monthly Visitors:</span>
-                                <span class="report-value">${municipality.totalVisitors.toLocaleString()}</span>
+</html>
                             </div>
                             <div class="report-item">
                                 <span>Occupancy Rate:</span>
@@ -914,4 +892,25 @@
                             </div>
                             <div class="stat-item">
                                 <span class="stat-number">${municipality.totalVisitors.toLocaleString()}</span>
-                                <span>
+                                <span>Visitors</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">${municipality.totalRooms}</span>
+                                <span>Rooms</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="municipality-body">
+                        <div class="property-count-badge">
+                            <i class="fas fa-hotel me-2"></i>
+                            ${municipality.propertyCount} Registered Properties
+                        </div>
+
+                        <div class="recent-reports">
+                            <div class="report-item">
+                                <span>Total Rooms:</span>
+                                <span class="report-value">${municipality.totalRooms}</span>
+                            </div>
+                            <div class="report-item">
+                                <span>Monthly Visitors:</span>
+                                <span class="report-value">${municipality.totalVisitors.toLocaleString()}</span>
