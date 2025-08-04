@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="added municipality page, not done though lmao">
-      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/tourist.py" afterDir="false" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="added tourist page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/auth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/Home.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/Home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/Login.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/Login.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -246,15 +242,8 @@
       <workItem from="1753892334949" duration="690000" />
       <workItem from="1754057562804" duration="883000" />
       <workItem from="1754215837321" duration="4251000" />
-      <workItem from="1754240500980" duration="2635000" />
-    </task>
-    <task id="LOCAL-00033" summary="added the add property">
-      <option name="closed" value="true" />
-      <created>1746120659270</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1746120659270</updated>
+      <workItem from="1754240500980" duration="2966000" />
+      <workItem from="1754327522688" duration="1548000" />
     </task>
     <task id="LOCAL-00034" summary="fixed mapping in add property">
       <option name="closed" value="true" />
@@ -640,7 +629,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754217659591</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="added tourist page">
+      <option name="closed" value="true" />
+      <created>1754246702435</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1754246702436</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -658,7 +655,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed Add Property" />
     <MESSAGE value="Card property not working" />
     <MESSAGE value="working add property" />
     <MESSAGE value="problem in popup modal" />
@@ -683,7 +679,8 @@
     <MESSAGE value="Added PTCAO_Properties.html" />
     <MESSAGE value="Fixed Layout for PTCAO_Properties.html" />
     <MESSAGE value="added municipality page, not done though lmao" />
-    <option name="LAST_COMMIT_MESSAGE" value="added municipality page, not done though lmao" />
+    <MESSAGE value="added tourist page" />
+    <option name="LAST_COMMIT_MESSAGE" value="added tourist page" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
