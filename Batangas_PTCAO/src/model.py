@@ -30,6 +30,7 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=False)
+    is_archived = db.Column(db.Boolean, nullable=True, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -45,10 +46,16 @@ class User(db.Model):
         except ValueError as e:
             return False
 
+    @property
+    def status(self):
+        if self.is_active:
+            return "archived"
+        return "active" if self.is_active else "suspended"
+
 class Property(db.Model):
     __tablename__ = 'property'
 
-    property_id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     property_name = db.Column(db.String(100), nullable=False)
     barangay = db.Column(db.String(100))
     municipality = db.Column(db.String(100))
@@ -60,12 +67,21 @@ class Property(db.Model):
     amenities = db.relationship('Amenity', back_populates='property', cascade="all, delete-orphan")
     typical_locations = db.relationship('TypicalLocation', back_populates='property', cascade="all, delete-orphan")
     coordinates = db.relationship('LongLat', back_populates='property', cascade="all, delete-orphan")
+    images = db.relationship('PropertyImage', back_populates='property', cascade="all, delete-orphan")
 
+class PropertyImage(db.Model):
+    __tablename__ = 'property_images'
+
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    image_path = db.Column(db.String(255), nullable=False)
+
+    property = db.relationship('Property', back_populates='images')
 
 class Room(db.Model):
     __tablename__ = 'room'
 
-    room_id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
     room_type = db.Column(db.String(50))
     day_price = db.Column(db.Numeric(10, 2))
@@ -79,7 +95,7 @@ class Room(db.Model):
 class Amenity(db.Model):
     __tablename__ = 'amenities'
 
-    amenity_id = db.Column(db.Integer, primary_key=True)
+    amenity_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=True)
     room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), nullable=True)
     amenity = db.Column(db.String(255), nullable=False)
@@ -103,8 +119,8 @@ class LongLat(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
-    longitude = db.Column(db.Integer, nullable=False)
-    latitude = db.Column(db.Integer, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
 
     property = db.relationship('Property', back_populates='coordinates')
 
@@ -250,3 +266,57 @@ class VisitorDataUpload(db.Model):
     records_processed = db.Column(db.Boolean, nullable=False, default=False)
 
     user = db.relationship('User', backref=db.backref('data_uploads', lazy='dynamic'))
+
+class PropertyReport(db.Model):
+    __tablename__ = 'property_reports'
+
+    report_id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    dot_accredited = db.Column(db.Boolean, default=False)
+    dot_accreditation_valid = db.Column(db.Date)
+    ptcao_registered = db.Column(db.Boolean, default=False)
+    ptcao_valid_until = db.Column(db.Date)
+    classification = db.Column(db.String(50))
+    male_employees = db.Column(db.Integer, default=0)
+    female_employees = db.Column(db.Integer, default=0)
+    total_rooms = db.Column(db.Integer, default=0)
+    daytour_capacity = db.Column(db.Integer, default=0)
+    overnight_capacity = db.Column(db.Integer, default=0)
+    report_period_start = db.Column(db.Date, nullable=False)
+    report_period_end = db.Column(db.Date, nullable=False)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    property = db.relationship('Property', backref=db.backref('property_reports', lazy='dynamic'))
+
+class TouristReport(db.Model):
+    __tablename__ = 'tourist_reports'
+
+    report_id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.property_id'), nullable=False)
+    report_date = db.Column(db.Date, nullable=False)
+    total_daytour_guests = db.Column(db.Integer, default=0)
+    total_overnight_guests = db.Column(db.Integer, default=0)
+    rooms_occupied = db.Column(db.Integer, default=0)
+    foreign_daytour_visitors = db.Column(db.Integer, default=0)
+    foreign_overnight_visitors = db.Column(db.Integer, default=0)
+    male_tourists = db.Column(db.Integer, default=0)
+    female_tourists = db.Column(db.Integer, default=0)
+    total_revenue = db.Column(db.Numeric(12, 2), default=0.00)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    property = db.relationship('Property', backref=db.backref('tourist_reports', lazy='dynamic'))
+
+# Add to model.py (at the end)
+class Announcement(db.Model):
+    __tablename__ = 'announcements'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255))
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    municipality = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return f'<Announcement {self.title}>'

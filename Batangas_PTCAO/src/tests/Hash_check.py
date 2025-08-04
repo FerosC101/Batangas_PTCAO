@@ -1,17 +1,19 @@
+<<<<<<< HEAD
 from extension import db
 from model import User
 from app import create_app  # Import your app factory
 import bcrypt
+=======
+# Create a new migration file (e.g., migrations/versions/XXXX_add_property_sequence.py)
+from alembic import op
+import sqlalchemy as sa
+>>>>>>> af1d5da10b244ec5180bff12f15d972f0ddbfc4f
 
-# Create the Flask app instance
-app = create_app()
+def upgrade():
+    op.execute("CREATE SEQUENCE property_id_seq")
+    op.execute("ALTER TABLE property ALTER COLUMN property_id SET DEFAULT nextval('property_id_seq')")
+    op.execute("SELECT setval('property_id_seq', COALESCE((SELECT MAX(property_id) FROM property), 1))")
 
-# Use app.app_context() to run queries
-with app.app_context():
-    users = User.query.all()
-    for user in users:
-        if not user.password_hash.startswith("$2b$"):  # Check if it's hashed
-            user.set_password(user.password_hash)  # Hash existing plain text password
-            db.session.commit()
-
-    print("All passwords hashed successfully!")
+def downgrade():
+    op.execute("ALTER TABLE property ALTER COLUMN property_id DROP DEFAULT")
+    op.execute("DROP SEQUENCE property_id_seq")

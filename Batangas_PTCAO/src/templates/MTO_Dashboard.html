@@ -252,6 +252,41 @@
             margin-bottom: 1rem;
             display: inline-block;
         }
+        /* Icon Colors */
+        .properties-icon {
+            color: #4e73df; /* Blue */
+        }
+        .local-icon {
+            color: #1cc88a; /* Green */
+        }
+        .foreign-icon {
+            color: #36b9cc; /* Teal */
+        }
+        .visitors-icon {
+            color: #f6c23e; /* Yellow */
+        }
+
+        /* Card Styling */
+        .dashboard-card {
+            border-left: 5px solid;
+            transition: all 0.3s;
+        }
+        .dashboard-card:nth-child(1) {
+            border-left-color: #4e73df;
+        }
+        .dashboard-card:nth-child(2) {
+            border-left-color: #1cc88a;
+        }
+        .dashboard-card:nth-child(3) {
+            border-left-color: #36b9cc;
+        }
+        .dashboard-card:nth-child(4) {
+            border-left-color: #f6c23e;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -259,25 +294,22 @@
     <header class="top-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="#" class="logo-text">
-                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
-                    Batangas Explorer - MTO
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    Batangas Explorer - MTO Panel
                 </a>
-
                 <div class="d-flex align-items-center">
-                    <div class="position-relative me-3">
-                        <i class="fas fa-bell fa-lg"></i>
-                        <span class="notification-badge">5</span>
-                    </div>
-                    <div class="position-relative me-3">
-                        <i class="fas fa-envelope fa-lg"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
-                    <div class="user-profile">
-                        <div class="user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <span class="d-none d-md-inline">MTO Admin</span>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            MTO User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -310,17 +342,13 @@
             <i class="fas fa-calendar-alt"></i>
             <span>Events</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="/mto/announcements" class="sidebar-link">
             <i class="fas fa-bullhorn"></i>
-            <span>Announcements</span>
+            <span> Announcements</span>
         </a>
         <a href="/mto/reports" class="sidebar-link">
             <i class="fas fa-file-alt"></i>
             <span>Reports</span>
-        </a>
-        <a href="#" class="sidebar-link">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
         </a>
     </div>
 
@@ -395,54 +423,82 @@
             </div>
         </div>
 
-        <!-- Main Stats Cards -->
+        <!-- Stats Cards Section -->
         <div class="row mb-4">
+            <!-- Active Properties -->
             <div class="col-md-3">
                 <div class="card dashboard-card">
-                    <div class="dashboard-icon destinations-icon">
+                    <div class="dashboard-icon properties-icon">
                         <i class="fas fa-hotel"></i>
                     </div>
-                    <div class="dashboard-number">{{ summary.total_properties }}</div>
+                    <div class="dashboard-number">{{ dashboard_stats.active_properties }}</div>
                     <div class="dashboard-label">Active Properties</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 8% from last month
-                    </div>
                 </div>
             </div>
+
+            <!-- Local Visitors -->
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon local-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="dashboard-number">{{ dashboard_stats.local_visitors|number_format }}</div>
+                    <div class="dashboard-label">Local Visitors</div>
+                </div>
+            </div>
+
+            <!-- Foreign Visitors -->
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon foreign-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="dashboard-number">{{ dashboard_stats.foreign_visitors|number_format }}</div>
+                    <div class="dashboard-label">Foreign Visitors</div>
+                </div>
+            </div>
+
+            <!-- Total Visitors -->
             <div class="col-md-3">
                 <div class="card dashboard-card">
                     <div class="dashboard-icon visitors-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <div class="dashboard-number">{{ summary.local_visitors }}</div>
-                    <div class="dashboard-label">Local Visitors</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 12% from last month
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card dashboard-card">
-                    <div class="dashboard-icon properties-icon">
-                        <i class="fas fa-globe-americas"></i>
-                    </div>
-                    <div class="dashboard-number">{{ summary.foreign_visitors }}</div>
-                    <div class="dashboard-label">Foreign Visitors</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 5% from last month
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card dashboard-card">
-                    <div class="dashboard-icon tasks-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="dashboard-number">{{ summary.total_visitors }}</div>
+                    <div class="dashboard-number">{{ dashboard_stats.total_visitors|number_format }}</div>
                     <div class="dashboard-label">Total Visitors</div>
-                    <div class="small text-success mt-2">
-                        <i class="fas fa-arrow-up"></i> 9% from last month
-                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Destinations Table Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Top Destinations</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Destination Name</th>
+                                <th>Barangay</th>
+                                <th>Total Visitors</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dest in top_destinations %}
+                            <tr>
+                                <td>{{ dest.property_name }}</td>
+                                <td>{{ dest.barangay }}</td>
+                                <td>{{ dest.total_visitors|number_format }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">No destination data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -450,9 +506,9 @@
         <!-- Property/Destination List Table -->
         <div class="card mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Destination List</h5>
+                <h5 class="card-title mb-0">Top Destinations</h5>
                 <div class="input-group" style="max-width: 300px;">
-                    <input type="text" class="form-control" placeholder="Search destinations...">
+                    <input type="text" class="form-control" placeholder="Search destinations..." id="destinationSearch">
                     <button class="btn btn-outline-secondary" type="button">
                         <i class="fas fa-search"></i>
                     </button>
@@ -460,58 +516,45 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" id="destinationsTable">
                         <thead>
                             <tr>
+                                <th>Destination</th>
                                 <th>Barangay</th>
-                                <th>Destination Name</th>
                                 <th>Type</th>
-                                <th>Local Visitors</th>
-                                <th>Foreign Visitors</th>
+                                <th>Local</th>
+                                <th>Foreign</th>
                                 <th>Day Tour</th>
                                 <th>Overnight</th>
+                                <th>Total</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for dest in top_destinations %}
                             <tr>
-                                <td>{{ dest.barangay }}</td>
                                 <td>{{ dest.property_name }}</td>
-                                <td>{{ dest.accommodation_type }}</td>
-                                <td>{{ dest.local_visitors }}</td>
-                                <td>{{ dest.foreign_visitors }}</td>
-                                <td>{{ dest.day_tour_visitors }}</td>
-                                <td>{{ dest.overnight_visitors }}</td>
+                                <td>{{ dest.barangay }}</td>
+                                <td>{{ dest.type }}</td>
+                                <td>{{ dest.local_visitors|number_format }}</td>
+                                <td>{{ dest.foreign_visitors|number_format }}</td>
+                                <td>{{ dest.daytour_visitors|number_format }}</td>
+                                <td>{{ dest.overnight_visitors|number_format }}</td>
+                                <td>{{ dest.total_visitors|number_format }}</td>
                                 <td>
-                                    <span class="badge bg-{% if dest.status == 'Active' %}success{% else %}secondary{% endif %}">
+                                    <span class="badge bg-{% if dest.status == 'ACTIVE' %}success{% else %}secondary{% endif %}">
                                         {{ dest.status }}
                                     </span>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="8" class="text-center">No destinations found</td>
+                                <td colspan="9" class="text-center">No destination data available</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="card-footer bg-white text-end">
-                <nav>
-                    <ul class="pagination justify-content-end mb-0">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         </div>
     </div>
@@ -535,9 +578,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script>
-        // Add any necessary JavaScript here
         document.addEventListener('DOMContentLoaded', function() {
-            // You can add chart initialization or other JavaScript here
+            const searchInput = document.getElementById('destinationSearch');
+            const table = document.getElementById('destinationsTable');
+            const rows = table.getElementsByTagName('tr');
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = this.value.toLowerCase();
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(filter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
         });
     </script>
 </body>

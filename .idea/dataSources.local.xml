@@ -7,14 +7,13 @@
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
-      <user-name>vince</user-name>
+      <user-name>postgres</user-name>
       <schema-mapping>
         <introspection-scope>
-          <node negative="1">
-            <node kind="database" qname="postgres" />
-            <node kind="database" qname="ptcao">
-              <node kind="schema" qname="public" />
-            </node>
+          <node kind="database">
+            <name qname="postgres" />
+            <name qname="ptcao" />
+            <node kind="schema" qname="public" />
           </node>
         </introspection-scope>
       </schema-mapping>
@@ -37,6 +36,23 @@
               <name qname="ptcao" />
               <node kind="schema" qname="public" />
             </node>
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
+    <data-source name="postgres@localhost [3]" uuid="6dba9298-aff1-4621-ba00-e84ecffec5eb">
+      <database-info product="PostgreSQL" version="17.5" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="17.5" exact-driver-version="42.7">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>postgres</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database">
+            <name qname="postgres" />
+            <name qname="ptcao" />
+            <node kind="schema" qname="public" />
           </node>
         </introspection-scope>
       </schema-mapping>

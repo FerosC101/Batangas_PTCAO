@@ -1,8 +1,12 @@
+# [file name]: MTO_Property.py
+import uuid
+
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
-from model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User
+from model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User, \
+    PropertyImage
 from extension import db
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
@@ -10,15 +14,18 @@ from datetime import datetime
 properties_bp = Blueprint("properties", __name__, url_prefix="/property")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-UPLOAD_FOLDER = 'static/uploads/properties'
+UPLOAD_FOLDER = 'static/uploads/events'
+
 
 def init_property_routes(app):
     app.register_blueprint(properties_bp)
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @properties_bp.route('/mto/property')
 @jwt_required()
@@ -33,15 +40,24 @@ def mto_properties():
             return redirect(url_for('dashboard.mto_dashboard'))
 
         properties = Property.query.filter_by(municipality=user.municipality).all()
+
+        # Define typical locations for dropdown
+        typical_locations = [
+            "Beachfront", "Mountain View", "City Center", "Lakeside",
+            "Riverside", "Forest", "Countryside", "Island"
+        ]
+
         return render_template(
             'MTO_Properties.html',
             properties=properties,
             user_id=current_user_id,
-            municipality=user.municipality
+            municipality=user.municipality,
+            typical_locations=typical_locations
         )
     except Exception as e:
         flash(f'Failed to load properties: {str(e)}', 'error')
         return redirect(url_for('dashboard.mto_dashboard'))
+
 
 @properties_bp.route('', methods=['GET'])
 @jwt_required()
@@ -100,33 +116,22 @@ def get_properties():
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/<int:property_id>', methods=['GET'])
 @jwt_required()
 def get_property(property_id):
-    """Get a single property by ID"""
+    print(f"Fetching property ID: {property_id}")
     try:
-        property = Property.query.get_or_404(property_id)
+        property = Property.query.options(
+            db.joinedload(Property.images),
+            db.joinedload(Property.amenities),
+            db.joinedload(Property.rooms).joinedload(Room.amenities),
+            db.joinedload(Property.coordinates),
+            db.joinedload(Property.typical_locations)
+        ).get_or_404(property_id)
 
-        rooms_data = []
-        for room in property.rooms:
-            room_data = {
-                'room_id': room.room_id,
-                'room_type': room.room_type,
-                'day_price': float(room.day_price),
-                'overnight_price': float(room.overnight_price),
-                'capacity': room.capacity,
-                'amenities': [amenity.amenity for amenity in room.amenities]
-            }
-            rooms_data.append(room_data)
-
-        coordinates = []
-        for coord in property.coordinates:
-            coordinates.append({
-                'longitude': coord.longitude,
-                'latitude': coord.latitude
-            })
-
-        result = {
+        # Prepare property data
+        property_data = {
             'property_id': property.property_id,
             'property_name': property.property_name,
             'barangay': property.barangay,
@@ -134,28 +139,44 @@ def get_property(property_id):
             'accommodation_type': property.accommodation_type,
             'status': property.status.value,
             'description': property.description,
-            'amenities': [amenity.amenity for amenity in property.amenities],
-            'typical_locations': [location.location for location in property.typical_locations],
-            'coordinates': coordinates,
-            'rooms': rooms_data,
-            'rating': 4.5,
-            'image_url': f"/static/uploads/properties/{property.property_image}" if property.property_image else None
+            'images': [{'id': img.id, 'image_path': url_for('static', filename=f'uploads/events/{img.image_path}')} for
+                       img in property.images],
+            'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in property.amenities if
+                          a.room_id is None],
+            'coordinates': [{'id': c.id, 'longitude': c.longitude, 'latitude': c.latitude} for c in
+                            property.coordinates],
+            'typical_locations': [{'id': tl.id, 'location': tl.location} for tl in property.typical_locations],
+            'rooms': []
         }
+
+        # Prepare room data
+        for room in property.rooms:
+            room_data = {
+                'room_id': room.room_id,
+                'room_type': room.room_type,
+                'day_price': float(room.day_price),
+                'overnight_price': float(room.overnight_price),
+                'capacity': room.capacity,
+                'amenities': [{'amenity_id': a.amenity_id, 'amenity': a.amenity} for a in room.amenities]
+            }
+            property_data['rooms'].append(room_data)
 
         return jsonify({
             'status': 'success',
-            'property': result
+            'property': property_data
         }), 200
+
     except Exception as e:
+        current_app.logger.error(f"Error fetching property: {str(e)}")
         return jsonify({
             'status': 'error',
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('', methods=['POST'])
 @jwt_required()
 def create_property():
-    """Create a new property"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -163,61 +184,107 @@ def create_property():
         if not user or not user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        data = request.get_json()
+        # Handle form data
+        data = request.form.to_dict()
+        files = request.files.getlist('property_images')
 
-        required_fields = ['property_name', 'barangay', 'municipality', 'accommodation_type']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'status': 'error',
-                    'message': f'Missing required field: {field}'
-                }), 400
-
+        # Create property
         new_property = Property(
             property_name=data['property_name'],
             barangay=data['barangay'],
-            municipality=data['municipality'],
+            municipality=user.municipality,
             accommodation_type=data['accommodation_type'],
-            status=PropertyStatus(data.get('status', 'Active')),
+            status=PropertyStatus(data.get('status', 'ACTIVE')),
             description=data.get('description')
         )
 
-        if 'amenities' in data and isinstance(data['amenities'], list):
-            for amenity_name in data['amenities']:
-                amenity = Amenity(amenity=amenity_name)
-                new_property.amenities.append(amenity)
-
-        if 'typical_locations' in data and isinstance(data['typical_locations'], list):
-            for location_name in data['typical_locations']:
-                location = TypicalLocation(location=location_name)
-                new_property.typical_locations.append(location)
-
-        if 'coordinates' in data and isinstance(data['coordinates'], list):
-            for coord in data['coordinates']:
-                if 'longitude' in coord and 'latitude' in coord:
-                    coordinate = LongLat(
-                        longitude=coord['longitude'],
-                        latitude=coord['latitude']
-                    )
-                    new_property.coordinates.append(coordinate)
-
-        if 'rooms' in data and isinstance(data['rooms'], list):
-            for room_data in data['rooms']:
-                room = Room(
-                    room_type=room_data.get('room_type'),
-                    day_price=room_data.get('day_price'),
-                    overnight_price=room_data.get('overnight_price'),
-                    capacity=room_data.get('capacity')
-                )
-
-                if 'amenities' in room_data and isinstance(room_data['amenities'], list):
-                    for amenity_name in room_data['amenities']:
-                        amenity = Amenity(amenity=amenity_name)
-                        room.amenities.append(amenity)
-
-                new_property.rooms.append(room)
-
         db.session.add(new_property)
+        db.session.flush()  # Generate the ID
+
+        from model import PropertyReport
+        property_report = PropertyReport(
+            property_id=new_property.property_id,
+            dot_accredited=data.get('dot_accredited', 'false').lower() == 'true',
+            dot_accreditation_valid=datetime.strptime(data['dot_valid_until'], '%Y-%m-%d').date() if data.get(
+                'dot_valid_until') else None,
+            ptcao_registered=data.get('ptcao_registered', 'false').lower() == 'true',
+            ptcao_valid_until=datetime.strptime(data['ptcao_valid_until'], '%Y-%m-%d').date() if data.get(
+                'ptcao_valid_until') else None,
+            classification=data.get('classification'),
+            male_employees=int(data.get('male_employees', 0)),
+            female_employees=int(data.get('female_employees', 0)),
+            total_rooms=int(data.get('total_rooms', 0)),
+            daytour_capacity=int(data.get('daytour_capacity', 0)),
+            overnight_capacity=int(data.get('overnight_capacity', 0)),
+            report_period_start=datetime.now().date(),
+            report_period_end=datetime.now().date()
+        )
+        db.session.add(property_report)
+
+        # Handle coordinates
+        if 'longitude' in data and 'latitude' in data:
+            db.session.add(LongLat(
+                property_id=new_property.property_id,
+                longitude=float(data['longitude']),
+                latitude=float(data['latitude'])
+            ))
+
+        # Handle typical locations
+        typical_locations = request.form.getlist('typical_locations[]')
+        for location in typical_locations:
+            if location.strip():
+                db.session.add(TypicalLocation(
+                    property_id=new_property.property_id,
+                    location=location.strip()
+                ))
+
+        # Handle file uploads
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(f"{new_property.property_id}_{file.filename}")
+                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                db.session.add(PropertyImage(
+                    property_id=new_property.property_id,
+                    image_path=filename
+                ))
+
+        # Handle amenities
+        amenities = request.form.getlist('amenities[]')
+        for amenity in amenities:
+            if amenity.strip():
+                db.session.add(Amenity(
+                    property_id=new_property.property_id,
+                    amenity=amenity.strip()
+                ))
+
+        # Handle rooms
+        room_indices = set()
+        for key in request.form.keys():
+            if key.startswith('rooms['):
+                index = key.split('[')[1].split(']')[0]
+                room_indices.add(index)
+
+        for index in room_indices:
+            room = Room(
+                property_id=new_property.property_id,
+                room_type=request.form.get(f'rooms[{index}][room_type]'),
+                day_price=float(request.form.get(f'rooms[{index}][day_price]', 0)),
+                overnight_price=float(request.form.get(f'rooms[{index}][overnight_price]', 0)),
+                capacity=int(request.form.get(f'rooms[{index}][capacity]', 1))
+            )
+            db.session.add(room)
+            db.session.flush()
+
+        amenities = request.form.getlist('amenities[]')
+        for amenity in amenities:
+            if amenity.strip():  # Skip empty amenities
+                amenity_record = Amenity(
+                    property_id=new_property.property_id,
+                    amenity=amenity.strip()
+                )
+                db.session.add(amenity_record)
+                db.session.flush()
+
         db.session.commit()
 
         return jsonify({
@@ -225,22 +292,19 @@ def create_property():
             'message': 'Property created successfully',
             'property_id': new_property.property_id
         }), 201
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+
     except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error creating property: {str(e)}")
         return jsonify({
             'status': 'error',
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/update/<int:property_id>', methods=['POST'])
 @jwt_required()
 def update_property(property_id):
-    """Update an existing property"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -249,69 +313,104 @@ def update_property(property_id):
         if property.municipality != user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        if 'property_image' in request.files:
-            file = request.files['property_image']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"{property_id}_{file.filename}")
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                property.property_image = filename
+        # Handle form data
+        data = request.form.to_dict()
+        files = request.files.getlist('property_images')
 
-        data = request.form.to_dict() or request.get_json()
-
+        # Update basic property info
         property.property_name = data.get('property_name', property.property_name)
         property.barangay = data.get('barangay', property.barangay)
         property.accommodation_type = data.get('accommodation_type', property.accommodation_type)
         property.status = PropertyStatus(data.get('status', property.status.value))
         property.description = data.get('description', property.description)
 
-        # Update coordinates
-        if 'coordinates' in data and isinstance(data['coordinates'], list):
-            property.coordinates = []
-            for coord in data['coordinates']:
-                property.coordinates.append(LongLat(
-                    longitude=coord['longitude'],
-                    latitude=coord['latitude']
+        if 'longitude' in data and 'latitude' in data:
+            LongLat.query.filter_by(property_id=property_id).delete()
+            db.session.add(LongLat(
+                property_id=property_id,
+                longitude=float(data['longitude']),
+                latitude=float(data['latitude'])
+            ))
+
+        # Update typical locations
+        TypicalLocation.query.filter_by(property_id=property_id).delete()
+        typical_locations = request.form.getlist('typical_locations[]')
+        for location in typical_locations:
+            if location.strip():
+                db.session.add(TypicalLocation(
+                    property_id=property_id,
+                    location=location.strip()
                 ))
 
-        # Update amenities
-        if 'amenities' in data and isinstance(data['amenities'], list):
-            property.amenities = []
-            for amenity_name in data['amenities']:
-                property.amenities.append(Amenity(amenity=amenity_name))
+        amenities = request.form.getlist('amenities[]')
+        if amenities:
+            Amenity.query.filter_by(property_id=property_id, room_id=None).delete()
+            for amenity in amenities:
+                if amenity:
+                    db.session.add(Amenity(
+                        property_id=property_id,
+                        amenity=amenity
+                    ))
 
-        # Update rooms
-        if 'rooms' in data and isinstance(data['rooms'], list):
-            property.rooms = []
-            for room_data in data['rooms']:
-                room = Room(
-                    room_type=room_data.get('room_type'),
-                    day_price=room_data.get('day_price'),
-                    overnight_price=room_data.get('overnight_price'),
-                    capacity=room_data.get('capacity')
-                )
-                property.rooms.append(room)
+        # Handle rooms
+        room_indices = set()
+        for key in request.form.keys():
+            if key.startswith('rooms['):
+                index = key.split('[')[1].split(']')[0]
+                room_indices.add(index)
+
+        if room_indices:
+            Room.query.filter_by(property_id=property_id).delete()
+
+            for index in room_indices:
+                room_data = {
+                    'room_type': request.form.get(f'rooms[{index}][room_type]'),
+                    'day_price': request.form.get(f'rooms[{index}][day_price]'),
+                    'overnight_price': request.form.get(f'rooms[{index}][overnight_price]'),
+                    'capacity': request.form.get(f'rooms[{index}][capacity]')
+                }
+
+                if room_data['room_type']:
+                    room = Room(
+                        property_id=property_id,
+                        room_type=room_data['room_type'],
+                        day_price=float(room_data.get('day_price', 0)),
+                        overnight_price=float(room_data.get('overnight_price', 0)),
+                        capacity=int(room_data.get('capacity', 1))
+                    )
+                    db.session.add(room)
+
+        # Handle file uploads
+        for file in files:
+            if file and allowed_file(file.filename):
+                ext = file.filename.rsplit('.', 1)[1].lower()
+                filename = f"{property_id}_{secure_filename(property.property_name)}_{uuid.uuid4().hex[:8]}.{ext}"
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+
+                db.session.add(PropertyImage(
+                    property_id=property_id,
+                    image_path=filename
+                ))
 
         db.session.commit()
+
         return jsonify({
             'status': 'success',
             'message': 'Property updated successfully'
         }), 200
-    except SQLAlchemyError as e:
+
+    except Exception as e:
         db.session.rollback()
         return jsonify({
             'status': 'error',
             'message': str(e)
         }), 500
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
 
-@properties_bp.route('/<int:property_id>/image', methods=['POST'])
+
+@properties_bp.route('/<int:property_id>/images', methods=['POST'])
 @jwt_required()
-def upload_property_image(property_id):
-    """Upload an image for a property"""
+def upload_property_images(property_id):
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -320,60 +419,86 @@ def upload_property_image(property_id):
         if property.municipality != user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
-        if 'property_image' not in request.files:
-            return jsonify({'status': 'error', 'message': 'No file uploaded'}), 400
+        files = request.files.getlist('property_image')
+        if not files:
+            return jsonify({'status': 'error', 'message': 'No files uploaded'}), 400
 
-        file = request.files['property_image']
-        if file.filename == '':
-            return jsonify({'status': 'error', 'message': 'No selected file'}), 400
+        uploaded_files = []
+        for file in files:
+            if file and allowed_file(file.filename):
+                ext = file.filename.rsplit('.', 1)[1].lower()
+                filename = f"{property_id}_{secure_filename(property.property_name)}_{uuid.uuid4().hex[:8]}.{ext}"
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(f"{property_id}_{file.filename}")
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            property.property_image = filename
-            db.session.commit()
-            return jsonify({
-                'status': 'success',
-                'message': 'Image uploaded successfully',
-                'image_url': f"/static/uploads/properties/{filename}"
-            }), 200
+                property_image = PropertyImage(
+                    property_id=property_id,
+                    image_path=filename
+                )
+                db.session.add(property_image)
+                uploaded_files.append(filename)
 
-        return jsonify({'status': 'error', 'message': 'Invalid file type'}), 400
-    except Exception as e:
+        db.session.commit()
+
         return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+            'status': 'success',
+            'message': 'Images uploaded successfully',
+            'files': uploaded_files
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 @properties_bp.route('/<int:property_id>', methods=['DELETE'])
 @jwt_required()
 def delete_property(property_id):
-    """Delete a property"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
-        property = Property.query.get_or_404(property_id)
+        if not user:
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
 
+        property = Property.query.get(property_id)
+        if not property:
+            return jsonify({'status': 'error', 'message': 'Property not found'}), 404
+
+        # Verify the property belongs to the user's municipality
         if property.municipality != user.municipality:
-            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+            return jsonify({'status': 'error', 'message': 'Unauthorized to delete this property'}), 403
+
+        # Delete associated images first
+        for image in property.images:
+            try:
+                image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], image.image_path)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+            except Exception as e:
+                current_app.logger.error(f"Error deleting image {image.image_path}: {str(e)}")
+                continue
 
         db.session.delete(property)
         db.session.commit()
+
         return jsonify({
             'status': 'success',
             'message': 'Property deleted successfully'
         }), 200
+
     except SQLAlchemyError as e:
         db.session.rollback()
+        current_app.logger.error(f"Database error deleting property: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'Database error occurred while deleting property'
         }), 500
     except Exception as e:
+        current_app.logger.error(f"Unexpected error deleting property: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'An unexpected error occurred'
         }), 500
+
 
 @properties_bp.route('/barangays', methods=['GET'])
 @jwt_required()
@@ -393,6 +518,7 @@ def get_barangays():
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/municipalities', methods=['GET'])
 @jwt_required()
 def get_municipalities():
@@ -410,6 +536,7 @@ def get_municipalities():
             'status': 'error',
             'message': str(e)
         }), 500
+
 
 @properties_bp.route('/accommodation-types', methods=['GET'])
 @jwt_required()
@@ -429,6 +556,7 @@ def get_accommodation_types():
             'status': 'error',
             'message': str(e)
         }), 500
+
 
 @properties_bp.route('/<int:property_id>/status', methods=['PATCH'])
 @jwt_required()
@@ -470,5 +598,71 @@ def change_property_status(property_id):
     except Exception as e:
         return jsonify({
             'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@properties_bp.route('/<int:property_id>/report', methods=['GET'])
+@jwt_required()
+def get_property_report(property_id):
+    try:
+        from model import PropertyReport
+        report = PropertyReport.query.filter_by(property_id=property_id).first()
+
+        if not report:
+            return jsonify({
+                'status': 'error',
+                'message': 'Report not found'
+            }), 404
+
+        return jsonify({
+            'status': 'success',
+            'report': {
+                'dot_accredited': report.dot_accredited,
+                'dot_accreditation_valid': report.dot_accreditation_valid.strftime(
+                    '%Y-%m-%d') if report.dot_accreditation_valid else None,
+                'ptcao_registered': report.ptcao_registered,
+                'ptcao_valid_until': report.ptcao_valid_until.strftime(
+                    '%Y-%m-%d') if report.ptcao_valid_until else None,
+                'classification': report.classification,
+                'male_employees': report.male_employees,
+                'female_employees': report.female_employees,
+                'total_employees': report.male_employees + report.female_employees,
+                'total_rooms': report.total_rooms,
+                'daytour_capacity': report.daytour_capacity,
+                'overnight_capacity': report.overnight_capacity
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@properties_bp.route('/mto/properties', methods=['GET'])
+@jwt_required()
+def get_mto_properties():
+    try:
+        current_user = User.query.get(get_jwt_identity())
+        if not current_user:
+            return jsonify({'success': False, 'message': 'User not found'}), 401
+
+        properties = Property.query.filter_by(municipality=current_user.municipality).all()
+
+        properties_data = [{
+            'id': prop.property_id,
+            'name': prop.property_name,
+            'barangay': prop.barangay,
+            'type': prop.accommodation_type
+        } for prop in properties]
+
+        return jsonify({
+            'success': True,
+            'data': properties_data
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
             'message': str(e)
         }), 500

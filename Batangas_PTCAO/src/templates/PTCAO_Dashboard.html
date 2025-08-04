@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - PTCAO Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --ptcao-purple: #6f42c1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: 100%;
+            position: fixed;
+            top: 72px;
+            width: 16.66667%;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+
+        .main-container {
+            margin-top: 70px;
+            margin-left: 16.66667%;
+            padding: 20px;
+            width: calc(100% - 16.66667%);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-left: 5px solid;
+        }
+
+        .dashboard-card:nth-child(1) {
+            border-left-color: #4e73df;
+        }
+
+        .dashboard-card:nth-child(2) {
+            border-left-color: #1cc88a;
+        }
+
+        .dashboard-card:nth-child(3) {
+            border-left-color: #36b9cc;
+        }
+
+        .dashboard-card:nth-child(4) {
+            border-left-color: #f6c23e;
+        }
+
+        .dashboard-card:nth-child(5) {
+            border-left-color: #e74a3b;
+        }
+
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .ptcao-badge {
+            background-color: var(--ptcao-purple);
+            color: white;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        footer {
+            background-color: var(--primary);
+            padding: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    Batangas Explorer - PTCAO Panel
+                </a>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            PTCAO User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/ptcao/dashboard" class="sidebar-link active">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/ptcao/destinations" class="sidebar-link">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>Destinations</span>
+        </a>
+        <a href="/ptcao/properties" class="sidebar-link">
+            <i class="fas fa-hotel"></i>
+            <span>Properties</span>
+        </a>
+        <a href="/ptcao/visitors" class="sidebar-link">
+            <i class="fas fa-users"></i>
+            <span>Visitors</span>
+        </a>
+        <a href="/ptcao/analytics" class="sidebar-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
+        <a href="/ptcao/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Events</span>
+        </a>
+        <a href="/ptcao/announcements" class="sidebar-link">
+            <i class="fas fa-bullhorn"></i>
+            <span>Announcements</span>
+        </a>
+        <a href="/ptcao/reports" class="sidebar-link">
+            <i class="fas fa-file-alt"></i>
+            <span>Reports</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="section-title mb-0">PTCAO Dashboard</h1>
+                <div class="ptcao-badge">
+                    <i class="fas fa-map-marker-alt me-2"></i>Province of Batangas
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-download me-1"></i> Export Data
+                </button>
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="municipalityDropdown" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i> Filter Municipality
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">All Municipalities</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% for mun in municipal_summary %}
+                        <li><a class="dropdown-item" href="#">{{ mun.municipality }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards Section -->
+        <div class="row mb-4">
+            <!-- Active Properties -->
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon" style="color: #4e73df;">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <div class="dashboard-number">{{ dashboard_stats.active_properties }}</div>
+                    <div class="dashboard-label">Active Properties</div>
+                </div>
+            </div>
+
+            <!-- Local Visitors -->
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon" style="color: #1cc88a;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="dashboard-number">{{ dashboard_stats.local_visitors|number_format }}</div>
+                    <div class="dashboard-label">Local Visitors</div>
+                </div>
+            </div>
+
+            <!-- Foreign Visitors -->
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon" style="color: #36b9cc;">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="dashboard-number">{{ dashboard_stats.foreign_visitors|number_format }}</div>
+                    <div class="dashboard-label">Foreign Visitors</div>
+                </div>
+            </div>
+
+            <!-- Total Visitors -->
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="dashboard-icon" style="color: #f6c23e;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="dashboard-number">{{ dashboard_stats.total_visitors|number_format }}</div>
+                    <div class="dashboard-label">Total Visitors ({{ current_year }})</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Trend Chart -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Monthly Visitor Trend ({{ current_year }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Municipal Summary Table -->
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Municipal Summary</h5>
+                <div class="input-group" style="max-width: 300px;">
+                    <input type="text" class="form-control" placeholder="Search municipalities..." id="municipalitySearch">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="municipalitiesTable">
+                        <thead>
+                            <tr>
+                                <th>Municipality</th>
+                                <th>Properties</th>
+                                <th>Local Visitors</th>
+                                <th>Foreign Visitors</th>
+                                <th>Day Tour</th>
+                                <th>Overnight</th>
+                                <th>Total Visitors</th>
+                                <th>Last Update</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mun in municipal_summary %}
+                            <tr>
+                                <td>{{ mun.municipality }}</td>
+                                <td>{{ mun.properties }}</td>
+                                <td>{{ mun.local_visitors|number_format }}</td>
+                                <td>{{ mun.foreign_visitors|number_format }}</td>
+                                <td>{{ mun.daytour_visitors|number_format }}</td>
+                                <td>{{ mun.overnight_visitors|number_format }}</td>
+                                <td>{{ mun.total_visitors|number_format }}</td>
+                                <td>{{ mun.last_update.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center">No municipal data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Destinations Table -->
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Top Destinations ({{ current_year }})</h5>
+                <div class="input-group" style="max-width: 300px;">
+                    <input type="text" class="form-control" placeholder="Search destinations..." id="destinationSearch">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="destinationsTable">
+                        <thead>
+                            <tr>
+                                <th>Destination</th>
+                                <th>Municipality</th>
+                                <th>Barangay</th>
+                                <th>Type</th>
+                                <th>Total Visitors</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dest in top_destinations %}
+                            <tr>
+                                <td>{{ dest.property_name }}</td>
+                                <td>{{ dest.municipality }}</td>
+                                <td>{{ dest.barangay }}</td>
+                                <td>{{ dest.type }}</td>
+                                <td>{{ dest.total_visitors|number_format }}</td>
+                                <td>
+                                    <span class="badge bg-{% if dest.status == 'ACTIVE' %}success{% else %}secondary{% endif %}">
+                                        {{ dest.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No destination data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-3">Terms of Service</a>
+                    <a href="#">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+    <script>
+    // Monthly Trend Chart
+        const monthlyTrendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        const monthlyTrendChart = new Chart(monthlyTrendCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Day Tour Visitors',
+                    data: {{ monthly_data }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Visitors: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        },
+                        grid: {
+                            drawBorder: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Visitors'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Municipality search
+            const munSearch = document.getElementById('municipalitySearch');
+            const munTable = document.getElementById('municipalitiesTable');
+            const munRows = munTable.querySelectorAll('tbody tr');
+
+            munSearch.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                munRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+
+            // Destination search
+            const destSearch = document.getElementById('destinationSearch');
+            const destTable = document.getElementById('destinationsTable');
+            const destRows = destTable.querySelectorAll('tbody tr');
+
+            destSearch.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                destRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        });
+
+        // Filter by municipality
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const municipality = this.textContent;
+                if (municipality === 'All Municipalities') {
+                    munRows.forEach(row => row.style.display = '');
+                } else {
+                    munRows.forEach(row => {
+                        const rowMun = row.cells[0].textContent;
+                        row.style.display = rowMun === municipality ? '' : 'none';
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

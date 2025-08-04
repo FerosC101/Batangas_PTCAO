@@ -217,35 +217,35 @@
     <header class="top-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="#" class="logo-text">
-                    <img src="/api/placeholder/40/40" alt="Logo" class="me-2" width="40" height="40">
-                    Batangas Explorer - MTO
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    Batangas Explorer - MTO Panel
                 </a>
-
                 <div class="d-flex align-items-center">
-                    <div class="position-relative me-3">
-                        <i class="fas fa-bell fa-lg"></i>
-                        <span class="notification-badge">5</span>
-                    </div>
-                    <div class="position-relative me-3">
-                        <i class="fas fa-envelope fa-lg"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
-                    <div class="user-profile">
-                        <div class="user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <span class="d-none d-md-inline">MTO Admin</span>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            MTO User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
+
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
             <div class="col-lg-2 px-0">
+                <!-- Sidebar -->
                 <div class="sidebar">
                     <a href="/mto/dashboard" class="sidebar-link">
                         <i class="fas fa-tachometer-alt"></i>
@@ -271,17 +271,13 @@
                         <i class="fas fa-calendar-alt"></i>
                         <span>Events</span>
                     </a>
-                    <a href="#" class="sidebar-link">
+                    <a href="/mto/announcements" class="sidebar-link active">
                         <i class="fas fa-bullhorn"></i>
-                        <span>Announcements</span>
+                        <span> Announcements</span>
                     </a>
                     <a href="/mto/reports" class="sidebar-link active">
                         <i class="fas fa-file-alt"></i>
                         <span>Reports</span>
-                    </a>
-                    <a href="#" class="sidebar-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
                     </a>
                 </div>
             </div>
@@ -294,20 +290,23 @@
                         <button class="btn btn-outline-primary me-2" id="exportBtn">
                             <i class="fas fa-download me-1"></i> Export Reports
                         </button>
-                        <button class="btn btn-primary" id="uploadBtn">
+                        <button class="btn btn-primary me-2" id="uploadBtn">
                             <i class="fas fa-upload me-1"></i> Upload Report
+                        </button>
+                        <button class="btn btn-success" id="addReportBtn">
+                            <i class="fas fa-plus me-1"></i> Add Report
                         </button>
                     </div>
                 </div>
 
                 <!-- Tabs -->
                 <div class="mb-4">
-                    <button class="tab-btn active" data-tab="tourist-report">Resort & Property Report</button>
-                    <button class="tab-btn" data-tab="property-report">Tourist Report</button>
+                    <button class="tab-btn active" data-tab="property-report">Resort & Property Report</button>
+                    <button class="tab-btn" data-tab="tourist-report">Tourist Report</button>
                 </div>
 
-                <!-- Tourist Report Tab -->
-                <div id="tourist-report" class="tab-content active">
+                <!-- Resort & Property Report Tab -->
+                <div id="property-report" class="tab-content active">
                     <div class="report-filter d-flex">
                         <div class="filter-group">
                             <label>Date Range:</label>
@@ -337,7 +336,6 @@
                                 <option value="Pension">HSS (Home Stay Site)</option>
                                 <option value="Pension">TIN (Tourist Inn)</option>
                                 <option value="Pension">MH (Motorist Hotel)</option>
-                            
                             </select>
                         </div>
                         <button class="btn btn-sm btn-primary align-self-end" id="applyFilters">
@@ -398,8 +396,8 @@
                     </div>
                 </div>
 
-                <!-- Property Report Tab -->
-                <div id="property-report" class="tab-content">
+                <!-- Tourist Report Tab -->
+                <div id="tourist-report" class="tab-content">
                     <div class="report-filter d-flex">
                         <div class="filter-group">
                             <label>Date Range:</label>
@@ -440,13 +438,12 @@
                                             <th>AE Name</th>
                                             <th>Barangay</th>
                                             <th>Type-Class</th>
-                                            <th>Total Rooms</th>
                                             <th>Total Guest Check In Day Tour</th>
                                             <th>Total Guest Check In Overnight</th>
-                                            <th>Total No. of Guest Check In </th>
+                                            <th>Total No. of Guest Check In</th>
                                             <th>Total No. of Rooms Occupied</th>
                                             <th>Total Foreign Visitor Arrival Day Tour</th>
-                                            <th>Total Guest Over night  Foreign Visitor</th>
+                                            <th>Total Guest Over night Foreign Visitor</th>
                                             <th>Total No. of Male Tourists</th>
                                             <th>Total No. of Female Tourists</th>
                                             <th>Actions</th>
@@ -516,10 +513,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="reportType" class="form-label">Report Type</label>
-                            <select class="form-select" id="reportType" required>
+                            <select class="form-select" id="reportType" name="report_type" required>
                                 <option value="">Select report type</option>
+                                <option value="property">Resort & Property Report</option>
                                 <option value="tourist">Tourist Report</option>
-                                <option value="property">Property Report</option>
                             </select>
                         </div>
                     </form>
@@ -527,6 +524,166 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="submitUpload">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Property Report Modal -->
+    <div class="modal fade" id="addPropertyReportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Property Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="propertyReportForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Property</label>
+                                    <select class="form-select" id="propertySelect" required>
+                                        <option value="">Loading properties...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">DOT Accredited</label>
+                                    <select class="form-select" id="dotAccredited">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">DOT Valid Until</label>
+                                    <input type="date" class="form-control" id="dotValidUntil">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">PTCAO Registered</label>
+                                    <select class="form-select" id="ptcaoRegistered">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">PTCAO Valid Until</label>
+                                    <input type="date" class="form-control" id="ptcaoValidUntil">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Classification</label>
+                                    <select class="form-select" id="classification">
+                                        <option value="Luxury">Luxury</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Economy">Economy</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Male Employees</label>
+                                    <input type="number" class="form-control" id="maleEmployees" value="0" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Female Employees</label>
+                                    <input type="number" class="form-control" id="femaleEmployees" value="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Total Rooms</label>
+                                    <input type="number" class="form-control" id="totalRooms" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Daytour Capacity</label>
+                                    <input type="number" class="form-control" id="daytourCapacity" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Overnight Capacity</label>
+                                    <input type="number" class="form-control" id="overnightCapacity" value="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitPropertyReport">Submit Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tourist Report Modal -->
+    <div class="modal fade" id="addTouristReportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Tourist Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="touristReportForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Property</label>
+                                    <select class="form-select" id="touristPropertySelect" required>
+                                        <option value="">Loading properties...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Report Date</label>
+                                    <input type="date" class="form-control" id="reportDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Day Tour Guests</label>
+                                    <input type="number" class="form-control" id="dayTourGuests" value="0" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Overnight Guests</label>
+                                    <input type="number" class="form-control" id="overnightGuests" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Rooms Occupied</label>
+                                    <input type="number" class="form-control" id="roomsOccupied" value="0" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Foreign Daytour Visitors</label>
+                                    <input type="number" class="form-control" id="foreignDaytour" value="0" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Foreign Overnight Visitors</label>
+                                    <input type="number" class="form-control" id="foreignOvernight" value="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Male Tourists</label>
+                                    <input type="number" class="form-control" id="maleTourists" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Female Tourists</label>
+                                    <input type="number" class="form-control" id="femaleTourists" value="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitTouristReport">Submit Report</button>
                 </div>
             </div>
         </div>
@@ -544,6 +701,8 @@
                 return new bootstrap.Toast(toastEl, { autohide: true, delay: 3000 });
             });
             const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+            const propertyReportModal = new bootstrap.Modal(document.getElementById('addPropertyReportModal'));
+            const touristReportModal = new bootstrap.Modal(document.getElementById('addTouristReportModal'));
 
             // Current state
             let currentPage = 1;
@@ -569,7 +728,10 @@
             const propPageInfo = document.getElementById('propPageInfo');
             const exportBtn = document.getElementById('exportBtn');
             const uploadBtn = document.getElementById('uploadBtn');
+            const addReportBtn = document.getElementById('addReportBtn');
             const submitUpload = document.getElementById('submitUpload');
+            const submitPropertyReport = document.getElementById('submitPropertyReport');
+            const submitTouristReport = document.getElementById('submitTouristReport');
             const uploadForm = document.getElementById('uploadForm');
 
             // Initialize the page
@@ -577,10 +739,71 @@
 
             function initPage() {
                 loadBarangays();
-                loadTouristReport();
                 loadPropertyReport();
+                loadTouristReport();
+                loadPropertiesForModal();
                 setupEventListeners();
+
+                // Set default date to today for tourist report
+                document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
             }
+
+            function loadPropertiesForModal() {
+                fetch('/property/mto/properties', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch properties');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Update property select for tourist report
+                        const touristSelect = document.getElementById('touristPropertySelect');
+                        touristSelect.innerHTML = '<option value="">Select Property</option>';
+
+                        data.data.forEach(property => {
+                            const option = document.createElement('option');
+                            option.value = property.id;
+                            option.textContent = `${property.name} (${property.barangay})`;
+                            touristSelect.appendChild(option);
+                        });
+
+                        // Also update property select for property report if needed
+                        const propertySelect = document.getElementById('propertySelect');
+                        if (propertySelect) {
+                            propertySelect.innerHTML = '<option value="">Select Property</option>';
+                            data.data.forEach(property => {
+                                const option = document.createElement('option');
+                                option.value = property.id;
+                                option.textContent = `${property.name} (${property.barangay})`;
+                                propertySelect.appendChild(option);
+                            });
+                        }
+                    } else {
+                        showError(data.message || 'Failed to load properties');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading properties:', error);
+                    showError('Error loading properties: ' + error.message);
+                });
+            }
+
+            // Call this when the modal is shown
+            document.getElementById('addTouristReportModal').addEventListener('shown.bs.modal', function() {
+                loadPropertiesForModal();
+                document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+            });
+
+            document.getElementById('addPropertyReportModal').addEventListener('shown.bs.modal', function() {
+                loadPropertiesForModal();
+            });
 
             function loadBarangays() {
                 fetch('/api/visitors/barangays')
@@ -598,49 +821,69 @@
                     });
             }
 
-            function loadTouristReport(page = 1) {
+            function loadPropertyReport(page = 1) {
                 const params = new URLSearchParams({
                     ...currentFilters,
                     page: page,
                     per_page: rowsPerPage
                 });
 
-                fetch(`/api/reports/properties?${params.toString()}`)
-                    .then(response => response.json())
+                fetch(`/mto/api/reports/properties?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
-                            renderTouristReport(data.data);
-                            updatePagination(data, 'tourist');
+                            renderPropertyReport(data.data);
+                            updatePagination(data, 'property');
+                        } else {
+                            showError(data.message || 'Failed to load property report');
                         }
                     })
-                    .catch(error => showError('Error loading tourist report: ' + error));
+                    .catch(error => {
+                        console.error('Error loading property report:', error);
+                        showError('Error loading property report: ' + error.message);
+                    });
             }
 
-            function loadPropertyReport(page = 1) {
+            function loadTouristReport(page = 1) {
                 const params = new URLSearchParams({
                     ...currentPropFilters,
                     page: page,
                     per_page: propRowsPerPage
                 });
 
-                fetch(`/api/reports/property-data?${params.toString()}`)
-                    .then(response => response.json())
+                fetch(`/mto/api/reports/property-data?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
-                            renderPropertyReport(data.data);
-                            updatePagination(data, 'property');
+                            renderTouristReport(data.data);
+                            updatePagination(data, 'tourist');
+                        } else {
+                            showError(data.message || 'Failed to load tourist report');
                         }
                     })
-                    .catch(error => showError('Error loading property report: ' + error));
+                    .catch(error => {
+                        console.error('Error loading tourist report:', error);
+                        showError('Error loading tourist report: ' + error.message);
+                    });
             }
 
-            function renderTouristReport(data) {
+            function renderPropertyReport(data) {
                 reportTableBody.innerHTML = '';
 
                 if (data.length === 0) {
                     reportTableBody.innerHTML = `
                         <tr>
-                            <td colspan="10" class="text-center py-4">No tourist report data found</td>
+                            <td colspan="16" class="text-center py-4">No property report data found</td>
                         </tr>
                     `;
                     return;
@@ -648,92 +891,91 @@
 
                 data.forEach(property => {
                     const row = document.createElement('tr');
-                    row.dataset.id = property.ae_id;
+                    row.dataset.id = property.property_id;
 
                     row.innerHTML = `
-                        <td>${property.ae_id}</td>
+                        <td>${property.property_id}</td>
                         <td>${property.name}</td>
                         <td>${property.barangay}</td>
+                        <td>${property.type}</td>
+                        <td>${property.dot_accredited ? 'Yes' : 'No'}</td>
+                        <td>${property.dot_valid || '-'}</td>
+                        <td>${property.ptcao_registered ? 'Yes' : 'No'}</td>
+                        <td>${property.ptcao_valid || '-'}</td>
+                        <td>${property.classification || '-'}</td>
+                        <td>${property.male_employees}</td>
+                        <td>${property.female_employees}</td>
+                        <td>${property.male_employees + property.female_employees}</td>
+                        <td>${property.daytour_capacity}</td>
+                        <td>${property.overnight_capacity}</td>
+                        <td>${property.total_rooms}</td>
                         <td>
-                            <select class="form-select form-select-sm type-select">
-                                ${getOptions(['Hotel', 'Resort', 'Villa', 'Pension'], property.type)}
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-select form-select-sm dot-accredited">
-                                ${getOptions(['Yes', 'No'], property.dot_accredited ? 'Yes' : 'No')}
-                            </select>
-                        </td>
-                        <td>
-                            <input type="date" class="form-control form-control-sm dot-valid"
-                                   value="${property.dot_valid || ''}">
-                        </td>
-                        <td>
-                            <select class="form-select form-select-sm ptcao-registered">
-                                ${getOptions(['Yes', 'No'], property.ptcao_registered ? 'Yes' : 'No')}
-                            </select>
-                        </td>
-                        <td>
-                            <input type="date" class="form-control form-control-sm ptcao-valid"
-                                   value="${property.ptcao_valid || ''}">
-                        </td>
-                        <td>
-                            <select class="form-select form-select-sm classification">
-                                ${getOptions(['Luxury', 'Standard', 'Economy'], property.classification || 'Standard')}
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary save-btn">
-                                <i class="fas fa-save"></i>
+                            <button class="btn btn-sm btn-outline-primary edit-btn">
+                                <i class="fas fa-edit"></i>
                             </button>
                         </td>
                     `;
                     reportTableBody.appendChild(row);
                 });
 
-                // Add event listeners for save buttons
-                document.querySelectorAll('.save-btn').forEach(btn => {
-                    btn.addEventListener('click', saveProperty);
+                // Add event listeners for edit buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const propertyId = this.closest('tr').dataset.id;
+                        editPropertyReport(propertyId);
+                    });
                 });
             }
 
-            function renderPropertyReport(data) {
+            function renderTouristReport(data) {
                 propReportTableBody.innerHTML = '';
 
                 if (data.length === 0) {
                     propReportTableBody.innerHTML = `
                         <tr>
-                            <td colspan="9" class="text-center py-4">No property report data found</td>
+                            <td colspan="13" class="text-center py-4">No tourist report data found</td>
                         </tr>
                     `;
                     return;
                 }
 
-                data.forEach(property => {
+                data.forEach(report => {
                     const row = document.createElement('tr');
-                    row.dataset.id = property.ae_id;
+                    row.dataset.id = report.property_id;
 
                     row.innerHTML = `
-                        <td>${property.ae_id}</td>
-                        <td>${property.name}</td>
-                        <td>${property.barangay}</td>
-                        <td>${property.type}</td>
-                        <td>${property.total_rooms}</td>
-                        <td>${property.day_tour_guests}</td>
-                        <td>${property.overnight_guests}</td>
-                        <td>${property.total_guests}</td>
+                        <td>${report.property_id}</td>
+                        <td>${report.name}</td>
+                        <td>${report.barangay}</td>
+                        <td>${report.type}</td>
+                        <td>${report.day_tour_guests}</td>
+                        <td>${report.overnight_guests}</td>
+                        <td>${report.day_tour_guests + report.overnight_guests}</td>
+                        <td>${report.rooms_occupied}</td>
+                        <td>${report.foreign_daytour}</td>
+                        <td>${report.foreign_overnight}</td>
+                        <td>${report.male_tourists}</td>
+                        <td>${report.female_tourists}</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary view-btn">
-                                <i class="fas fa-eye"></i>
+                            <button class="btn btn-sm btn-outline-primary edit-btn">
+                                <i class="fas fa-edit"></i>
                             </button>
                         </td>
                     `;
                     propReportTableBody.appendChild(row);
                 });
+
+                // Add event listeners for edit buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const propertyId = this.closest('tr').dataset.id;
+                        editTouristReport(propertyId);
+                    });
+                });
             }
 
             function updatePagination(data, type) {
-                if (type === 'tourist') {
+                if (type === 'property') {
                     totalPages = data.pages;
                     pageInfo.textContent = `Page ${data.current_page} of ${totalPages}`;
 
@@ -748,40 +990,52 @@
                 }
             }
 
-            function getOptions(options, selected) {
-                return options.map(opt =>
-                    `<option ${opt === selected ? 'selected' : ''}>${opt}</option>`
-                ).join('');
+            function editPropertyReport(propertyId) {
+                fetch(`/api/reports/properties?property_id=${propertyId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data.length > 0) {
+                            const property = data.data[0];
+
+                            document.getElementById('propertySelect').value = property.property_id;
+                            document.getElementById('dotAccredited').value = property.dot_accredited ? 'true' : 'false';
+                            document.getElementById('dotValidUntil').value = property.dot_valid || '';
+                            document.getElementById('ptcaoRegistered').value = property.ptcao_registered ? 'true' : 'false';
+                            document.getElementById('ptcaoValidUntil').value = property.ptcao_valid || '';
+                            document.getElementById('classification').value = property.classification || 'Standard';
+                            document.getElementById('maleEmployees').value = property.male_employees;
+                            document.getElementById('femaleEmployees').value = property.female_employees;
+                            document.getElementById('totalRooms').value = property.total_rooms;
+                            document.getElementById('daytourCapacity').value = property.daytour_capacity;
+                            document.getElementById('overnightCapacity').value = property.overnight_capacity;
+
+                            propertyReportModal.show();
+                        }
+                    })
+                    .catch(error => showError('Error loading property data: ' + error));
             }
 
-            function saveProperty(e) {
-                const row = e.target.closest('tr');
-                const data = {
-                    ae_id: row.dataset.id,
-                    type: row.querySelector('.type-select').value,
-                    dot_accredited: row.querySelector('.dot-accredited').value === 'Yes',
-                    dot_valid: row.querySelector('.dot-valid').value,
-                    ptcao_registered: row.querySelector('.ptcao-registered').value === 'Yes',
-                    ptcao_valid: row.querySelector('.ptcao-valid').value,
-                    classification: row.querySelector('.classification').value
-                };
+            function editTouristReport(propertyId) {
+                fetch(`/mto/api/reports/property-data?property_id=${propertyId}&per_page=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data.length > 0) {
+                            const report = data.data[0];
 
-                fetch('/api/reports/update-property', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showSuccess('Property updated successfully');
-                    } else {
-                        showError(data.message || 'Failed to update property');
-                    }
-                })
-                .catch(error => showError('Error updating property: ' + error));
+                            document.getElementById('touristPropertySelect').value = report.property_id;
+                            document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+                            document.getElementById('dayTourGuests').value = report.day_tour_guests;
+                            document.getElementById('overnightGuests').value = report.overnight_guests;
+                            document.getElementById('roomsOccupied').value = report.rooms_occupied;
+                            document.getElementById('foreignDaytour').value = report.foreign_daytour;
+                            document.getElementById('foreignOvernight').value = report.foreign_overnight;
+                            document.getElementById('maleTourists').value = report.male_tourists;
+                            document.getElementById('femaleTourists').value = report.female_tourists;
+
+                            touristReportModal.show();
+                        }
+                    })
+                    .catch(error => showError('Error loading tourist data: ' + error));
             }
 
             function setupEventListeners() {
@@ -804,7 +1058,7 @@
                         type: document.getElementById('typeFilter').value
                     };
                     currentPage = 1;
-                    loadTouristReport();
+                    loadPropertyReport();
                 });
 
                 document.getElementById('applyPropFilters').addEventListener('click', () => {
@@ -813,35 +1067,35 @@
                         type: document.getElementById('propTypeFilter').value
                     };
                     currentPropPage = 1;
-                    loadPropertyReport();
+                    loadTouristReport();
                 });
 
                 // Pagination
                 document.getElementById('prevPage').addEventListener('click', () => {
                     if (currentPage > 1) {
                         currentPage--;
-                        loadTouristReport(currentPage);
+                        loadPropertyReport(currentPage);
                     }
                 });
 
                 document.getElementById('nextPage').addEventListener('click', () => {
                     if (currentPage < totalPages) {
                         currentPage++;
-                        loadTouristReport(currentPage);
+                        loadPropertyReport(currentPage);
                     }
                 });
 
                 document.getElementById('propPrevPage').addEventListener('click', () => {
                     if (currentPropPage > 1) {
                         currentPropPage--;
-                        loadPropertyReport(currentPropPage);
+                        loadTouristReport(currentPropPage);
                     }
                 });
 
                 document.getElementById('propNextPage').addEventListener('click', () => {
                     if (currentPropPage < propTotalPages) {
                         currentPropPage++;
-                        loadPropertyReport(currentPropPage);
+                        loadTouristReport(currentPropPage);
                     }
                 });
 
@@ -849,21 +1103,21 @@
                 document.getElementById('rowsPerPage').addEventListener('change', (e) => {
                     rowsPerPage = parseInt(e.target.value);
                     currentPage = 1;
-                    loadTouristReport();
+                    loadPropertyReport();
                 });
 
                 document.getElementById('propRowsPerPage').addEventListener('change', (e) => {
                     propRowsPerPage = parseInt(e.target.value);
                     currentPropPage = 1;
-                    loadPropertyReport();
+                    loadTouristReport();
                 });
 
                 // Export
                 exportBtn.addEventListener('click', () => {
                     const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-                    const endpoint = activeTab === 'tourist-report'
-                        ? '/api/reports/export-tourist'
-                        : '/api/reports/export-property';
+                    const endpoint = activeTab === 'property-report'
+                        ? '/api/reports/export-property'
+                        : '/api/reports/export-tourist';
 
                     window.open(endpoint, '_blank');
                 });
@@ -873,7 +1127,22 @@
                     uploadModal.show();
                 });
 
-                submitUpload.addEventListener('click', () => {
+                // Add Report
+                addReportBtn.addEventListener('click', function() {
+                    const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+                    if (activeTab === 'property-report') {
+                        // Property Report tab -> open Property Report modal
+                        document.getElementById('propertyReportForm').reset();
+                        propertyReportModal.show();
+                    } else {
+                        // Tourist Report tab -> open Tourist Report modal
+                        document.getElementById('touristReportForm').reset();
+                        document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+                        touristReportModal.show();
+                    }
+                });
+
+                submitUpload.addEventListener('click', function() {
                     const formData = new FormData(uploadForm);
                     const reportType = document.getElementById('reportType').value;
 
@@ -889,21 +1158,142 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            showSuccess('Report uploaded successfully');
+                            showSuccess(data.message || 'Report uploaded successfully');
                             uploadModal.hide();
                             uploadForm.reset();
 
                             // Reload the appropriate report
-                            if (reportType === 'tourist') {
-                                loadTouristReport();
-                            } else {
+                            if (reportType === 'property') {
                                 loadPropertyReport();
+                            } else {
+                                loadTouristReport();
                             }
                         } else {
                             showError(data.message || 'Failed to upload report');
                         }
                     })
                     .catch(error => showError('Error uploading report: ' + error));
+                });
+
+                // Submit Property Report
+                submitPropertyReport.addEventListener('click', function() {
+                    const submitBtn = document.getElementById('submitPropertyReport');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+
+                    const data = {
+                        property_id: document.getElementById('propertySelect').value,
+                        dot_accredited: document.getElementById('dotAccredited').value === 'true',
+                        dot_valid: document.getElementById('dotValidUntil').value,
+                        ptcao_registered: document.getElementById('ptcaoRegistered').value === 'true',
+                        ptcao_valid: document.getElementById('ptcaoValidUntil').value,
+                        classification: document.getElementById('classification').value,
+                        male_employees: parseInt(document.getElementById('maleEmployees').value) || 0,
+                        female_employees: parseInt(document.getElementById('femaleEmployees').value) || 0,
+                        total_rooms: parseInt(document.getElementById('totalRooms').value) || 0,
+                        daytour_capacity: parseInt(document.getElementById('daytourCapacity').value) || 0,
+                        overnight_capacity: parseInt(document.getElementById('overnightCapacity').value) || 0
+                    };
+
+                    if (!data.property_id) {
+                        showError('Please select a property');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                        return;
+                    }
+
+                    apiFetch('/mto/api/reports/update-property', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    })
+
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess('Property report submitted successfully');
+                            propertyReportModal.hide();
+                            loadPropertyReport();
+                        } else {
+                            showError(data.message || 'Failed to submit property report');
+                        }
+                    })
+                    .catch(error => showError('Error submitting property report: ' + error))
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                    });
+                });
+
+                // Submit Tourist Report
+                submitTouristReport.addEventListener('click', function() {
+                    const submitBtn = document.getElementById('submitTouristReport');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+
+                    const data = {
+                        property_id: document.getElementById('touristPropertySelect').value,
+                        report_date: document.getElementById('reportDate').value,
+                        day_tour_guests: parseInt(document.getElementById('dayTourGuests').value) || 0,
+                        overnight_guests: parseInt(document.getElementById('overnightGuests').value) || 0,
+                        rooms_occupied: parseInt(document.getElementById('roomsOccupied').value) || 0,
+                        foreign_daytour: parseInt(document.getElementById('foreignDaytour').value) || 0,
+                        foreign_overnight: parseInt(document.getElementById('foreignOvernight').value) || 0,
+                        male_tourists: parseInt(document.getElementById('maleTourists').value) || 0,
+                        female_tourists: parseInt(document.getElementById('femaleTourists').value) || 0
+                    };
+
+                    // Validate inputs
+                    if (!data.property_id) {
+                        showError('Please select a property');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                        return;
+                    }
+
+                    if (!data.report_date) {
+                        showError('Please select a report date');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                        return;
+                    }
+                    fetch('/mto/api/reports/add-tourist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                        },
+                        body: JSON.stringify(data)
+                    })
+
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text) });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess('Tourist report submitted successfully');
+                            touristReportModal.hide();
+                            document.getElementById('touristReportForm').reset();
+                            loadTouristReport();
+                        } else {
+                            showError(data.message || 'Failed to submit tourist report');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showError(error.message || 'Error submitting tourist report');
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Report';
+                    });
                 });
             }
 
@@ -919,6 +1309,33 @@
                 bootstrap.Toast.getOrCreateInstance(toast).show();
             }
         });
+
+        function apiFetch(url, options = {}) {
+            // Ensure headers exist
+            options.headers = options.headers || {};
+            // Add JWT token
+            options.headers['Authorization'] = `Bearer ${localStorage.getItem('jwt_token')}`;
+            // Set content type if body exists
+            if (options.body && !options.headers['Content-Type']) {
+                options.headers['Content-Type'] = 'application/json';
+            }
+
+            return fetch(url, options)
+                .then(async response => {
+                    const contentType = response.headers.get('content-type');
+                    const isJson = contentType && contentType.includes('application/json');
+
+                    if (!response.ok) {
+                        // Try to parse error as JSON first
+                        const error = isJson
+                            ? await response.json()
+                            : { message: await response.text() };
+                        throw error;
+                    }
+
+                    return isJson ? response.json() : response.text();
+                });
+        }
     </script>
 </body>
 </html>

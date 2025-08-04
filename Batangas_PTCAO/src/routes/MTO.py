@@ -1,8 +1,9 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+from flask import Blueprint, request, render_template, redirect, url_for, flash, session, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from extension import db
-from model import User, Property, VisitorStatistics, VisitorDataUpload, PropertyStatus
+from model import User, Property, VisitorStatistics, VisitorDataUpload, PropertyStatus, \
+    PropertyReport, TouristReport
 
 mto_bp = Blueprint('mto', __name__, url_prefix='/mto')
 
@@ -16,7 +17,6 @@ def dashboard():
         flash('Please login to access this page', 'error')
         return redirect(url_for('login'))
 
-    # Get current user identity
     current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)
     if not user:
@@ -24,38 +24,98 @@ def dashboard():
         return redirect(url_for('auth.login'))
 
     municipality = user.municipality
-
-    # Calculate date ranges
     today = datetime.now().date()
     last_30_days = today - timedelta(days=30)
 
-    # Get summary statistics filtered by municipality
-    summary_stats = {
-        'total_properties': Property.query.filter_by(
-            status=PropertyStatus.ACTIVE,  # Using enum value
-            municipality=municipality
-        ).count(),
-        'total_visitors': get_visitor_count(last_30_days, today, municipality=municipality),
-        'local_visitors': get_visitor_count(last_30_days, today, 'Local', municipality),
-        'foreign_visitors': get_visitor_count(last_30_days, today, 'Foreign', municipality)
+    # Initialize dashboard stats
+    dashboard_stats = {
+        'active_properties': 0,
+        'local_visitors': 0,
+        'foreign_visitors': 0,
+        'total_visitors': 0
     }
 
-    # Get top destinations
-    top_destinations = get_top_destinations(municipality=municipality, limit=5)
+    try:
+        # 1. Get active properties count from Property
+        dashboard_stats['active_properties'] = Property.query.filter_by(
+            status=PropertyStatus.ACTIVE,
+            municipality=municipality
+        ).count()
 
-    # Get recent uploads
-    recent_uploads = VisitorDataUpload.query.filter_by(
-        municipality=municipality
-    ).order_by(
-        VisitorDataUpload.upload_date.desc()
-    ).limit(5).all()
+        # 2. Get visitor statistics from TouristReport
+        visitor_data = db.session.query(
+            db.func.sum(TouristReport.total_daytour_guests + TouristReport.total_overnight_guests).label('total'),
+            db.func.sum(TouristReport.foreign_daytour_visitors + TouristReport.foreign_overnight_visitors).label('foreign'),
+            db.func.sum(
+                (TouristReport.total_daytour_guests + TouristReport.total_overnight_guests) -
+                (TouristReport.foreign_daytour_visitors + TouristReport.foreign_overnight_visitors)
+            ).label('local')
+        ).join(
+            Property,
+            Property.property_id == TouristReport.property_id
+        ).filter(
+            Property.municipality == municipality,
+            TouristReport.report_date.between(last_30_days, today)
+        ).first()
+
+        if visitor_data:
+            dashboard_stats.update({
+                'total_visitors': visitor_data.total or 0,
+                'local_visitors': visitor_data.local or 0,
+                'foreign_visitors': visitor_data.foreign or 0
+            })
+
+        # 3. Get top destinations with all required fields
+        top_destinations = db.session.query(
+            Property.property_id,
+            Property.property_name,
+            Property.barangay,
+            Property.accommodation_type.label('type'),
+            Property.status,
+            db.func.sum(TouristReport.total_daytour_guests + TouristReport.total_overnight_guests).label('total_visitors'),
+            db.func.sum(
+                (TouristReport.total_daytour_guests + TouristReport.total_overnight_guests) -
+                (TouristReport.foreign_daytour_visitors + TouristReport.foreign_overnight_visitors)
+            ).label('local_visitors'),
+            db.func.sum(TouristReport.foreign_daytour_visitors + TouristReport.foreign_overnight_visitors).label('foreign_visitors'),
+            db.func.sum(TouristReport.total_daytour_guests).label('daytour_visitors'),
+            db.func.sum(TouristReport.total_overnight_guests).label('overnight_visitors')
+        ).join(
+            TouristReport,
+            TouristReport.property_id == Property.property_id
+        ).filter(
+            Property.municipality == municipality,
+            TouristReport.report_date.between(last_30_days, today)
+        ).group_by(
+            Property.property_id,
+            Property.property_name,
+            Property.barangay,
+            Property.accommodation_type,
+            Property.status
+        ).order_by(
+            db.desc('total_visitors')
+        ).limit(5).all()
+
+        # 4. Get recent uploads
+        recent_uploads = VisitorDataUpload.query.filter_by(
+            municipality=municipality
+        ).order_by(
+            VisitorDataUpload.upload_date.desc()
+        ).limit(5).all()
+
+    except Exception as e:
+        current_app.logger.error(f"Error loading dashboard data: {str(e)}")
+        flash('Error loading dashboard data', 'error')
+        top_destinations = []
+        recent_uploads = []
 
     return render_template(
         'MTO_Dashboard.html',
-        summary=summary_stats,
+        dashboard_stats=dashboard_stats,
         top_destinations=top_destinations,
         recent_uploads=recent_uploads,
-        municipality=municipality
+        municipality=municipality,
+        current_date=today.strftime('%B %d, %Y')
     )
 
 def get_visitor_count(start_date, end_date, visitor_type=None, municipality=None):
@@ -183,7 +243,7 @@ def mto_registration():
                 gender=form_data['gender'],
                 birthday=birthday,
                 username=form_data['username'],
-                is_active=True  # Requires admin approval
+                is_active=False  # Requires admin approval
             )
 
             # Set password using bcrypt

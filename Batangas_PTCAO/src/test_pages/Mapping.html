@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Batangas Explorer - Destinations Map</title>
+    <title>Batangas Explorer - Properties</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         :root {
             --primary: #003366;
@@ -105,6 +104,21 @@
             background-color: var(--accent);
             border-radius: 2px;
         }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
         .sidebar {
             background-color: white;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
@@ -134,6 +148,14 @@
             width: 20px;
             text-align: center;
         }
+        .btn-action {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
         footer {
             background-color: var(--primary);
             padding: 1.5rem 0;
@@ -160,237 +182,303 @@
         .main-container {
             margin-top: 70px;
             margin-left: 16.66667%;
-            width: calc(100% - 16.66667%);
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 70px);
-        }
-        .map-container {
-            height: 65vh;
-            position: relative;
-        }
-        #mapView {
-            height: 100%;
-            width: 100%;
-            z-index: 1;
-        }
-        .search-overlay {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            margin: 0 auto;
-            width: 80%;
-        }
-        .search-bar {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            padding: 15px;
-        }
-        .property-drawer {
-            height: 35vh;
-            background-color: white;
-            overflow-y: auto;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
             padding: 20px;
-            position: relative;
-        }
-        .drawer-handle {
-            width: 60px;
-            height: 6px;
-            background-color: #ddd;
-            border-radius: 3px;
-            margin: 0 auto 15px;
-            cursor: pointer;
-        }
-        .property-cards {
-            display: flex;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            gap: 15px;
-            scroll-behavior: smooth;
+            width: calc(100% - 16.66667%);
         }
         .property-card {
-            min-width: 280px;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+            cursor: pointer;
             transition: all 0.3s;
         }
         .property-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+        }
+        .property-img-container {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
         }
         .property-img {
-            height: 150px;
+            height: 100%;
+            width: 100%;
             object-fit: cover;
-            border-radius: 10px 10px 0 0;
+            transition: transform 0.3s;
         }
-        .property-card .card-body {
-            padding: 15px;
+        .property-card:hover .property-img {
+            transform: scale(1.05);
         }
-        .property-title {
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 5px;
-            font-size: 1.1rem;
-        }
-        .property-location {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .property-price {
-            font-weight: 700;
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-        .property-rating {
-            color: #ffc107;
-            font-size: 0.9rem;
-        }
-        .amenity-badge {
-            background-color: rgba(0, 51, 102, 0.1);
-            color: var(--primary);
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            margin-right: 5px;
-            margin-bottom: 5px;
-            display: inline-block;
-        }
-        .filter-panel {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            padding: 15px;
-            position: absolute;
-            top: 75px;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            margin: 0 auto;
-            width: 80%;
-            display: none;
-        }
-        .filter-panel.active {
-            display: block;
-        }
-        .noUi-connect {
-            background-color: var(--primary);
-        }
-        .map-marker {
-            background-color: var(--primary);
-            border: 3px solid white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        }
-        .map-marker:hover, .map-marker.active {
-            background-color: var(--accent);
-            transform: scale(1.2);
-        }
-        .property-detail-view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: white;
-            z-index: 20;
-            padding: 20px;
-            overflow-y: auto;
-            display: none;
-        }
-        .property-detail-view.active {
-            display: block;
-        }
-        .detail-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-        }
-        .detail-gallery {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        .gallery-img {
-            width: 100px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .detail-amenities {
+        .property-features {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin: 15px 0;
+            margin-top: 10px;
         }
-        .detail-section {
+        .feature-badge {
+            background-color: rgba(0, 51, 102, 0.1);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        .feature-badge i {
+            margin-right: 5px;
+            font-size: 0.7rem;
+        }
+        .property-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .property-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .filter-bar {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .detail-section-title {
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .pagination .page-link {
+            color: var(--primary);
+        }
+        .map-container {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
+        }
+        .carousel-control-prev, .carousel-control-next {
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .carousel-control-prev { left: 10px; }
+        .carousel-control-next { right: 10px; }
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            width: 15px;
+            height: 15px;
+        }
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-preview {
+            height: 100px;
+            width: auto;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .property-img-thumbnail {
+            max-height: 150px;
+            object-fit: cover;
+        }
+        .price-range {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Improved Property Details Modal Styles */
+        .property-modal {
+            z-index: 1060;
+        }
+        .property-modal .modal-dialog {
+            max-width: 900px;
+        }
+        .property-modal .modal-content {
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .property-modal .modal-header {
+            background-color: var(--primary);
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem;
+        }
+        .property-modal .modal-title {
+            font-weight: 600;
+        }
+        .property-modal .modal-body {
+            padding: 0;
+        }
+        .property-gallery {
+            height: 400px;
+            background-color: #f8f9fa;
+            position: relative;
+        }
+        .property-gallery img {
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+        }
+        .property-details {
+            padding: 2rem;
+        }
+        .property-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .property-location {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        .property-description {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .section-heading {
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 10px;
+            margin-bottom: 1rem;
             position: relative;
-            padding-bottom: 5px;
+            padding-bottom: 0.5rem;
         }
-        .detail-section-title::after {
+        .section-heading::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 50px;
+            width: 60px;
             height: 3px;
             background-color: var(--accent);
         }
-        .rating-stars {
-            display: inline-block;
-            margin-left: 10px;
+        .amenities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1rem;
         }
-        .drawer-scroll-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            border-radius: 50%;
+        .amenity-badge {
+            background-color: #f0f8ff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--primary);
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            z-index: 5;
         }
-        .drawer-scroll-left {
-            left: 10px;
+        .amenity-badge i {
+            margin-right: 5px;
+            color: var(--accent);
         }
-        .drawer-scroll-right {
-            right: 10px;
+        .room-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #f9f9f9;
+        }
+        .room-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .room-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .room-detail {
+            display: flex;
+            align-items: center;
+        }
+        .room-detail i {
+            margin-right: 8px;
+            color: var(--accent);
+        }
+        .room-price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        .property-map-container {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 2rem;
+            border: 1px solid #dee2e6;
+            overflow: hidden;
+        }
+        .property-sidebar {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            height: 100%;
+        }
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .info-card-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .status-active {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        .contact-info {
+            margin-top: 1rem;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .contact-item i {
+            margin-right: 8px;
+            color: var(--accent);
+            width: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -430,11 +518,11 @@
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
-        <a href="#" class="sidebar-link active">
+        <a href="/mto/destinations" class="sidebar-link">
             <i class="fas fa-map-marked-alt"></i>
             <span>Destinations</span>
         </a>
-        <a href="/property/mto/property" class="sidebar-link">
+        <a href="/property/mto/property" class="sidebar-link active">
             <i class="fas fa-hotel"></i>
             <span>Properties</span>
         </a>
@@ -442,7 +530,7 @@
             <i class="fas fa-users"></i>
             <span>Visitors</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="/mto/analytics" class="sidebar-link">
             <i class="fas fa-chart-line"></i>
             <span>Analytics</span>
         </a>
@@ -454,7 +542,7 @@
             <i class="fas fa-bullhorn"></i>
             <span>Announcements</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="/mto/reports" class="sidebar-link">
             <i class="fas fa-file-alt"></i>
             <span>Reports</span>
         </a>
@@ -466,347 +554,1229 @@
 
     <!-- Main Content -->
     <div class="main-container">
-        <!-- Map View Section -->
-        <div class="map-container">
-            <div id="mapView"></div>
-
-            <!-- Search Overlay -->
-            <div class="search-overlay">
-                <div class="search-bar">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                <span class="input-group-text bg-transparent border-0">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text" class="form-control border-0" placeholder="Search destinations, properties, or locations...">
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <button class="btn btn-outline-primary me-2" id="filterToggle">
-                                <i class="fas fa-filter me-1"></i> Filters
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-search me-1"></i> Search
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="section-title mb-0">Properties Management</h1>
+            <div>
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-download me-1"></i> Export
+                </button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                    <i class="fas fa-plus me-1"></i> Add New Property
+                </button>
             </div>
+        </div>
 
-            <!-- Filter Panel -->
-            <div class="filter-panel" id="filterPanel">
-                <div class="row">
-                    <div class="col-12 mb-3">
-                        <h5>Refine Your Search</h5>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Property Type</label>
-                        <select class="form-select">
-                            <option selected>All Types</option>
-                            <option>Resort</option>
-                            <option>Hotel</option>
-                            <option>Restaurant</option>
-                            <option>Tourist Spot</option>
-                            <option>Activity Center</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Barangay</label>
-                        <select class="form-select">
-                            <option selected>All Barangays</option>
-                            <option>San Andres</option>
-                            <option>Talahib</option>
-                            <option>Poblacion</option>
-                            <option>Lumbangan</option>
-                            <option>Mataas na Kahoy</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Sort By</label>
-                        <select class="form-select">
-                            <option selected>Relevance</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Rating: High to Low</option>
-                            <option>Popularity</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Price Range (₱)</label>
-                        <div id="priceRange"></div>
-                        <div class="d-flex justify-content-between mt-2">
-                            <span id="priceMin">₱500</span>
-                            <span id="priceMax">₱10,000+</span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Amenities</label>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="wifi">
-                                    <label class="form-check-label" for="wifi">Wi-Fi</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="pool">
-                                    <label class="form-check-label" for="pool">Swimming Pool</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="aircon">
-                                    <label class="form-check-label" for="aircon">Air-conditioning</label>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="parking">
-                                    <label class="form-check-label" for="parking">Free Parking</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="restaurant">
-                                    <label class="form-check-label" for="restaurant">Restaurant</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="petfriendly">
-                                    <label class="form-check-label" for="petfriendly">Pet Friendly</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 mt-2 text-end">
-                        <button class="btn btn-outline-secondary me-2" id="clearFilters">Clear All</button>
-                        <button class="btn btn-primary" id="applyFilters">Apply Filters</button>
-                    </div>
+        <!-- Filter Bar -->
+        <div class="filter-bar mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Barangay</label>
+                    <select class="form-select">
+                        <option selected>All Barangays</option>
+                        <option>San Andres</option>
+                        <option>Talahib</option>
+                        <option>Poblacion</option>
+                        <option>Lumbangan</option>
+                        <option>Mataas na Kahoy</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Property Type</label>
+                    <select class="form-select">
+                        <option selected>All Types</option>
+                        <option>Resort</option>
+                        <option>Hotel</option>
+                        <option>Lodge</option>
+                        <option>Restaurant</option>
+                        <option>Tour Operator</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select">
+                        <option selected>All Statuses</option>
+                        <option>Active</option>
+                        <option>Pending</option>
+                        <option>Closed</option>
+                        <option>Under Maintenance</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-1"></i> Apply Filters
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Property Cards Drawer -->
-        <div class="property-drawer">
-            <div class="drawer-handle" id="drawerHandle"></div>
-            <h4 class="mb-3">Featured Properties</h4>
+        <!-- Property Cards -->
+        <div class="row">
+            {% for property in properties %}
+            <div class="col-md-4 mb-4">
+                <div class="card property-card" data-property-id="{{ property.property_id }}">
+                    <div class="property-img-container">
+                        {% if property.images %}
+                        <div id="propertyCarousel{{ property.property_id }}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner" style="height: 100%;">
+                                {% for image in property.images %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %}" style="height: 100%;">
+                                    <img src="{{ image.image_url | default('https://via.placeholder.com/300x200') }}"
+                                         class="d-block w-100 property-img"
+                                         alt="{{ property.property_name }} image {{ loop.index }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if property.images|length > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel{{ property.property_id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel{{ property.property_id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200" class="property-img" alt="No image available">
+                        {% endif %}
+                        <span class="property-status badge bg-{% if property.status.value == 'ACTIVE' %}success{% else %}warning{% endif %}">
+                            {{ property.status.value }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">{{ property.property_name }}</h5>
+                        </div>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ property.barangay }}, {{ property.municipality }}
+                        </p>
+                        <p class="card-text">{{ property.description|truncate(100) }}</p>
 
-            <div class="position-relative">
-                <div class="drawer-scroll-btn drawer-scroll-left">
-                    <i class="fas fa-chevron-left"></i>
-                </div>
+                        <div class="property-features">
+                            {% for amenity in property.amenities %}
+                            <span class="feature-badge">
+                                <i class="fas fa-check"></i> {{ amenity.amenity }}
+                            </span>
+                            {% endfor %}
+                        </div>
 
-                <div class="property-cards" id="propertyCards">
-                    <!-- Property Cards will be loaded here -->
-                </div>
-
-                <div class="drawer-scroll-btn drawer-scroll-right">
-                    <i class="fas fa-chevron-right"></i>
+                        <div class="property-footer">
+                            <div>
+                                {% if property.rooms %}
+                                    {% set min_price = property.rooms|min(attribute='overnight_price') %}
+                                    {% set max_price = property.rooms|max(attribute='overnight_price') %}
+                                    <span class="price-range">
+                                        ₱{{ "%.2f"|format(min_price.overnight_price) }} - ₱{{ "%.2f"|format(max_price.overnight_price) }}
+                                    </span>
+                                    <span class="text-muted">/ night</span>
+                                {% else %}
+                                    <span class="price-range">N/A</span>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-outline-primary me-2 edit-btn"
+                                        data-id="{{ property.property_id }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editPropertyModal">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-btn"
+                                        data-id="{{ property.property_id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
+        </div>
 
-            <!-- Property Detail View -->
-            <div class="property-detail-view" id="propertyDetailView">
-                <div class="detail-close">
-                    <i class="fas fa-times"></i>
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Batangas Explorer. All rights reserved.</p>
                 </div>
-
-                <h3 class="property-title mb-2" id="detailTitle">Acuatico Beach Resort</h3>
-                <p class="property-location mb-3" id="detailLocation">
-                    <i class="fas fa-map-marker-alt me-1"></i>
-                    <span id="detailAddress">San Andres, Batangas</span>
-                </p>
-
-                <div class="detail-gallery" id="detailGallery">
-                    <!-- Gallery images will be loaded here -->
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-3">Terms of Service</a>
+                    <a href="#">Contact Support</a>
                 </div>
+            </div>
+        </div>
+    </footer>
 
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="detail-section">
-                            <h5 class="detail-section-title">About</h5>
-                            <p id="detailDescription">
-                                A luxurious beachfront resort offering panoramic views of Batangas Bay. The resort features Mediterranean-inspired architecture, with well-appointed rooms and modern amenities.
-                            </p>
-                        </div>
+    <!-- Property Details Modal -->
+    <div class="modal fade property-modal" id="propertyDetailsModal" tabindex="-1" aria-labelledby="propertyDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="propertyDetailsModalLabel">Property Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-8">
+                            <!-- Gallery -->
+                            <div id="propertyGallery" class="carousel slide property-gallery" data-bs-ride="carousel">
+                                <div class="carousel-inner h-100" id="propertyGalleryInner">
+                                    <!-- Images will be loaded here -->
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#propertyGallery" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#propertyGallery" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
 
-                        <div class="detail-section">
-                            <h5 class="detail-section-title">Amenities</h5>
-                            <div class="detail-amenities" id="detailAmenities">
-                                <!-- Amenities will be loaded here -->
+                            <!-- Details -->
+                            <div class="property-details">
+                                <h1 class="property-title" id="propertyName"></h1>
+                                <p class="property-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span id="propertyLocation"></span>
+                                </p>
+                                <p class="property-description" id="propertyDescription"></p>
+
+                                <h3 class="section-heading">Amenities</h3>
+                                <div class="amenities-list" id="propertyAmenities">
+                                    <!-- Amenities will be loaded here -->
+                                </div>
+
+                                <h3 class="section-heading">Rooms</h3>
+                                <div id="propertyRooms">
+                                    <!-- Rooms will be loaded here -->
+                                </div>
+
+                                <h3 class="section-heading">Location</h3>
+                                <div class="property-map-container">
+                                    <div id="propertyMap"></div>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="detail-section">
-                            <h5 class="detail-section-title">
-                                Reviews
-                                <div class="rating-stars">
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                    <span class="ms-1">4.5</span>
+                        <div class="col-md-4 property-sidebar">
+                            <div class="info-card">
+                                <h4 class="info-card-title">Pricing Information</h4>
+                                <div id="propertyPricing">
+                                    <!-- Pricing will be loaded here -->
                                 </div>
-                            </h5>
-                            <div id="detailReviews">
-                                <!-- Reviews will be loaded here -->
+                            </div>
+
+                            <div class="info-card">
+                                <h4 class="info-card-title">Status</h4>
+                                <span class="status-badge" id="propertyStatus"></span>
+                            </div>
+
+                            <div class="info-card">
+                                <h4 class="info-card-title">Contact Information</h4>
+                                <div class="contact-info">
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone"></i>
+                                        <span id="propertyPhone">Not available</span>
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope"></i>
+                                        <span id="propertyEmail">Not available</span>
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fas fa-globe"></i>
+                                        <span id="propertyWebsite">Not available</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <h4 class="info-card-title">Additional Information</h4>
+                                <div class="contact-item">
+                                    <i class="fas fa-home"></i>
+                                    <span id="propertyType"></span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-users"></i>
+                                    <span id="propertyCapacity"></span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span id="propertyDateAdded"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="mb-3">Contact Information</h5>
-                                <p><i class="fas fa-phone me-2"></i> <span id="detailPhone">+63 921 123 4567</span></p>
-                                <p><i class="fas fa-envelope me-2"></i> <span id="detailEmail">info@example.com</span></p>
-                                <p><i class="fas fa-globe me-2"></i> <a href="#" id="detailWebsite">www.example.com</a></p>
-
-                                <hr>
-
-                                <h5 class="mb-3">Rates</h5>
-                                <p class="mb-2"><strong>Overnight:</strong> <span id="detailOvernightRate">₱8,500 - ₱15,000</span></p>
-                                <p><strong>Day Tour:</strong> <span id="detailDayTourRate">₱3,500 - ₱5,000</span></p>
-
-                                <div class="d-grid gap-2 mt-4">
-                                    <button class="btn btn-primary">Get Directions</button>
-                                    <button class="btn btn-outline-primary">Add to Itinerary</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
-    <script>
-            document.addEventListener('DOMContentLoaded', function() {
-            // Initialize map
-            const map = L.map('mapView').setView([13.7565, 121.0583], 11);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    <!-- Add Property Modal -->
+    <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPropertyModalLabel">Add New Property</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="propertyForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Property Name*</label>
+                                    <input type="text" class="form-control" name="property_name" required>
+                                </div>
 
-            // Sample properties data
-            const properties = [/* ... (keep the existing properties array) ... */];
+                                <div class="mb-3">
+                                    <label class="form-label">Barangay*</label>
+                                    <input type="text" class="form-control" name="barangay" required>
+                                </div>
 
-            // Initialize markers array and property cards container
-            const markers = [];
-            const propertyCardsContainer = document.getElementById('propertyCards');
-            let currentProperties = properties;
+                                <div class="mb-3">
+                                    <label class="form-label">Municipality*</label>
+                                    <input type="text" class="form-control" name="municipality" value="{{ municipality }}" readonly>
+                                </div>
 
-            // Function to generate star rating HTML
-            function generateStarRating(rating) {
-            const fullStars = Math.floor(rating);
-            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-            let starsHtml = '';
+                                <div class="mb-3">
+                                    <label class="form-label">Accommodation Type*</label>
+                                    <select class="form-select" name="accommodation_type" required>
+                                        <option value="">Select Type</option>
+                                        <option>Resort</option>
+                                        <option>Hotel</option>
+                                        <option>Lodge</option>
+                                    </select>
+                                </div>
 
-            for (let i = 0; i < fullStars; i++) starsHtml += '<i class="fas fa-star text-warning"></i>';
-            if (halfStar) starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
-            for (let i = 0; i < (5 - fullStars - halfStar); i++) starsHtml += '<i class="far fa-star text-warning"></i>';
-            return starsHtml;
-        }
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                                </div>
 
-            // Function to create property cards
-            function createPropertyCard(property) {
-            const card = document.createElement('div');
-            card.className = 'property-card';
-            card.dataset.id = property.id;
-            card.innerHTML = `
-                    <img src="${property.image}" class="property-img card-img-top" alt="${property.name}">
-                    <div class="card-body">
-                        <h5 class="property-title">${property.name}</h5>
-                        <p class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${property.location}</p>
-                        <p class="property-price">₱${property.price.toLocaleString()}</p>
-                        <div class="property-rating">${generateStarRating(property.rating)}</div>
-                        <div class="amenities mt-2">
-                            ${property.amenities.map(a => `<span class="amenity-badge">${a}</span>`).join('')}
+                                <div class="mb-3">
+                                    <label class="form-label">Property Images*</label>
+                                    <input type="file" class="form-control" name="property_images" multiple accept="image/*" required>
+                                    <small class="text-muted">Upload multiple images (max 5, JPEG/PNG/GIF)</small>
+                                    <div id="imagePreview" class="image-preview-container mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Property Location*</label>
+                                    <div id="map" class="map-container"></div>
+                                    <small class="text-muted">Click on the map to set coordinates</small>
+                                    <input type="hidden" name="longitude" required>
+                                    <input type="hidden" name="latitude" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Amenities</label>
+                                    <div id="amenitiesContainer">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" name="amenities[]">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="addAmenityField()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Rooms</label>
+                                    <div id="roomsContainer">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="mb-2">
+                                                    <input type="text" class="form-control" name="rooms[0][room_type]" placeholder="Room Type">
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col">
+                                                        <input type="number" class="form-control" name="rooms[0][day_price]" placeholder="Day Price" min="0" step="0.01">
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="number" class="form-control" name="rooms[0][overnight_price]" placeholder="Overnight Price" min="0" step="0.01">
+                                                    </div>
+                                                </div>
+                                                <input type="number" class="form-control mb-2" name="rooms[0][capacity]" placeholder="Capacity" min="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addRoomField()">
+                                        <i class="fas fa-plus me-1"></i>Add Room
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                `;
-            card.addEventListener('click', () => showPropertyDetail(property));
-            return card;
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Property</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Property Modal -->
+    <div class="modal fade" id="editPropertyModal" tabindex="-1" aria-labelledby="editPropertyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPropertyModalLabel">Edit Property</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editPropertyForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Property Name*</label>
+                                    <input type="text" class="form-control" name="property_name" id="editPropertyName" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Barangay*</label>
+                                    <input type="text" class="form-control" name="barangay" id="editBarangay" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Municipality*</label>
+                                    <input type="text" class="form-control" name="municipality" id="editMunicipality" readonly>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Accommodation Type*</label>
+                                    <select class="form-select" name="accommodation_type" id="editAccommodationType" required>
+                                        <option value="">Select Type</option>
+                                        <option>Resort</option>
+                                        <option>Hotel</option>
+                                        <option>Lodge</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Status*</label>
+                                    <select class="form-select" name="status" id="editStatus" required>
+                                        <option value="ACTIVE">Active</option>
+                                        <option value="MAINTENANCE">Maintenance</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="editDescription" rows="3"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Images</label>
+                                    <input type="file" class="form-control" name="property_images" multiple accept="image/*">
+                                    <small class="text-muted">Add more images (JPEG/PNG/GIF)</small>
+                                    <div id="editImagePreview" class="image-preview-container mt-2"></div>
+                                    <div id="currentImages" class="mt-3">
+                                        <h6>Current Images</h6>
+                                        <div class="d-flex flex-wrap gap-2" id="existingImagesContainer"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Property Location*</label>
+                                    <div id="editMap" class="map-container"></div>
+                                    <small class="text-muted">Click on the map to update coordinates</small>
+                                    <input type="hidden" name="longitude" id="editLongitude" required>
+                                    <input type="hidden" name="latitude" id="editLatitude" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Amenities</label>
+                                    <div id="editAmenitiesContainer"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditAmenityField()">
+                                        <i class="fas fa-plus me-1"></i>Add Amenity
+                                    </button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Rooms</label>
+                                    <div id="editRoomsContainer"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditRoomField()">
+                                        <i class="fas fa-plus me-1"></i>Add Room
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        // Property Management Functions
+        let map, marker;
+        let editMap, editMarker;
+        let currentPropertyId;
+        let propertyMap; // For the property details modal map
+
+        // Show Property Details Modal
+        function showPropertyDetails(propertyId) {
+            currentPropertyId = propertyId;
+
+            // Show loading state
+            const modal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
+            modal.show();
+
+            document.getElementById('propertyGalleryInner').innerHTML = `
+                <div class="carousel-item active h-100">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            fetch(`/api/properties/${propertyId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch property details');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.property) {
+                    const prop = data.property;
+
+                    // Set basic info
+                    document.getElementById('propertyName').textContent = prop.property_name;
+                    document.getElementById('propertyLocation').textContent = `${prop.barangay}, ${prop.municipality}`;
+                    document.getElementById('propertyDescription').textContent = prop.description || 'No description available';
+                    document.getElementById('propertyType').textContent = prop.accommodation_type || 'Not specified';
+
+                    // Set contact info if available
+                    if (prop.contact_info) {
+                        document.getElementById('propertyPhone').textContent = prop.contact_info.phone || 'Not available';
+                        document.getElementById('propertyEmail').textContent = prop.contact_info.email || 'Not available';
+                        document.getElementById('propertyWebsite').textContent = prop.contact_info.website || 'Not available';
+                    }
+
+                    // Set status
+                    const statusBadge = document.getElementById('propertyStatus');
+                    statusBadge.textContent = prop.status;
+                    statusBadge.className = prop.status === 'ACTIVE' ? 'status-badge status-active' : 'status-badge status-inactive';
+
+                    // Set date added if available
+                    if (prop.date_added) {
+                        document.getElementById('propertyDateAdded').textContent = new Date(prop.date_added).toLocaleDateString();
+                    }
+
+                    // Load images
+                    const galleryInner = document.getElementById('propertyGalleryInner');
+                    galleryInner.innerHTML = '';
+
+                    if (prop.images && prop.images.length > 0) {
+                        prop.images.forEach((image, index) => {
+                            const carouselItem = document.createElement('div');
+                            carouselItem.className = `carousel-item h-100 ${index === 0 ? 'active' : ''}`;
+                            carouselItem.innerHTML = `
+                                <img src="${image.image_url || 'https://via.placeholder.com/800x400?text=No+Image'}"
+                                     class="d-block w-100 h-100"
+                                     alt="Property image ${index + 1}"
+                                     style="object-fit: cover;">
+                            `;
+                            galleryInner.appendChild(carouselItem);
+                        });
+                    } else {
+                        galleryInner.innerHTML = `
+                            <div class="carousel-item active h-100">
+                                <img src="https://via.placeholder.com/800x400?text=No+Image+Available"
+                                     class="d-block w-100 h-100"
+                                     alt="No image available"
+                                     style="object-fit: cover;">
+                            </div>
+                        `;
+                    }
+
+                    // Load amenities
+                    const amenitiesContainer = document.getElementById('propertyAmenities');
+                    amenitiesContainer.innerHTML = '';
+
+                    if (prop.amenities && prop.amenities.length > 0) {
+                        prop.amenities.forEach(amenity => {
+                            const amenityBadge = document.createElement('span');
+                            amenityBadge.className = 'amenity-badge';
+                            amenityBadge.innerHTML = `<i class="fas fa-check"></i> ${amenity.amenity}`;
+                            amenitiesContainer.appendChild(amenityBadge);
+                        });
+                    } else {
+                        amenitiesContainer.innerHTML = '<p class="text-muted">No amenities listed</p>';
+                    }
+
+                    // Load pricing info
+                    const pricingContainer = document.getElementById('propertyPricing');
+
+                    if (prop.rooms && prop.rooms.length > 0) {
+                        const minPrice = Math.min(...prop.rooms.map(r => parseFloat(r.overnight_price || 0)));
+                        const maxPrice = Math.max(...prop.rooms.map(r => parseFloat(r.overnight_price || 0)));
+                        const totalCapacity = prop.rooms.reduce((sum, room) => sum + (parseInt(room.capacity) || 0), 0);
+
+                        document.getElementById('propertyCapacity').textContent = `${totalCapacity} person(s)`;
+
+                        pricingContainer.innerHTML = `
+                            <div class="room-detail">
+                                <i class="fas fa-tags"></i>
+                                <span><strong>From:</strong> ₱${minPrice.toFixed(2)}</span>
+                            </div>
+                            <div class="room-detail">
+                                <i class="fas fa-tags"></i>
+                                <span><strong>To:</strong> ₱${maxPrice.toFixed(2)}</span>
+                            </div>
+                            <div class="room-detail">
+                                <i class="fas fa-door-open"></i>
+                                <span><strong>Rooms Available:</strong> ${prop.rooms.length}</span>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('propertyCapacity').textContent = 'Not specified';
+                        pricingContainer.innerHTML = '<p class="text-muted">No pricing information available</p>';
+                    }
+
+                    // Load room details
+                    const roomsContainer = document.getElementById('propertyRooms');
+                    roomsContainer.innerHTML = '';
+
+                    if (prop.rooms && prop.rooms.length > 0) {
+                        prop.rooms.forEach(room => {
+                            const roomCard = document.createElement('div');
+                            roomCard.className = 'room-card';
+                            roomCard.innerHTML = `
+                                <h5 class="room-title">${room.room_type || 'Unnamed Room'}</h5>
+                                <div class="room-details">
+                                    <div class="room-detail">
+                                        <i class="fas fa-sun"></i>
+                                        <span><strong>Day Price:</strong> <span class="room-price">₱${parseFloat(room.day_price || 0).toFixed(2)}</span></span>
+                                    </div>
+                                    <div class="room-detail">
+                                        <i class="fas fa-moon"></i>
+                                        <span><strong>Overnight Price:</strong> <span class="room-price">₱${parseFloat(room.overnight_price || 0).toFixed(2)}</span></span>
+                                    </div>
+                                    <div class="room-detail">
+                                        <i class="fas fa-user-friends"></i>
+                                        <span><strong>Capacity:</strong> ${room.capacity || 0} person(s)</span>
+                                    </div>
+                                </div>
+                                ${room.amenities && room.amenities.length > 0 ? `
+                                <div class="room-amenities">
+                                    <p class="mb-2"><strong>Room Amenities:</strong></p>
+                                    <div class="amenities-list">
+                                        ${room.amenities.map(a => `
+                                            <span class="amenity-badge">
+                                                <i class="fas fa-check"></i> ${a.amenity}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                ` : ''}
+                            `;
+                            roomsContainer.appendChild(roomCard);
+                        });
+                    } else {
+                        roomsContainer.innerHTML = '<p class="text-muted">No room information available</p>';
+                    }
+
+                    // Initialize map
+                    initPropertyMap(prop);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading property details:', error);
+                alert('Failed to load property details. Please try again.');
+            });
         }
 
-            // Function to update map markers
-            function updateMarkers(properties) {
-            markers.forEach(marker => map.removeLayer(marker));
-            markers.length = 0;
+        // Initialize Property Map
+        function initPropertyMap(property) {
+            // Clear previous map if exists
+            if (propertyMap) {
+                propertyMap.remove();
+            }
 
-            properties.forEach(property => {
-            const marker = L.marker(property.coordinates)
-            .addTo(map)
-            .bindPopup(`<b>${property.name}</b><br>${property.type}`)
-            .on('click', () => showPropertyDetail(property));
-            markers.push(marker);
-        });
+            const mapContainer = document.getElementById('propertyMap');
+            mapContainer.innerHTML = '';
 
-            if (properties.length > 0) {
-            const bounds = L.latLngBounds(properties.map(p => p.coordinates));
-            map.fitBounds(bounds);
+            if (property.coordinates && property.coordinates.length > 0) {
+                const coord = property.coordinates[0];
+                const lat = parseFloat(coord.latitude);
+                const lng = parseFloat(coord.longitude);
+
+                propertyMap = L.map('propertyMap').setView([lat, lng], 15);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(propertyMap);
+
+                L.marker([lat, lng]).addTo(propertyMap)
+                    .bindPopup(`<b>${property.property_name}</b><br>${property.barangay}, ${property.municipality}`);
+
+                // Ensure map is properly sized after modal is shown
+                setTimeout(() => {
+                    propertyMap.invalidateSize();
+                }, 0);
+            } else {
+                mapContainer.innerHTML = '<div class="alert alert-info p-2">No location data available for this property</div>';
+            }
         }
+
+        // Initialize Add Property Map
+        function initMap() {
+            const defaultLat = 13.7565;
+            const defaultLng = 121.0583;
+
+            map = L.map('map', {
+                center: [defaultLat, defaultLng],
+                zoom: 15,
+                zoomControl: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            marker = L.marker([defaultLat, defaultLng]).addTo(map);
+
+            document.querySelector('input[name="latitude"]').value = defaultLat;
+            document.querySelector('input[name="longitude"]').value = defaultLng;
+
+            map.on('click', function(e) {
+                if (marker) marker.remove();
+                marker = L.marker(e.latlng).addTo(map);
+                document.querySelector('input[name="latitude"]').value = e.latlng.lat;
+                document.querySelector('input[name="longitude"]').value = e.latlng.lng;
+            });
+
+            setTimeout(() => map.invalidateSize(), 0);
         }
 
-            // Function to show property details
-            function showPropertyDetail(property) {
-            document.getElementById('detailTitle').textContent = property.name;
-            document.getElementById('detailLocation').textContent = property.location;
-            document.getElementById('detailDescription').textContent = property.description;
-            document.getElementById('detailAmenities').innerHTML =
-            property.amenities.map(a => `<span class="amenity-badge">${a}</span>`).join('');
-            document.getElementById('propertyDetailView').classList.add('active');
+        // Initialize Edit Property Map
+        function initEditMap() {
+            const lat = parseFloat(document.getElementById('editLatitude').value) || 13.7565;
+            const lng = parseFloat(document.getElementById('editLongitude').value) || 121.0583;
+
+            editMap = L.map('editMap', {
+                center: [lat, lng],
+                zoom: 15,
+                zoomControl: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(editMap);
+
+            L.control.zoom({ position: 'topright' }).addTo(editMap);
+
+            if(lat && lng) {
+                editMarker = L.marker([lat, lng]).addTo(editMap);
+            }
+
+            editMap.on('click', function(e) {
+                if(editMarker) editMarker.remove();
+                editMarker = L.marker(e.latlng).addTo(editMap);
+                document.getElementById('editLatitude').value = e.latlng.lat;
+                document.getElementById('editLongitude').value = e.latlng.lng;
+            });
+
+            setTimeout(() => editMap.invalidateSize(), 0);
         }
 
-            // Initialize price slider
-            const priceSlider = document.getElementById('priceRange');
-            noUiSlider.create(priceSlider, {
-            start: [500, Math.max(...properties.map(p => p.price))],
-            connect: true,
-            range: {min: 500, max: Math.max(...properties.map(p => p.price))},
-            step: 500
+        // Image preview for Add Property
+        document.querySelector('input[name="property_images"]').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('imagePreview');
+            previewContainer.innerHTML = '';
+
+            if (this.files.length > 5) {
+                alert('Maximum 5 images allowed');
+                this.value = '';
+                return;
+            }
+
+            Array.from(this.files).forEach(file => {
+                if (!file.type.match('image.*')) {
+                    alert('Only image files are allowed');
+                    this.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('image-preview');
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
         });
 
-            // Filter functionality
-            document.getElementById('applyFilters').addEventListener('click', function() {
-            const typeFilter = document.querySelector('select').value;
-            const [minPrice, maxPrice] = priceSlider.noUiSlider.get();
-            const amenities = Array.from(document.querySelectorAll('.form-check-input:checked'))
-            .map(cb => cb.nextElementSibling.textContent);
+        // Image preview for Edit Property
+        document.querySelector('#editPropertyForm input[name="property_images"]').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('editImagePreview');
+            previewContainer.innerHTML = '';
 
-            currentProperties = properties.filter(property => {
-            return (typeFilter === 'All Types' || property.type === typeFilter) &&
-            property.price >= minPrice && property.price <= maxPrice &&
-            amenities.every(a => property.amenities.includes(a));
+            Array.from(this.files).forEach(file => {
+                if (!file.type.match('image.*')) {
+                    alert('Only image files are allowed');
+                    this.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('image-preview');
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
         });
 
-            propertyCardsContainer.innerHTML = '';
-            currentProperties.forEach(p => propertyCardsContainer.appendChild(createPropertyCard(p)));
-            updateMarkers(currentProperties);
+        // Open Edit Modal
+        function openEditModal(propertyId) {
+            currentPropertyId = propertyId;
+            fetch(`/api/properties/${propertyId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.property) {
+                    const prop = data.property;
+                    // Populate basic fields
+                    document.getElementById('editPropertyName').value = prop.property_name;
+                    document.getElementById('editBarangay').value = prop.barangay;
+                    document.getElementById('editMunicipality').value = prop.municipality;
+                    document.getElementById('editAccommodationType').value = prop.accommodation_type;
+                    document.getElementById('editStatus').value = prop.status;
+                    document.getElementById('editDescription').value = prop.description;
+
+                    // Handle coordinates
+                    if(prop.coordinates.length > 0) {
+                        const coord = prop.coordinates[0];
+                        document.getElementById('editLatitude').value = coord.latitude;
+                        document.getElementById('editLongitude').value = coord.longitude;
+                    }
+
+                    // Populate amenities
+                    const amenitiesContainer = document.getElementById('editAmenitiesContainer');
+                    amenitiesContainer.innerHTML = '';
+                    prop.amenities.forEach((amenity, index) => {
+                        addEditAmenityField(amenity.amenity);
+                    });
+
+                    // Populate rooms
+                    const roomsContainer = document.getElementById('editRoomsContainer');
+                    roomsContainer.innerHTML = '';
+                    prop.rooms.forEach((room, index) => {
+                        addEditRoomField(room, index);
+                    });
+
+                    // Show current images
+                    const existingImagesContainer = document.getElementById('existingImagesContainer');
+                    existingImagesContainer.innerHTML = '';
+                    if(prop.images && prop.images.length > 0) {
+                        prop.images.forEach(image => {
+                            const imgDiv = document.createElement('div');
+                            imgDiv.className = 'position-relative';
+                            imgDiv.innerHTML = `
+                                <img src="${image.image_url || 'https://via.placeholder.com/150'}"
+                                     class="img-thumbnail property-img-thumbnail">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                        onclick="deletePropertyImage(${image.id}, this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            existingImagesContainer.appendChild(imgDiv);
+                        });
+                    } else {
+                        document.getElementById('currentImages').style.display = 'none';
+                    }
+
+                    // Initialize map
+                    initEditMap();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Delete property image
+        function deletePropertyImage(imageId, button) {
+            if(confirm('Are you sure you want to delete this image?')) {
+                fetch(`/api/properties/${currentPropertyId}/images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                    }
+                })
+                .then(response => {
+                    if(response.ok) {
+                        button.closest('.position-relative').remove();
+                        if(document.querySelectorAll('#existingImagesContainer .position-relative').length === 0) {
+                            document.getElementById('currentImages').style.display = 'none';
+                        }
+                    } else {
+                        alert('Error deleting image');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+
+        // Dynamic fields for Add Property
+        function addAmenityField() {
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" name="amenities[]">
+                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            document.getElementById('amenitiesContainer').appendChild(div);
+        }
+
+        function addRoomField() {
+            const roomCount = document.querySelectorAll('#roomsContainer .card').length;
+            const div = document.createElement('div');
+            div.className = 'card mb-3';
+            div.innerHTML = `
+                <div class="card-body">
+                    <div class="mb-2">
+                        <input type="text" class="form-control" name="rooms[${roomCount}][room_type]" placeholder="Room Type">
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <input type="number" class="form-control" name="rooms[${roomCount}][day_price]" placeholder="Day Price" min="0" step="0.01">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="rooms[${roomCount}][overnight_price]" placeholder="Overnight Price" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <input type="number" class="form-control mb-2" name="rooms[${roomCount}][capacity]" placeholder="Capacity" min="1">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-trash"></i> Remove Room
+                    </button>
+                </div>
+            `;
+            document.getElementById('roomsContainer').appendChild(div);
+        }
+
+        // Dynamic fields for Edit Property
+        function addEditAmenityField(value = '') {
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" name="amenities[]" value="${value}">
+                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            document.getElementById('editAmenitiesContainer').appendChild(div);
+        }
+
+        function addEditRoomField(room = {}, index = 0) {
+            const div = document.createElement('div');
+            div.className = 'card mb-3';
+            div.innerHTML = `
+                <div class="card-body">
+                    <div class="mb-2">
+                        <input type="text" class="form-control"
+                               name="rooms[${index}][room_type]"
+                               placeholder="Room Type"
+                               value="${room.room_type || ''}">
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <input type="number" class="form-control"
+                                   name="rooms[${index}][day_price]"
+                                   placeholder="Day Price"
+                                   value="${room.day_price || ''}" min="0" step="0.01">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control"
+                                   name="rooms[${index}][overnight_price]"
+                                   placeholder="Overnight Price"
+                                   value="${room.overnight_price || ''}" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <input type="number" class="form-control mb-2"
+                           name="rooms[${index}][capacity]"
+                           placeholder="Capacity"
+                           value="${room.capacity || ''}" min="1">
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-trash"></i> Remove Room
+                    </button>
+                </div>
+            `;
+            document.getElementById('editRoomsContainer').appendChild(div);
+        }
+
+        // Add Property Form Submission
+        document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            try {
+                const response = await fetch('/api/properties', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Error saving property');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
         });
 
-            // Initial setup
-            properties.forEach(p => propertyCardsContainer.appendChild(createPropertyCard(p)));
-            updateMarkers(properties);
+        // Edit Property Form Submission
+        document.getElementById('editPropertyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
 
-            // Event listeners
-            document.querySelector('.detail-close').addEventListener('click', () => {
-            document.getElementById('propertyDetailView').classList.remove('active');
+            try {
+                // First handle file uploads if any
+                const files = formData.getAll('property_images');
+                if (files.length > 0) {
+                    const uploadFormData = new FormData();
+                    files.forEach(file => {
+                        if (file.size > 0) {  // Skip empty files
+                            uploadFormData.append('property_images', file);
+                        }
+                    });
+
+                    if (uploadFormData.has('property_images')) {
+                        const uploadResponse = await fetch(`/api/properties/${currentPropertyId}/images`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                            },
+                            body: uploadFormData
+                        });
+
+                        if (!uploadResponse.ok) {
+                            throw new Error('Failed to upload images');
+                        }
+                    }
+                }
+
+                // Then update property data
+                const data = {
+                    property_name: formData.get('property_name'),
+                    barangay: formData.get('barangay'),
+                    municipality: formData.get('municipality'),
+                    accommodation_type: formData.get('accommodation_type'),
+                    status: formData.get('status'),
+                    description: formData.get('description'),
+                    coordinates: [{
+                        longitude: formData.get('longitude'),
+                        latitude: formData.get('latitude')
+                    }],
+                    amenities: formData.getAll('amenities[]').filter(a => a),
+                    rooms: []
+                };
+
+                // Process rooms
+                const roomIndices = new Set([...formData.keys()]
+                    .map(k => k.match(/rooms\[(\d+)\]/)?.[1])
+                    .filter(Boolean));
+
+                roomIndices.forEach(index => {
+                    data.rooms.push({
+                        room_type: formData.get(`rooms[${index}][room_type]`),
+                        day_price: formData.get(`rooms[${index}][day_price]`),
+                        overnight_price: formData.get(`rooms[${index}][overnight_price]`),
+                        capacity: formData.get(`rooms[${index}][capacity]`)
+                    });
+                });
+
+                const updateResponse = await fetch(`/api/properties/${currentPropertyId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (updateResponse.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await updateResponse.json();
+                    alert(error.message || 'Error updating property');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
         });
 
-            document.getElementById('filterToggle').addEventListener('click', () => {
-            document.getElementById('filterPanel').classList.toggle('active');
+        // Delete Property
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this property?')) {
+                    const propertyId = this.getAttribute('data-id');
+                    fetch(`/api/properties/${propertyId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Error deleting property');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred');
+                    });
+                }
+            });
         });
 
-            document.querySelectorAll('.drawer-scroll-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-            const scrollAmount = btn.classList.contains('drawer-scroll-left') ? -300 : 300;
-            propertyCardsContainer.scrollBy({left: scrollAmount, behavior: 'smooth'});
+        // Edit Button Click Handler
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const propertyId = this.getAttribute('data-id');
+                openEditModal(propertyId);
+            });
         });
+
+        // Initialize maps when modals are shown
+        document.getElementById('addPropertyModal').addEventListener('shown.bs.modal', function() {
+            initMap();
+            document.getElementById('map').style.height = '300px';
         });
+
+        document.getElementById('editPropertyModal').addEventListener('shown.bs.modal', function() {
+            initEditMap();
+            document.getElementById('editMap').style.height = '300px';
+        });
+
+        // Initialize property card click handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Click handler for property cards
+            document.querySelectorAll('.property-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Check if the click was on the edit or delete buttons or their children
+                    const isEditButton = e.target.closest('.edit-btn');
+                    const isDeleteButton = e.target.closest('.delete-btn');
+
+                    if (!isEditButton && !isDeleteButton) {
+                        const propertyId = this.getAttribute('data-property-id');
+                        showPropertyDetails(propertyId);
+                    }
+                });
+            });
+
+            // Click handler for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const propertyId = this.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this property?')) {
+                        fetch(`/api/properties/${propertyId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.reload();
+                            } else {
+                                alert('Error deleting property');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred');
+                        });
+                    }
+                });
+            });
+
+            // Click handler for edit buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const propertyId = this.getAttribute('data-id');
+                    openEditModal(propertyId);
+                });
+            });
+
+            // Initialize property details modal map when shown
+            document.getElementById('propertyDetailsModal').addEventListener('shown.bs.modal', function() {
+                if (propertyMap) {
+                    setTimeout(() => {
+                        propertyMap.invalidateSize();
+                    }, 0);
+                }
+            });
         });
     </script>
 </body>

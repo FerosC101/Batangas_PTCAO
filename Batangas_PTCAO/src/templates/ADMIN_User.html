@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batangas Explorer - Admin Users</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .top-header {
+            background-color: var(--primary);
+            padding: 0.8rem;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .sidebar {
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            height: calc(100vh - 70px);
+            position: sticky;
+            top: 70px;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+            border-left-color: var(--accent);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .tab-btn {
+            background-color: var(--light-bg);
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background-color: #fff;
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .status-active {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-suspended {
+            background-color: #f8d7da;
+            color: #842029;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-archived {
+            background-color: #e2e3e5;
+            color: #41464b;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="logo-text text-decoration-none text-white">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    Batangas Explorer - Admin Panel
+                </a>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>
+                            Admin User
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Admin Sidebar -->
+            <div class="col-lg-2 px-0">
+                <div class="sidebar">
+                    <a href="/admin/dashboard" class="sidebar-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/admin/users" class="sidebar-link active">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="/admin/reports" class="sidebar-link">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Reports</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 py-4">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <h1 class="section-title mb-0">Admin Users Management</h1>
+                    <div>
+                        <button id="exportUsers" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-download me-1"></i> Export Users
+                        </button>
+                        <button id="addUserBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
+                            <i class="fas fa-plus me-1"></i> Add New User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="mb-4">
+                    <button class="tab-btn active" data-tab="users">Users</button>
+                    <button class="tab-btn" data-tab="manage-users">Manage Users</button>
+                    <button class="tab-btn" data-tab="archive">Archive</button>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="users" class="tab-content active">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="activeUsersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>Name</th>
+                                            <th>Municipality</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in active_users %}
+                                        <tr data-user-id="{{ user.user_id }}">
+                                            <td>{{ user.user_id }}</td>
+                                            <td>{{ user.full_name }}</td>
+                                            <td>{{ user.municipality }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td><span class="status-active">Active</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary edit-user" data-user-id="{{ user.user_id }}">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger suspend-user" data-user-id="{{ user.user_id }}">
+                                                    <i class="fas fa-user-slash"></i> Suspend
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Users Tab -->
+                <div id="manage-users" class="tab-content">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="suspendedUsersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>Name</th>
+                                            <th>Municipality</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in suspended_users %}
+                                        <tr data-user-id="{{ user.user_id }}">
+                                            <td>{{ user.user_id }}</td>
+                                            <td>{{ user.full_name }}</td>
+                                            <td>{{ user.municipality }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td><span class="status-suspended">Suspended</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-success activate-user" data-user-id="{{ user.user_id }}">
+                                                    <i class="fas fa-user-check"></i> Activate
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger archive-user" data-user-id="{{ user.user_id }}">
+                                                    <i class="fas fa-archive"></i> Archive
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive Tab -->
+                <div id="archive" class="tab-content">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="archivedUsersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>Name</th>
+                                            <th>Municipality</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in archived_users %}
+                                        <tr data-user-id="{{ user.user_id }}">
+                                            <td>{{ user.user_id }}</td>
+                                            <td>{{ user.full_name }}</td>
+                                            <td>{{ user.municipality }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td><span class="status-archived">Archived</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-success restore-user" data-user-id="{{ user.user_id }}">
+                                                    <i class="fas fa-undo"></i> Restore
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger delete-user" data-user-id="{{ user.user_id }}">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Add/Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId" name="userId">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="municipality" class="form-label">Municipality</label>
+                                <input type="text" class="form-control" id="municipality" name="municipality" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="idNumber" class="form-label">ID Number</label>
+                                <input type="text" class="form-control" id="idNumber" name="idNumber" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="designation" class="form-label">Designation</label>
+                                <input type="text" class="form-control" id="designation" name="designation" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="birthday" class="form-label">Birthday</label>
+                                <input type="date" class="form-control" id="birthday" name="birthday" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="isActive" class="form-label">Status</label>
+                                <select class="form-select" id="isActive" name="isActive" required>
+                                    <option value="true">Active</option>
+                                    <option value="false">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveUserBtn">Save User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // Status update handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Suspend user
+            document.querySelectorAll('.suspend-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Suspend this user?')) {
+                        await updateStatus(this.dataset.userId, 'suspend');
+                    }
+                });
+            });
+
+            // Activate user
+            document.querySelectorAll('.activate-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Activate this user?')) {
+                        await updateStatus(this.dataset.userId, 'activate');
+                    }
+                });
+            });
+
+            // Archive user
+            document.querySelectorAll('.archive-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Archive this user?')) {
+                        await updateStatus(this.dataset.userId, 'archive');
+                    }
+                });
+            });
+
+            // Restore user
+            document.querySelectorAll('.restore-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Restore this user?')) {
+                        await updateStatus(this.dataset.userId, 'restore');
+                    }
+                });
+            });
+
+            // Delete user
+            document.querySelectorAll('.delete-user').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (confirm('Permanently delete this user?')) {
+                        try {
+                            const response = await fetch(`/admin/users/${this.dataset.userId}`, {
+                                method: 'DELETE'
+                            });
+                            if (response.ok) location.reload();
+                            else alert('Failed to delete user');
+                        } catch (error) {
+                            alert('Error: ' + error.message);
+                        }
+                    }
+                });
+            });
+        });
+
+        async function updateStatus(userId, action) {
+            try {
+                const response = await fetch(`/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action })
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to update status');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Modal and form handling
+        const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+        const userForm = document.getElementById('userForm');
+
+        // Add new user
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            userForm.reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('userModalLabel').textContent = 'Add New User';
+            document.getElementById('password').required = true;
+            document.getElementById('confirmPassword').required = true;
+        });
+
+        // Edit user
+        document.querySelectorAll('.edit-user').forEach(button => {
+            button.addEventListener('click', async () => {
+                const userId = button.getAttribute('data-user-id');
+                try {
+                    const response = await fetch(`/admin/users/${userId}`);
+                    if (!response.ok) throw new Error('Failed to fetch user data');
+
+                    const user = await response.json();
+
+                    // Populate form
+                    document.getElementById('userId').value = user.user_id;
+                    document.getElementById('fullName').value = user.full_name;
+                    document.getElementById('municipality').value = user.municipality;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('username').value = user.username;
+                    document.getElementById('isActive').value = user.is_active ? 'true' : 'false';
+
+                    document.getElementById('userModalLabel').textContent = 'Edit User';
+                    document.getElementById('password').required = false;
+                    document.getElementById('confirmPassword').required = false;
+
+                    userModal.show();
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+        });
+
+        // Save user
+        document.getElementById('saveUserBtn').addEventListener('click', async () => {
+            const formData = new FormData(userForm);
+            const userId = formData.get('userId');
+            const url = userId ? `/admin/users/${userId}` : '/admin/users';
+            const method = userId ? 'PUT' : 'POST';
+
+            // Validate password if creating new user
+            if (!userId) {
+                const password = formData.get('password');
+                const confirmPassword = formData.get('confirmPassword');
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save user');
+                }
+
+                alert('User saved successfully');
+                userModal.hide();
+                window.location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // Suspend user
+        document.querySelectorAll('.suspend-user').forEach(button => {
+            button.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to suspend this user?')) {
+                    const userId = button.getAttribute('data-user-id');
+                    try {
+                        const response = await fetch(`/admin/users/${userId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `isActive=false`
+                        });
+
+                        if (!response.ok) throw new Error('Failed to suspend user');
+
+                        alert('User suspended successfully');
+                        window.location.reload();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                }
+            });
+        });
+
+        // Activate user
+        document.querySelectorAll('.activate-user').forEach(button => {
+            button.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to activate this user?')) {
+                    const userId = button.getAttribute('data-user-id');
+                    try {
+                        const response = await fetch(`/admin/users/${userId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `isActive=true`
+                        });
+
+                        if (!response.ok) throw new Error('Failed to activate user');
+
+                        alert('User activated successfully');
+                        window.location.reload();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                }
+            });
+        });
+
+        // Archive user
+        document.querySelectorAll('.archive-user').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (confirm('Archive this user?')) {
+                    const res = await fetch(`/admin/users/${btn.dataset.userId}/archive`, {
+                        method: 'PUT'
+                    });
+                    if (res.ok) location.reload();
+                }
+            });
+        });
+
+        document.querySelectorAll('.restore-user').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (confirm('Restore this user?')) {
+                    const res = await fetch(`/admin/users/${btn.dataset.userId}/restore`, {
+                        method: 'PUT'
+                    });
+                    if (res.ok) location.reload();
+                }
+            });
+        });
+
+        // Delete user
+        document.querySelectorAll('.delete-user').forEach(button => {
+            button.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to permanently delete this user?')) {
+                    const userId = button.getAttribute('data-user-id');
+                    try {
+                        const response = await fetch(`/admin/users/${userId}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (!response.ok) throw new Error('Failed to delete user');
+
+                        alert('User deleted successfully');
+                        window.location.reload();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                }
+            });
+        });
+
+        // Export users
+        document.getElementById('exportUsers').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/admin/users/export');
+                if (!response.ok) throw new Error('Failed to export users');
+
+                const users = await response.json();
+
+                // Convert to CSV
+                let csv = 'User ID,Full Name,Municipality,Username,Email,Status,Created At\n';
+                users.forEach(user => {
+                    csv += `${user.user_id},"${user.full_name}","${user.municipality}","${user.username}","${user.email}","${user.status}","${user.created_at}"\n`;
+                });
+
+                // Download CSV
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', `users_export_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
