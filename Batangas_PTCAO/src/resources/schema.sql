@@ -203,3 +203,47 @@ CREATE TABLE announcements (
 );
 
 CREATE INDEX idx_announcements_municipality ON announcements(municipality);
+
+-- Enum Type for DestinationType
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'destinationtype') THEN
+        CREATE TYPE "DestinationType" AS ENUM ('Mountain', 'Heritage', 'Beach', 'Island', 'Other');
+    END IF;
+END
+$$;
+
+-- Table for Destinations
+CREATE TABLE IF NOT EXISTS destinations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    location_name VARCHAR(100) NOT NULL,
+    longitude FLOAT NOT NULL,
+    latitude FLOAT NOT NULL,
+    barangay VARCHAR(100) NOT NULL,
+    municipality VARCHAR(100) NOT NULL,
+    destination_type "DestinationType" NOT NULL,
+    image_path VARCHAR(255),
+    is_featured BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trigger function for automatic update of 'updated_at'
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for the 'destinations' table
+DROP TRIGGER IF EXISTS set_timestamp ON destinations;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON destinations
+FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
+

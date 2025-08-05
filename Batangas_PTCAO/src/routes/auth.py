@@ -26,7 +26,7 @@ def init_auth_routes(app):
     # Add this to auth.py after the existing routes
     @app.route('/tourist')
     def tourist_home():
-        return render_template('Home.html')
+        return render_template('TOURIST_Home.html')
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():

@@ -7,4 +7,4 @@ def init_tourist_routes(app):
 
 @tourist_bp.route('/home')
 def tourist_home():
-    return render_template('Home.html')
+    return render_template('TOURIST_Home.html')

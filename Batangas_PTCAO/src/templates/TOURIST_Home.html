@@ -94,7 +94,7 @@
         /* Hero Section */
         .hero-section {
             background-image: linear-gradient(rgba(0,51,102,0.1), rgba(0,51,102,0.7)),
-                              url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80");
+                              url("/static/uploads/events/batangas_hero.jpg");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -280,7 +280,7 @@
             border: 1px solid rgba(255, 126, 0, 0.2);
         }
 
-        /* Map Section - Now Full Width */
+        /* Map Section */
         .map-section {
             background: white;
             padding: 4rem 0;
@@ -613,6 +613,29 @@
             font-size: 0.9rem;
         }
 
+        /* Loading and Error States */
+        .loading-spinner {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 0.25em solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #dc3545;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero-title {
@@ -725,134 +748,19 @@
         <!-- Featured Destinations -->
         <section class="section-container" id="destinations">
             <h2 class="section-title">Featured Destinations</h2>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="card destination-card">
-                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Taal Volcano" class="card-img-top">
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Talisay, Batangas</span>
-                            </div>
-                            <h5 class="card-title">Taal Volcano</h5>
-                            <p class="card-text">One of the most iconic landmarks in the Philippines and the world's smallest active volcano situated on an island within Taal Lake.</p>
-                            <div class="mb-3">
-                                <span class="badge-custom">Hiking</span>
-                                <span class="badge-custom">Nature</span>
-                                <span class="badge-custom">Adventure</span>
-                            </div>
-                            <a href="#" class="btn btn-outline-primary">Explore</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="card destination-card">
-                        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Anilao Beach" class="card-img-top">
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Mabini, Batangas</span>
-                            </div>
-                            <h5 class="card-title">Anilao Beach</h5>
-                            <p class="card-text">World-renowned diving capital of the Philippines, famous for its incredible marine biodiversity and pristine coral reefs.</p>
-                            <div class="mb-3">
-                                <span class="badge-custom">Diving</span>
-                                <span class="badge-custom">Beach</span>
-                                <span class="badge-custom">Snorkeling</span>
-                            </div>
-                            <a href="#" class="btn btn-outline-primary">Explore</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="card destination-card">
-                        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Fortune Island" class="card-img-top">
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Nasugbu, Batangas</span>
-                            </div>
-                            <h5 class="card-title">Fortune Island</h5>
-                            <p class="card-text">Instagram-famous island featuring stunning Grecian-inspired ruins and crystal-clear turquoise waters perfect for swimming.</p>
-                            <div class="mb-3">
-                                <span class="badge-custom">Island</span>
-                                <span class="badge-custom">Swimming</span>
-                                <span class="badge-custom">Photography</span>
-                            </div>
-                            <a href="#" class="btn btn-outline-primary">Explore</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="card destination-card">
-                        <img src="https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Basilica of St. Martin of Tours" class="card-img-top">
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Taal, Batangas</span>
-                            </div>
-                            <h5 class="card-title">Basilica of St. Martin of Tours</h5>
-                            <p class="card-text">The largest Catholic church in Asia, showcasing beautiful Spanish colonial architecture and rich religious heritage.</p>
-                            <div class="mb-3">
-                                <span class="badge-custom">Heritage</span>
-                                <span class="badge-custom">Architecture</span>
-                                <span class="badge-custom">Culture</span>
-                            </div>
-                            <a href="#" class="btn btn-outline-primary">Explore</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="card destination-card">
-                        <img src="https://images.unsplash.com/photo-1439066615861-d1af74d74000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Mount Batulao" class="card-img-top">
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Nasugbu, Batangas</span>
-                            </div>
-                            <h5 class="card-title">Mount Batulao</h5>
-                            <p class="card-text">Popular hiking destination known for its rolling hills, scenic ridges, and breathtaking views of Batangas landscape.</p>
-                            <div class="mb-3">
-                                <span class="badge-custom">Hiking</span>
-                                <span class="badge-custom">Adventure</span>
-                                <span class="badge-custom">Scenic Views</span>
-                            </div>
-                            <a href="#" class="btn btn-outline-primary">Explore</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="card destination-card">
-                        <img src="https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Calatagan Beach" class="card-img-top">
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Calatagan, Batangas</span>
-                            </div>
-                            <h5 class="card-title">Calatagan Beach</h5>
-                            <p class="card-text">Pristine white sand beach perfect for relaxation, water sports, and stunning sunset views along the South China Sea.</p>
-                            <div class="mb-3">
-                                <span class="badge-custom">Beach</span>
-                                <span class="badge-custom">Relaxation</span>
-                                <span class="badge-custom">Sunset</span>
-                            </div>
-                            <a href="#" class="btn btn-outline-primary">Explore</a>
-                        </div>
-                    </div>
+            <div class="row g-4" id="destinations-container">
+                <div class="col-12 text-center py-5">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-2">Loading destinations...</p>
                 </div>
             </div>
             <div class="text-center mt-4">
-                <a href="#" class="btn-explore">View All Destinations</a>
+                <a href="/destinations" class="btn-explore">View All Destinations</a>
             </div>
         </section>
     </div>
 
-    <!-- Interactive Map Section - Full Width -->
+    <!-- Interactive Map Section -->
     <section class="map-section" id="map">
         <div class="map-container">
             <h2 class="section-title text-center">Explore Batangas Map</h2>
@@ -904,64 +812,13 @@
 
     <!-- Content Container -->
     <div class="container my-5">
-        <!-- Upcoming Events Section - Full Width -->
+        <!-- Upcoming Events Section -->
         <section class="section-container" id="events">
             <h2 class="section-title">Upcoming Events</h2>
-            <div class="row g-4">
-                <div class="col-lg-6 col-md-6">
-                    <div class="event-card">
-                        <div class="event-date">
-                            <div class="day">15</div>
-                            <div class="month">Aug</div>
-                        </div>
-                        <div class="event-content">
-                            <h5>Batangas Lomi Festival</h5>
-                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Batangas City Plaza</p>
-                            <p>Celebrate Batangas' famous lomi noodle soup with cooking competitions, food stalls, and cultural performances.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6">
-                    <div class="event-card">
-                        <div class="event-date">
-                            <div class="day">22</div>
-                            <div class="month">Aug</div>
-                        </div>
-                        <div class="event-content">
-                            <h5>Anilao Marine Life Photography Contest</h5>
-                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Anilao, Mabini</p>
-                            <p>Underwater photographers compete to capture the stunning marine biodiversity of Anilao's coral reefs.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6">
-                    <div class="event-card">
-                        <div class="event-date">
-                            <div class="day">05</div>
-                            <div class="month">Sep</div>
-                        </div>
-                        <div class="event-content">
-                            <h5>Taal Heritage Walking Tour</h5>
-                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Taal Town Proper</p>
-                            <p>Guided historical tours through Taal's well-preserved Spanish colonial architecture and ancestral houses.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6">
-                    <div class="event-card">
-                        <div class="event-date">
-                            <div class="day">18</div>
-                            <div class="month">Sep</div>
-                        </div>
-                        <div class="event-content">
-                            <h5>Mount Batulao Night Hike</h5>
-                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Nasugbu, Batangas</p>
-                            <p>Experience Mount Batulao under the stars with guided night hikes and sunrise viewing from the summit.</p>
-                        </div>
-                    </div>
+            <div class="row g-4" id="events-container">
+                <div class="col-12 text-center py-5">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-2">Loading events...</p>
                 </div>
             </div>
         </section>
@@ -971,37 +828,11 @@
             <div class="col-lg-6">
                 <!-- Latest Updates Section -->
                 <section class="section-container">
-                    <div class="announcements-section">
+                    <div class="announcements-section" id="announcements-container">
                         <h2 class="section-title">Latest Updates</h2>
-
-                        <div class="announcement-card">
-                            <h6>Summer Safety Guidelines for Beach Activities</h6>
-                            <p class="announcement-date">August 3, 2025</p>
-                            <p class="mb-0">Updated safety guidelines for all beach and water activities. Life guards stationed at major beaches during peak season.</p>
-                        </div>
-
-                        <div class="announcement-card">
-                            <h6>Special Weekend Rates for Local Tourists</h6>
-                            <p class="announcement-date">August 1, 2025</p>
-                            <p class="mb-0">Participating resorts and hotels offering up to 30% discounts for Filipino tourists during August and September.</p>
-                        </div>
-
-                        <div class="announcement-card">
-                            <h6>Taal Volcano Alert Level Remains at 1</h6>
-                            <p class="announcement-date">July 28, 2025</p>
-                            <p class="mb-0">PHIVOLCS confirms Taal Volcano remains at Alert Level 1. Tourism activities around Taal Lake continue as normal.</p>
-                        </div>
-
-                        <div class="announcement-card">
-                            <h6>New Public Transportation Routes to Anilao</h6>
-                            <p class="announcement-date">July 25, 2025</p>
-                            <p class="mb-0">Additional bus routes from Manila to Anilao now available every hour starting 6 AM. Travel time reduced to 2.5 hours.</p>
-                        </div>
-
-                        <div class="announcement-card">
-                            <h6>Fortune Island Day Trip Capacity Increase</h6>
-                            <p class="announcement-date">July 22, 2025</p>
-                            <p class="mb-0">Fortune Island day trips can now accommodate up to 200 visitors per day with additional boat services and improved facilities.</p>
+                        <div class="text-center py-5">
+                            <div class="loading-spinner"></div>
+                            <p class="mt-2">Loading announcements...</p>
                         </div>
                     </div>
                 </section>
@@ -1012,7 +843,7 @@
                 <section class="section-container about-section-sidebar" id="about">
                     <h2 class="section-title">About Batangas</h2>
                     <div class="about-image-container mb-3">
-                        <img src="https://images.unsplash.com/photo-1502780402662-acc01917271e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="About Batangas" class="about-image-small">
+                        <img src="/static/uploads/events/about_batangas.jpg" alt="About Batangas" class="about-image-small" onerror="this.src='/static/images/default-about.jpg'">
                     </div>
                     <p class="lead">Batangas is a first-class province in the Philippines located in the CALABARZON region of Luzon. Known as the "Industrial Port City of CALABARZON," it serves as a major gateway to the southern islands.</p>
                     <p>The province is famous for its stunning beaches, world-class diving spots, rich coffee heritage, and well-preserved Spanish colonial architecture. From the iconic Taal Volcano to the pristine waters of Anilao, Batangas offers diverse attractions for all types of travelers.</p>
@@ -1045,9 +876,10 @@
                             </div>
                         </div>
                     </div>
-                    <a href="#" class="btn-explore mt-3">Learn More</a>
+                    <a href="/about" class="btn-explore mt-3">Learn More</a>
                 </section>
             </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -1074,13 +906,8 @@
                 </div>
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h5 class="footer-title">Popular Destinations</h5>
-                    <ul class="footer-links">
-                        <li><a href="#">Taal Volcano Island</a></li>
-                        <li><a href="#">Anilao Diving Sites</a></li>
-                        <li><a href="#">Fortune Island</a></li>
-                        <li><a href="#">Mount Batulao</a></li>
-                        <li><a href="#">Calatagan Beaches</a></li>
-                        <li><a href="#">Taal Heritage Town</a></li>
+                    <ul class="footer-links" id="popular-destinations">
+                        <li><a href="#">Loading...</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
@@ -1114,6 +941,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Navbar scroll effect
@@ -1159,83 +987,271 @@
             observer.observe(section);
         });
 
-        // Counter animation for stats
-        function animateCounters() {
-            const counters = document.querySelectorAll('.stat-number');
-            counters.forEach(counter => {
-                const target = parseFloat(counter.textContent.replace(/[^\d.]/g, ''));
-                const suffix = counter.textContent.replace(/[\d.]/g, '');
-                let current = 0;
-                const increment = target / 50;
+        // Load featured destinations
+        async function loadFeaturedDestinations() {
+            const container = document.getElementById('destinations-container');
+            const popularContainer = document.getElementById('popular-destinations');
 
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        counter.textContent = target + suffix;
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = Math.floor(current) + suffix;
-                    }
-                }, 40);
-            });
-        }
+            // Show loading state
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-2">Loading destinations...</p>
+                </div>
+            `;
 
-        // Trigger counter animation when stats section is visible
-        const statsObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    statsObserver.unobserve(entry.target);
+            try {
+                const response = await fetch('/tourist/api/home/featured-destinations');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-4">
+                            <p>No featured destinations found.</p>
+                        </div>
+                    `;
+                    return;
                 }
-            });
-        }, { threshold: 0.5 });
 
-        const statsContainer = document.querySelector('.stats-container');
-        if (statsContainer) {
-            statsObserver.observe(statsContainer);
-        }
+                // Render destinations
+                container.innerHTML = data.map(dest => `
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card destination-card">
+                            <img src="${dest.image_path || '/static/images/default-destination.jpg'}"
+                                 alt="${dest.name}"
+                                 class="card-img-top">
+                            <div class="card-body">
+                                <div class="location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${dest.municipality}, Batangas</span>
+                                </div>
+                                <h5 class="card-title">${dest.name}</h5>
+                                <p class="card-text">${dest.description}</p>
+                                <div class="mb-3">
+                                    <span class="badge-custom">${dest.type}</span>
+                                    ${dest.barangay ? `<span class="badge-custom">${dest.barangay}</span>` : ''}
+                                </div>
+                                <a href="/destination/${dest.id}" class="btn btn-outline-primary">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
 
-        // Add parallax effect to hero section
-        window.addEventListener('scroll', function() {
-            const scrolled = window.pageYOffset;
-            const heroSection = document.querySelector('.hero-section');
-            if (heroSection && scrolled < heroSection.offsetHeight) {
-                heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+                // Update popular destinations in footer
+                if (popularContainer) {
+                    popularContainer.innerHTML = data.slice(0, 6).map(dest => `
+                        <li><a href="/destination/${dest.id}">${dest.name}</a></li>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading destinations:', error);
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Failed to load destinations. Please try again later.
+                        </div>
+                    </div>
+                `;
             }
-        });
+        }
 
-        // Enhanced hover effects for interactive elements
-        document.querySelectorAll('.destination-card, .event-card, .announcement-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                if (this.classList.contains('destination-card')) {
-                    this.style.transform = 'translateY(-8px)';
-                } else if (this.classList.contains('event-card')) {
-                    this.style.transform = 'translateX(5px)';
-                } else {
-                    this.style.transform = 'translateX(3px)';
+        // Load upcoming events
+        async function loadUpcomingEvents() {
+            const container = document.getElementById('events-container');
+
+            // Show loading state
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-2">Loading events...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/tourist/api/home/upcoming-events');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-4">
+                            <p>No upcoming events found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.map(event => `
+                    <div class="col-lg-6 col-md-6">
+                        <div class="event-card">
+                            <div class="event-date">
+                                <div class="day">${event.day}</div>
+                                <div class="month">${event.month}</div>
+                            </div>
+                            <div class="event-content">
+                                <h5>${event.title}</h5>
+                                <p class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${event.location}, ${event.municipality}
+                                </p>
+                                <p>${event.description}</p>
+                                <a href="/event/${event.id}" class="btn btn-sm btn-outline-primary">More Info</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading events:', error);
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Failed to load events. Please try again later.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load recent announcements
+        async function loadRecentAnnouncements() {
+            const container = document.getElementById('announcements-container');
+
+            // Show loading state
+            container.innerHTML = `
+                <h2 class="section-title">Latest Updates</h2>
+                <div class="text-center py-5">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-2">Loading announcements...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/tourist/api/home/recent-announcements');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <h2 class="section-title">Latest Updates</h2>
+                        <div class="text-center py-4">
+                            <p>No announcements found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <h2 class="section-title">Latest Updates</h2>
+                    ${data.map(announcement => `
+                        <div class="announcement-card">
+                            <h6>${announcement.title}</h6>
+                            <p class="announcement-date">${announcement.date} • ${announcement.municipality}</p>
+                            <p class="mb-0">${announcement.content}</p>
+                        </div>
+                    `).join('')}
+                `;
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+                container.innerHTML = `
+                    <h2 class="section-title">Latest Updates</h2>
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Failed to load announcements. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedDestinations();
+            loadUpcomingEvents();
+            loadRecentAnnouncements();
+
+            // Counter animation for stats
+            function animateCounters() {
+                const counters = document.querySelectorAll('.stat-number, .stat-number-compact');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.textContent.replace(/\D/g, ''));
+                    const suffix = counter.textContent.replace(/[0-9]/g, '');
+                    let current = 0;
+                    const increment = target / 50;
+
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            counter.textContent = target + suffix;
+                            clearInterval(timer);
+                        } else {
+                            counter.textContent = Math.floor(current) + suffix;
+                        }
+                    }, 40);
+                });
+            }
+
+            // Trigger counter animation when stats section is visible
+            const statsObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const statsContainer = document.querySelector('.stats-container-compact');
+            if (statsContainer) {
+                statsObserver.observe(statsContainer);
+            }
+
+            // Add parallax effect to hero section
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const heroSection = document.querySelector('.hero-section');
+                if (heroSection && scrolled < heroSection.offsetHeight) {
+                    heroSection.style.backgroundPositionY = `${scrolled * 0.5}px`;
                 }
             });
 
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = '';
-            });
-        });
+            // Enhanced hover effects for interactive elements
+            document.querySelectorAll('.destination-card, .event-card, .announcement-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    if (this.classList.contains('destination-card')) {
+                        this.style.transform = 'translateY(-8px)';
+                    } else if (this.classList.contains('event-card')) {
+                        this.style.transform = 'translateX(5px)';
+                    } else {
+                        this.style.transform = 'translateX(3px)';
+                    }
+                });
 
-        // Button hover effects
-        document.querySelectorAll('.btn, .btn-explore, .btn-outline-primary').forEach(button => {
-            button.addEventListener('mouseenter', function () {
-                this.style.transform = 'translateY(-2px)';
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
             });
 
-            button.addEventListener('mouseleave', function () {
-                this.style.transform = 'translateY(0)';
-            });
-        });
+            // Button hover effects
+            document.querySelectorAll('.btn, .btn-explore, .btn-outline-primary').forEach(button => {
+                button.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-2px)';
+                });
 
-        // Image lazy loading effect
-        document.querySelectorAll('img').forEach(img => {
-            img.addEventListener('load', function() {
-                this.style.opacity = '1';
+                button.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Image lazy loading effect
+            document.querySelectorAll('img').forEach(img => {
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+                if (img.complete) {
+                    img.style.opacity = '1';
+                }
             });
         });
     </script>

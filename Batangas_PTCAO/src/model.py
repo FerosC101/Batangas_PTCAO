@@ -320,3 +320,32 @@ class Announcement(db.Model):
 
     def __repr__(self):
         return f'<Announcement {self.title}>'
+
+
+class DestinationType(str, Enum):
+    MOUNTAIN = 'Mountain'
+    HERITAGE = 'Heritage'
+    BEACH = 'Beach'
+    ISLAND = 'Island'
+    OTHER = 'Other'
+
+
+class Destination(db.Model):
+    __tablename__ = 'destinations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    location_name = db.Column(db.String(100), nullable=False)  # Display name for location
+    longitude = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    barangay = db.Column(db.String(100), nullable=False)
+    municipality = db.Column(db.String(100), nullable=False)
+    destination_type = db.Column(SqlEnum(DestinationType), nullable=False)
+    image_path = db.Column(db.String(255))  # Optional image path
+    is_featured = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Destination {self.name}>'
