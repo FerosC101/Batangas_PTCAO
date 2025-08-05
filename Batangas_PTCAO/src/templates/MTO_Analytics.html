@@ -348,7 +348,7 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
                 <a href="#" class="logo-text text-decoration-none text-white">
-                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="80" height="40">
+                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Logo" class="me-2" width="60" height="55">
                     Batangas Explorer - MTO Panel
                 </a>
                 <div class="d-flex align-items-center">
@@ -450,9 +450,16 @@
                     <div class="filter-label">Property Type</div>
                     <select class="form-select" id="propertyTypeFilter">
                         <option value="all">All Types</option>
-                        <option value="resort">Resort</option>
-                        <option value="hotel">Hotel</option>
-                        <option value="lodge">Lodge</option>
+                        <option value="resort">RES (Resort)</option>
+                        <option value="hotel">HTL (Hotel)</option>
+                        <option value="lodge">CON (Condotel)</option>
+                        <option value="lodge">SER (Service Residence)</option>
+                        <option value="lodge">APA (Apartelle)</option>
+                        <option value="lodge">MOT (Motel)</option>
+                        <option value="lodge">PEN (Pension House)</option>
+                        <option value="lodge">HSS (Home Stay Site)</option>
+                        <option value="lodge">TIN (Tourist Inn)</option>
+                        <option value="lodge">MH (Motorist Hotel)</option>
                     </select>
                 </div>
                 <div class="col-md-3">
