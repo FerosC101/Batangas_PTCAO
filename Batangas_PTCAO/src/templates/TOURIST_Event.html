@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Batangas Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, #003366 0%, #004080 100%);
+            --gradient-accent: linear-gradient(135deg, #ff7e00 0%, #ff9500 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            padding: 0.7rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-1px);
+        }
+
+        .navbar-brand img {
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: var(--transition);
+            border-radius: 5px;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 70%;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .page-hero {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8rem 0 4rem;
+            margin-top: 76px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .page-hero .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 76px;
+            z-index: 100;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 126, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        /* Event Cards */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            height: fit-content;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .event-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .event-card:hover .event-image {
+            transform: scale(1.05);
+        }
+
+        .event-content {
+            padding: 1.8rem;
+        }
+
+        .event-date-badge {
+            display: inline-flex;
+            align-items: center;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(255, 126, 0, 0.3);
+        }
+
+        .event-date-badge i {
+            margin-right: 0.5rem;
+        }
+
+        .event-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .event-location {
+            display: flex;
+            align-items: center;
+            color: #666;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .event-location i {
+            color: var(--accent);
+            margin-right: 0.5rem;
+            width: 16px;
+        }
+
+        .event-description {
+            color: #666;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .event-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .event-tag {
+            background: rgba(255, 126, 0, 0.1);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 126, 0, 0.2);
+        }
+
+        .event-details {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .event-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .event-price.free {
+            color: #28a745;
+        }
+
+        .btn-event {
+            background: var(--gradient-accent);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 126, 0, 0.4);
+            color: white;
+        }
+
+        /* Featured Event */
+        .featured-event {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(255, 126, 0, 0.3);
+        }
+
+        .featured-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 400px;
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-info {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .featured-date {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .featured-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .featured-description {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .featured-location {
+            display: flex;
+            align-items: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .featured-location i {
+            color: var(--accent);
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+
+        .no-results h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Calendar View Toggle */
+        .view-toggle {
+            display: flex;
+            background: white;
+            border-radius: 25px;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+        }
+
+        .view-btn {
+            background: none;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .featured-content {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-info {
+                padding: 2rem;
+            }
+
+            .featured-title {
+                font-size: 1.8rem;
+            }
+
+            .filter-section {
+                position: static;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-hero {
+                padding: 6rem 0 3rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .event-content {
+                padding: 1.5rem;
+            }
+
+            .featured-info {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="Home.html">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='5' fill='%23ff7e00'/%3E%3Ctext x='20' y='26' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' fill='white'%3EB%3C/text%3E%3C/svg%3E" alt="Batangas Explorer Logo" width="40" height="40">
+                Batangas Explorer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="Home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#destinations">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#map">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container text-center">
+            <h1 class="hero-title">Events & Festivals</h1>
+            <p class="hero-subtitle">Discover exciting events, cultural festivals, and amazing experiences happening across Batangas Province throughout the year.</p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-filter="all">All Events</button>
+                        <button class="filter-btn" data-filter="festival">Festivals</button>
+                        <button class="filter-btn" data-filter="cultural">Cultural</button>
+                        <button class="filter-btn" data-filter="sports">Sports</button>
+                        <button class="filter-btn" data-filter="food">Food & Culinary</button>
+                        <button class="filter-btn" data-filter="nature">Nature & Adventure</button>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="d-flex gap-2">
+                        <div class="search-box flex-grow-1">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search events..." id="searchInput">
+                        </div>
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
+                            <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Featured Event -->
+        <div class="featured-event" data-category="festival">
+            <div class="featured-badge">
+                <i class="fas fa-star me-1"></i>Featured Event
+            </div>
+            <div class="featured-content">
+                <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Batangas Lomi Festival" class="featured-image">
+                <div class="featured-info">
+                    <div class="featured-date">
+                        <i class="fas fa-calendar-alt me-2"></i>August 15-17, 2025
+                    </div>
+                    <h2 class="featured-title">Batangas Lomi Festival</h2>
+                    <p class="featured-description">Join the biggest culinary celebration in Batangas! Experience the authentic taste of Batangas Lomi with cooking competitions, food stalls, cultural performances, and traditional games. This three-day festival showcases the rich culinary heritage of the province.</p>
+                    <div class="featured-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Batangas City Plaza & Surrounding Streets
+                    </div>
+                    <a href="#" class="btn-event">
+                        <i class="fas fa-ticket-alt me-2"></i>Get Details
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Grid -->
+        <div class="events-grid" id="eventsGrid">
+            <!-- Cultural Events -->
+            <div class="event-card" data-category="cultural">
+                <img src="https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Taal Heritage Walking Tour" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>September 5, 2025
+                    </div>
+                    <h3 class="event-title">Taal Heritage Walking Tour</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Taal Town Proper, Batangas
+                    </div>
+                    <p class="event-description">Explore the well-preserved Spanish colonial architecture and ancestral houses of Taal. Professional guides will share stories about the town's rich history and cultural significance.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Heritage</span>
+                        <span class="event-tag">Architecture</span>
+                        <span class="event-tag">History</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱350</div>
+                        <a href="#" class="btn-event">Join Tour</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nature & Adventure Events -->
+            <div class="event-card" data-category="nature">
+                <img src="https://images.unsplash.com/photo-1439066615861-d1af74d74000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Mount Batulao Night Hike" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>September 18, 2025
+                    </div>
+                    <h3 class="event-title">Mount Batulao Night Hike</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Nasugbu, Batangas
+                    </div>
+                    <p class="event-description">Experience Mount Batulao under the stars! Join this guided night hike and witness a breathtaking sunrise from the summit. Perfect for adventure seekers and photography enthusiasts.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Hiking</span>
+                        <span class="event-tag">Sunrise</span>
+                        <span class="event-tag">Photography</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱800</div>
+                        <a href="#" class="btn-event">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sports Events -->
+            <div class="event-card" data-category="sports">
+                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Anilao Marine Life Photography Contest" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>August 22, 2025
+                    </div>
+                    <h3 class="event-title">Anilao Marine Photography Contest</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Anilao, Mabini, Batangas
+                    </div>
+                    <p class="event-description">Capture the stunning marine biodiversity of Anilao's coral reefs. Open to both amateur and professional underwater photographers. Prizes worth ₱100,000 await the winners!</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Photography</span>
+                        <span class="event-tag">Diving</span>
+                        <span class="event-tag">Competition</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱1,200</div>
+                        <a href="#" class="btn-event">Register</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Events -->
+            <div class="event-card" data-category="food">
+                <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Kapeng Barako Festival" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>October 12-14, 2025
+                    </div>
+                    <h3 class="event-title">Kapeng Barako Festival</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Lipa City, Batangas
+                    </div>
+                    <p class="event-description">Celebrate Batangas' world-famous coffee! Experience coffee tasting sessions, barista competitions, traditional brewing demonstrations, and local coffee farm tours.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Coffee</span>
+                        <span class="event-tag">Tasting</span>
+                        <span class="event-tag">Culture</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price free">FREE</div>
+                        <a href="#" class="btn-event">Learn More</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cultural Events -->
+            <div class="event-card" data-category="cultural">
+                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Sublian Festival" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>July 23, 2026
+                    </div>
+                    <h3 class="event-title">Sublian Festival</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Batangas City
+                    </div>
+                    <p class="event-description">Experience the grandest festival in Batangas! Watch colorful street dancing, traditional music performances, and cultural presentations celebrating the devotion to the Holy Cross.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Festival</span>
+                        <span class="event-tag">Dance</span>
+                        <span class="event-tag">Religious</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price free">FREE</div>
+                        <a href="#" class="btn-event">Watch Live</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nature Events -->
+            <div class="event-card" data-category="nature">
+                <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Fortune Island Day Trip" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>Every Weekend
+                    </div>
+                    <h3 class="event-title">Fortune Island Day Trip</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Nasugbu, Batangas
+                    </div>
+                    <p class="event-description">Visit the Instagram-famous island with Grecian-inspired ruins and crystal-clear waters. Package includes boat transfer, lunch, and snorkeling equipment rental.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Island</span>
+                        <span class="event-tag">Swimming</span>
+                        <span class="event-tag">Photography</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱2,500</div>
+                        <a href="#" class="btn-event">Book Trip</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sports Events -->
+            <div class="event-card" data-category="sports">
+                <img src="https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Batangas Triathlon Championship" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>November 8, 2025
+                    </div>
+                    <h3 class="event-title">Batangas Triathlon Championship</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Calatagan, Batangas
+                    </div>
+                    <p class="event-description">Join the ultimate test of endurance with swimming, cycling, and running segments along Batangas' scenic coastline. Open to all skill levels with different distance categories.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Triathlon</span>
+                        <span class="event-tag">Sports</span>
+                        <span class="event-tag">Competition</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱1,800</div>
+                        <a href="#" class="btn-event">Register</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Festival Events -->
+            <div class="event-card" data-category="festival">
+                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Musikahan Festival" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>December 15-17, 2025
+                    </div>
+                    <h3 class="event-title">Musikahan Festival</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Nasugbu, Batangas
+                    </div>
+                    <p class="event-description">A celebration of music and arts featuring local bands, acoustic performances, art exhibitions, and workshops. Experience the vibrant creative culture of Batangas.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Music</span>
+                        <span class="event-tag">Arts</span>
+                        <span class="event-tag">Festival</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱200</div>
+                        <a href="#" class="btn-event">Get Tickets</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Events -->
+            <div class="event-card" data-category="food">
+                <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Batangas Food Tour" class="event-image">
+                <div class="event-content">
+                    <div class="event-date-badge">
+                        <i class="fas fa-calendar-alt"></i>Every Saturday
+                    </div>
+                    <h3 class="event-title">Batangas Food Tour</h3>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>Various Locations, Batangas
+                    </div>
+                    <p class="event-description">Taste authentic Batangas cuisine including famous lomi, goto, bulalo, and kapeng barako. Visit local restaurants and traditional food establishments with expert guides.</p>
+                    <div class="event-tags">
+                        <span class="event-tag">Food Tour</span>
+                        <span class="event-tag">Local Cuisine</span>
+                        <span class="event-tag">Cultural</span>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-price">₱1,500</div>
+                        <a href="#" class="btn-event">Join Tour</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No Events Found</h3>
+            <p>Try adjusting your search criteria or browse all events to discover exciting activities in Batangas.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-title">Batangas Explorer</h5>
+                    <p>Your ultimate guide to discovering the natural wonders, cultural treasures, and culinary delights of Batangas Province. From pristine beaches to historical landmarks, we help you explore the best of what Batangas has to offer.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon" title="Follow us on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Follow us on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Subscribe to our YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Popular Destinations</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Taal Volcano Island</a></li>
+                        <li><a href="#">Anilao Diving Sites</a></li>
+                        <li><a href="#">Fortune Island</a></li>
+                        <li><a href="#">Mount Batulao</a></li>
+                        <li><a href="#">Calatagan Beaches</a></li>
+                        <li><a href="#">Taal Heritage Town</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Travel Guidelines</a></li>
+                        <li><a href="#">Transportation Guide</a></li>
+                        <li><a href="#">Weather Updates</a></li>
+                        <li><a href="#">Emergency Contacts</a></li>
+                        <li><a href="#">Tourism Offices</a></li>
+                        <li><a href="#">Hotel Bookings</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="footer-title">Visit Batangas</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Provincial Capitol Complex, Batangas City</li>
+                        <li><i class="fas fa-phone me-2"></i> Hotline: (043) 980-2020</li>
+                        <li><i class="fas fa-envelope me-2"></i> tourism@batangas.gov.ph</li>
+                        <li><i class="fas fa-clock me-2"></i> Mon-Fri: 8:00 AM - 5:00 PM</li>
+                        <li><i class="fas fa-globe me-2"></i> www.batangastourism.com</li>
+                    </ul>
+                    <div class="mt-3">
+                        <small class="text-muted">Official tourism website of Batangas Province</small>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Batangas Explorer. All rights reserved. | Provincial Tourism and Cultural Affairs Office</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const eventCards = document.querySelectorAll('.event-card');
+        const featuredEvent = document.querySelector('.featured-event');
+        const noResults = document.getElementById('noResults');
+        const searchInput = document.getElementById('searchInput');
+
+        function filterEvents(category, searchTerm = '') {
+            let visibleCount = 0;
+            const searchLower = searchTerm.toLowerCase();
+
+            // Handle featured event
+            const featuredCategory = featuredEvent.getAttribute('data-category');
+            const featuredTitle = featuredEvent.querySelector('.featured-title').textContent.toLowerCase();
+            const featuredDescription = featuredEvent.querySelector('.featured-description').textContent.toLowerCase();
+
+            if ((category === 'all' || featuredCategory === category) &&
+                (searchTerm === '' || featuredTitle.includes(searchLower) || featuredDescription.includes(searchLower))) {
+                featuredEvent.style.display = 'block';
+                visibleCount++;
+            } else {
+                featuredEvent.style.display = 'none';
+            }
+
+            // Handle regular event cards
+            eventCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                const cardTitle = card.querySelector('.event-title').textContent.toLowerCase();
+                const cardDescription = card.querySelector('.event-description').textContent.toLowerCase();
+                const cardLocation = card.querySelector('.event-location').textContent.toLowerCase();
+
+                if ((category === 'all' || cardCategory === category) &&
+                    (searchTerm === '' || cardTitle.includes(searchLower) ||
+                     cardDescription.includes(searchLower) || cardLocation.includes(searchLower))) {
+                    card.style.display = 'block';
+                    setTimeout(() => card.classList.add('visible'), 100);
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('visible');
+                }
+            });
+
+            // Show/hide no results message
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        // Filter button event listeners
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                const category = this.getAttribute('data-filter');
+                filterEvents(category, searchInput.value);
+            });
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+            filterEvents(activeFilter, this.value);
+        });
+
+        // View toggle functionality
+        const viewButtons = document.querySelectorAll('.view-btn');
+        const eventsGrid = document.getElementById('eventsGrid');
+
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                viewButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                const view = this.getAttribute('data-view');
+                if (view === 'list') {
+                    eventsGrid.style.gridTemplateColumns = '1fr';
+                    eventsGrid.style.maxWidth = '800px';
+                    eventsGrid.style.margin = '0 auto 3rem';
+                } else {
+                    eventsGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+                    eventsGrid.style.maxWidth = 'none';
+                    eventsGrid.style.margin = '0 0 3rem 0';
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe event cards for animations
+        eventCards.forEach(card => {
+            observer.observe(card);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Enhanced hover effects
+        eventCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Loading animation for images
+        document.querySelectorAll('img').forEach(img => {
+            img.classList.add('loading');
+            img.addEventListener('load', function() {
+                this.classList.remove('loading');
+            });
+        });
+
+        // Dynamic date formatting
+        function formatEventDates() {
+            const eventDates = document.querySelectorAll('.event-date-badge, .featured-date');
+            eventDates.forEach(dateElement => {
+                // This would typically parse and format dates from a database
+                // For now, keeping the static dates as they are properly formatted
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            formatEventDates();
+            // Show all events initially
+            filterEvents('all');
+        });
+
+        // Add click handlers for event buttons
+        document.querySelectorAll('.btn-event').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                // This would typically handle event registration/booking
+                alert('Event registration/booking functionality would be implemented here.');
+            });
+        });
+
+        // Footer styles (matching home page)
+        const footerStyles = `
+            footer {
+                background-color: var(--primary);
+                padding: 3rem 0 1.5rem;
+                color: rgba(255, 255, 255, 0.8);
+                margin-top: 3rem;
+            }
+
+            .footer-title {
+                color: white;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                font-size: 1.2rem;
+            }
+
+            .footer-links {
+                list-style: none;
+                padding: 0;
+            }
+
+            .footer-links li {
+                margin-bottom: 0.8rem;
+            }
+
+            .footer-links a {
+                color: rgba(255, 255, 255, 0.8);
+                text-decoration: none;
+                transition: var(--transition);
+            }
+
+            .footer-links a:hover {
+                color: var(--accent);
+                padding-left: 8px;
+            }
+
+            .social-icons {
+                display: flex;
+                gap: 10px;
+                margin-top: 1rem;
+            }
+
+            .social-icon {
+                width: 42px;
+                height: 42px;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: var(--transition);
+                color: white;
+                text-decoration: none;
+            }
+
+            .social-icon:hover {
+                background-color: var(--accent);
+                transform: translateY(-2px);
+                color: white;
+            }
+
+            .copyright {
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-top: 1.5rem;
+                margin-top: 2rem;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+        `;
+
+        // Add additional styles if needed
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = footerStyles;
+        document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>

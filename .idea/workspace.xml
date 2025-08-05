@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="added tourist page">
-      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Destination.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Map.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_About.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Event.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -247,14 +247,8 @@
       <workItem from="1754327522688" duration="2288000" />
       <workItem from="1754359294031" duration="699000" />
       <workItem from="1754370159430" duration="1890000" />
-    </task>
-    <task id="LOCAL-00035" summary="fixed mapping in add property">
-      <option name="closed" value="true" />
-      <created>1746121399342</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1746121399342</updated>
+      <workItem from="1754372074589" duration="28000" />
+      <workItem from="1754373389328" duration="1243000" />
     </task>
     <task id="LOCAL-00036" summary="unfinished backend for dashboard">
       <option name="closed" value="true" />
@@ -640,7 +634,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754329534174</updated>
     </task>
-    <option name="localTasksCounter" value="84" />
+    <task id="LOCAL-00084" summary="added tourist page">
+      <option name="closed" value="true" />
+      <created>1754372093465</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1754372093465</updated>
+    </task>
+    <option name="localTasksCounter" value="85" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

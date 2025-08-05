@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Batangas - Discover the Heart of CALABARZON</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, #003366 0%, #004d99 100%);
+            --gradient-accent: linear-gradient(135deg, #ff7e00 0%, #ff9533 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            padding: 0.7rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-1px);
+        }
+
+        .navbar-brand img {
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: var(--transition);
+            border-radius: 5px;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 70%;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: var(--gradient-primary),
+                        url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 60vh;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: 76px;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,51,102,0.8) 0%, rgba(0,77,153,0.6) 100%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Content Sections */
+        .section-container {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .section-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .content-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .content-card:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4rem 0;
+            margin: 4rem 0;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gradient-accent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .timeline-date {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--accent);
+            color: white;
+            padding: 1rem;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            z-index: 2;
+            box-shadow: 0 0 0 8px white, var(--shadow-medium);
+        }
+
+        .timeline-content h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Geography Grid */
+        .geography-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .geography-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .geography-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .geography-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .geography-item h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Culture Grid */
+        .culture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .culture-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+
+        .culture-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .culture-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .culture-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .culture-content {
+            padding: 1.5rem;
+        }
+
+        .culture-item h5 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn-explore {
+            background: var(--gradient-accent);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(255, 126, 0, 0.3);
+        }
+
+        .btn-explore:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 126, 0, 0.4);
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            padding: 3rem 0 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 3rem;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            padding-left: 8px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: white;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .timeline::before {
+                left: 2rem;
+            }
+
+            .timeline-item {
+                flex-direction: column !important;
+                align-items: flex-start;
+                padding-left: 4rem;
+            }
+
+            .timeline-content {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .timeline-date {
+                left: 2rem;
+                width: 60px;
+                height: 60px;
+                font-size: 0.8rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .content-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .geography-grid,
+            .culture-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='5' fill='%23ff7e00'/%3E%3Ctext x='20' y='26' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' fill='white'%3EB%3C/text%3E%3C/svg%3E" alt="Batangas Explorer Logo" width="40" height="40">
+                Batangas Explorer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#destinations">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#map">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#events">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">About Batangas</h1>
+            <p class="hero-subtitle">Discover the rich history, vibrant culture, and natural wonders of the Philippines' premier industrial and tourism province.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Introduction Section -->
+        <section class="section-container">
+            <div class="content-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h2 class="section-title">The Heart of CALABARZON</h2>
+                        <p class="lead">Batangas is a first-class province located in the CALABARZON region of the Philippines, situated on the southwestern part of Luzon Island. Known as the "Industrial Port City of CALABARZON," it serves as a vital economic gateway to the southern Philippines while maintaining its rich cultural heritage and natural beauty.</p>
+                        <p>The province is strategically positioned south of Manila, bordered by Cavite and Laguna to the north, Quezon to the east, and surrounded by the South China Sea and Batangas Bay. This unique location has shaped Batangas into a diverse province that seamlessly blends industrial progress with tourism excellence.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1502780402662-acc01917271e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Batangas Landscape" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <div class="container">
+                <h2 class="section-title text-center text-white">Batangas by the Numbers</h2>
+                <p class="text-center text-white-50 lead">Key facts and figures about our beautiful province</p>
+
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number">3,165</div>
+                        <div class="stat-label">Square Kilometers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">2.8M</div>
+                        <div class="stat-label">Population</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">34</div>
+                        <div class="stat-label">Municipalities & Cities</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Tourist Attractions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">120+</div>
+                        <div class="stat-label">Beaches & Resorts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1581</div>
+                        <div class="stat-label">Year Founded</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Geography Section -->
+        <section class="section-container">
+            <h2 class="section-title">Geography & Climate</h2>
+            <div class="geography-grid">
+                <div class="geography-item">
+                    <div class="geography-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <h4>Topography</h4>
+                    <p>Batangas features diverse terrain including coastal plains, rolling hills, and volcanic mountains. The province is home to the famous Taal Volcano, one of the world's smallest active volcanoes.</p>
+                </div>
+                <div class="geography-item">
+                    <div class="geography-icon">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h4>Coastline</h4>
+                    <p>With over 200 kilometers of coastline along the South China Sea and Batangas Bay, the province boasts numerous pristine beaches, diving spots, and marine sanctuaries.</p>
+                </div>
+                <div class="geography-item">
+                    <div class="geography-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <h4>Climate</h4>
+                    <p>Tropical climate with two distinct seasons: dry season (November-April) and wet season (May-October). Average temperature ranges from 23°C to 32°C year-round.</p>
+                </div>
+                <div class="geography-item">
+                    <div class="geography-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h4>Natural Resources</h4>
+                    <p>Rich in marine resources, agricultural products, and minerals. Famous for coffee production, particularly the renowned Barako coffee and Kapeng Alamid.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Timeline -->
+        <section class="section-container">
+            <h2 class="section-title">Historical Timeline</h2>
+            <p class="lead text-center mb-5">Journey through the rich history of Batangas from pre-colonial times to the modern era</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Pre-Colonial Era</h4>
+                        <p>Indigenous communities including the Tagalogs thrived in the region, establishing settlements along rivers and coasts. The area was known for its skilled seafarers and traders.</p>
+                    </div>
+                    <div class="timeline-date">Pre-1500s</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Spanish Colonial Period</h4>
+                        <p>Batangas was officially founded as a province by the Spanish colonial government. The name "Batangas" is believed to derive from "batang," meaning logs, referring to the numerous logs floating in the Calumpang River.</p>
+                    </div>
+                    <div class="timeline-date">1581</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Philippine Revolution</h4>
+                        <p>Batangas played a crucial role in the Philippine Revolution against Spain. Many Batangueños joined the Katipunan and fought for independence under leaders like Miguel Malvar.</p>
+                    </div>
+                    <div class="timeline-date">1896-1898</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>American Period</h4>
+                        <p>During the Philippine-American War, Batangas was a stronghold of resistance. General Miguel Malvar led guerrilla warfare against American forces from his base in the province.</p>
+                    </div>
+                    <div class="timeline-date">1899-1946</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>World War II</h4>
+                        <p>Batangas experienced Japanese occupation and became a center of guerrilla resistance. The province suffered significant damage but emerged with strengthened community bonds.</p>
+                    </div>
+                    <div class="timeline-date">1942-1945</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Modern Development</h4>
+                        <p>Post-independence Batangas transformed into an industrial powerhouse while developing its tourism sector. Today, it balances economic growth with environmental conservation and cultural preservation.</p>
+                    </div>
+                    <div class="timeline-date">1946-Present</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Culture and Heritage -->
+        <section class="section-container">
+            <h2 class="section-title">Culture & Heritage</h2>
+            <p class="lead text-center mb-5">Experience the vibrant traditions, festivals, and cultural treasures that make Batangas unique</p>
+
+            <div class="culture-grid">
+                <div class="culture-item">
+                    <img src="https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Taal Basilica">
+                    <div class="culture-content">
+                        <h5>Spanish Colonial Architecture</h5>
+                        <p>Magnificent churches and ancestral houses showcase centuries of Spanish influence, with Taal's Basilica of St. Martin of Tours being the largest Catholic church in Asia.</p>
+                    </div>
+                </div>
+                <div class="culture-item">
+                    <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Barako Coffee">
+                    <div class="culture-content">
+                        <h5>Coffee Heritage</h5>
+                        <p>Home to the world-famous Barako coffee and the rare Kapeng Alamid. Coffee culture runs deep in Batangueño tradition, passed down through generations.</p>
+                    </div>
+                </div>
+                <div class="culture-item">
+                    <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Local Cuisine">
+                    <div class="culture-content">
+                        <h5>Culinary Traditions</h5>
+                        <p>Famous for Lomi, Bulalo, Goto, and other hearty dishes. Local cuisine reflects the province's agricultural abundance and coastal location.</p>
+                    </div>
+                </div>
+                <div class="culture-item">
+                    <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Local Festival">
+                    <div class="culture-content">
+                        <h5>Festivals & Celebrations</h5>
+                        <p>Vibrant festivals like the Sublian Festival celebrate local traditions, while town fiestas honor patron saints with colorful parades and cultural performances.</p>
+                    </div>
+                </div>
+                <div class="culture-item">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Traditional Crafts">
+                    <div class="culture-content">
+                        <h5>Traditional Crafts</h5>
+                        <p>Skilled artisans create beautiful embroidered barongs, handwoven textiles, and intricate wood carvings that preserve centuries-old techniques.</p>
+                    </div>
+                </div>
+                <div class="culture-item">
+                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Local Language">
+                    <div class="culture-content">
+                        <h5>Language & Literature</h5>
+                        <p>The Batangueño dialect of Tagalog is known for its distinctive accent and expressions. The province has produced notable writers and poets who celebrate local culture.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Economy and Industry -->
+        <section class="section-container">
+            <div class="content-card">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h2 class="section-title">Economy & Industry</h2>
+                        <p class="lead">Batangas stands as one of the Philippines' most economically dynamic provinces, successfully balancing industrial development with sustainable tourism and agriculture.</p>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-4">
+                                <h4><i class="fas fa-industry text-primary me-3"></i>Industrial Hub</h4>
+                                <p>Home to major industrial complexes including the Batangas Bay Industrial Complex and numerous manufacturing facilities. The province hosts petrochemical plants, power generation facilities, and automotive assembly plants.</p>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <h4><i class="fas fa-ship text-primary me-3"></i>Maritime Gateway</h4>
+                                <p>Batangas Port serves as the primary gateway to the southern Philippine islands, handling millions of passengers and tons of cargo annually. It's a crucial link for inter-island commerce and tourism.</p>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <h4><i class="fas fa-seedling text-primary me-3"></i>Agriculture</h4>
+                                <p>Major producer of coffee, sugarcane, coconut, and various fruits. The province is famous for its high-quality Barako coffee and sustainable farming practices.</p>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <h4><i class="fas fa-umbrella-beach text-primary me-3"></i>Tourism Industry</h4>
+                                <p>Tourism contributes significantly to the local economy, with world-class diving destinations, beach resorts, historical sites, and adventure tourism attracting millions of visitors annually.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Batangas Industry" class="img-fluid rounded mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <h5 class="text-primary">Economic Indicators</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>GDP Contribution:</strong> ₱500+ Billion</li>
+                                <li><strong>Employment Rate:</strong> 95.2%</li>
+                                <li><strong>Major Industries:</strong> 15+</li>
+                                <li><strong>Tourist Arrivals:</strong> 8M+ annually</li>
+                                <li><strong>Export Value:</strong> $2B+ annually</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Government and Administration -->
+        <section class="section-container">
+            <h2 class="section-title">Government & Administration</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="content-card">
+                        <h3 class="section-subtitle">Provincial Government</h3>
+                        <p>Batangas is governed by a provincial government headed by a Governor, with a Provincial Board (Sangguniang Panlalawigan) serving as the legislative body. The province is divided into four congressional districts represented in the national legislature.</p>
+
+                        <h4 class="mt-4">Key Government Services</h4>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Provincial Health Office</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Social Services and Development Office</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Tourism and Cultural Affairs Office</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Environment and Natural Resources Office</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Agriculture and Fisheries Office</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="content-card">
+                        <h3 class="section-subtitle">Cities and Municipalities</h3>
+                        <p>The province comprises 4 cities and 30 municipalities, each with its own local government unit providing essential services to residents and visitors.</p>
+
+                        <h4 class="mt-4">Component Cities</h4>
+                        <div class="row">
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-city text-primary me-2"></i> Batangas City</li>
+                                    <li><i class="fas fa-city text-primary me-2"></i> Lipa City</li>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-city text-primary me-2"></i> Santo Tomas</li>
+                                    <li><i class="fas fa-city text-primary me-2"></i> Tanauan City</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p class="mt-3"><strong>30 municipalities</strong> including popular tourist destinations like Nasugbu, Mabini, Taal, and Calatagan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education and Healthcare -->
+        <section class="section-container">
+            <h2 class="section-title">Education & Healthcare</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="content-card">
+                        <h3 class="section-subtitle"><i class="fas fa-graduation-cap text-primary me-3"></i>Education</h3>
+                        <p>Batangas is home to several prestigious educational institutions, making it a center for learning in the CALABARZON region.</p>
+
+                        <h4>Major Universities & Colleges</h4>
+                        <ul>
+                            <li><strong>Batangas State University</strong> - The premier state university with multiple campuses</li>
+                            <li><strong>De La Salle Lipa</strong> - Private Catholic university known for excellence</li>
+                            <li><strong>University of Batangas</strong> - Leading private institution</li>
+                            <li><strong>Lyceum of the Philippines University Batangas</strong></li>
+                            <li><strong>Immaculate Conception Seminary</strong> - Theological studies</li>
+                        </ul>
+
+                        <div class="bg-light p-3 rounded mt-3">
+                            <p class="mb-0"><strong>Literacy Rate:</strong> 97.8% (Above national average)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="content-card">
+                        <h3 class="section-subtitle"><i class="fas fa-hospital text-primary me-3"></i>Healthcare</h3>
+                        <p>The province maintains a robust healthcare system with modern medical facilities and specialized services.</p>
+
+                        <h4>Major Healthcare Facilities</h4>
+                        <ul>
+                            <li><strong>Batangas Medical Center</strong> - Regional medical hub</li>
+                            <li><strong>Mary Mediatrix Medical Center</strong> - Private tertiary hospital</li>
+                            <li><strong>Metro Lipa Medical Center</strong> - Advanced medical services</li>
+                            <li><strong>Sorosoro Ibaba District Hospital</strong></li>
+                            <li><strong>Various Rural Health Units</strong> - Primary care in municipalities</li>
+                        </ul>
+
+                        <div class="bg-light p-3 rounded mt-3">
+                            <p class="mb-1"><strong>Hospital Bed Capacity:</strong> 2,500+ beds</p>
+                            <p class="mb-0"><strong>Healthcare Coverage:</strong> Universal healthcare access</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transportation and Connectivity -->
+        <section class="section-container">
+            <div class="content-card">
+                <h2 class="section-title">Transportation & Connectivity</h2>
+                <p class="lead">Batangas enjoys excellent connectivity with Manila and other regions, making it easily accessible for tourists and business travelers.</p>
+
+                <div class="row mt-4">
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                            <h5>By Road</h5>
+                            <p>STAR Tollway and SLEX provide direct highway access from Manila. Travel time: 1.5-2 hours</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="fas fa-bus fa-3x text-primary mb-3"></i>
+                            <h5>Public Transport</h5>
+                            <p>Regular bus services from Manila terminals. Provincial buses connect all municipalities</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="fas fa-ship fa-3x text-primary mb-3"></i>
+                            <h5>Sea Transport</h5>
+                            <p>Batangas Port serves ferries to Mindoro, Romblon, and other southern islands</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="fas fa-plane fa-3x text-primary mb-3"></i>
+                            <h5>Air Access</h5>
+                            <p>Nearest airports: NAIA (2 hours) and Clark (3 hours). Private airstrip in Nasugbu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="section-container text-center">
+            <div class="content-card">
+                <h2 class="section-title">Experience Batangas Today</h2>
+                <p class="lead">From pristine beaches to rich cultural heritage, from world-class diving to mountain adventures, Batangas offers unforgettable experiences for every type of traveler.</p>
+                <div class="mt-4">
+                    <a href="/#destinations" class="btn-explore me-3">Explore Destinations</a>
+                    <a href="/#events" class="btn-explore">View Events</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-title">Batangas Explorer</h5>
+                    <p>Your ultimate guide to discovering the natural wonders, cultural treasures, and culinary delights of Batangas Province. From pristine beaches to historical landmarks, we help you explore the best of what Batangas has to offer.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon" title="Follow us on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Follow us on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Subscribe to our YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Popular Destinations</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Taal Volcano Island</a></li>
+                        <li><a href="#">Anilao Diving Sites</a></li>
+                        <li><a href="#">Fortune Island</a></li>
+                        <li><a href="#">Mount Batulao</a></li>
+                        <li><a href="#">Calatagan Beaches</a></li>
+                        <li><a href="#">Taal Heritage Town</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Travel Guidelines</a></li>
+                        <li><a href="#">Transportation Guide</a></li>
+                        <li><a href="#">Weather Updates</a></li>
+                        <li><a href="#">Emergency Contacts</a></li>
+                        <li><a href="#">Tourism Offices</a></li>
+                        <li><a href="#">Hotel Bookings</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="footer-title">Visit Batangas</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Provincial Capitol Complex, Batangas City</li>
+                        <li><i class="fas fa-phone me-2"></i> Hotline: (043) 980-2020</li>
+                        <li><i class="fas fa-envelope me-2"></i> tourism@batangas.gov.ph</li>
+                        <li><i class="fas fa-clock me-2"></i> Mon-Fri: 8:00 AM - 5:00 PM</li>
+                        <li><i class="fas fa-globe me-2"></i> www.batangastourism.com</li>
+                    </ul>
+                    <div class="mt-3">
+                        <small class="text-muted">Official tourism website of Batangas Province</small>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Batangas Explorer. All rights reserved. | Provincial Tourism and Cultural Affairs Office</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections for fade-in animation
+        document.querySelectorAll('.section-container').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Counter animation for stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.textContent.replace(/[^\d.]/g, ''));
+                const suffix = counter.textContent.replace(/[\d.]/g, '');
+                let current = 0;
+                const increment = target / 60;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target + suffix;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current) + suffix;
+                    }
+                }, 30);
+            });
+        }
+
+        // Trigger counter animation when stats section is visible
+        const statsObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection && scrolled < heroSection.offsetHeight) {
+                heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Enhanced hover effects for cards
+        document.querySelectorAll('.content-card, .culture-item, .geography-item, .stat-item').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = this.classList.contains('stat-item') ? 'translateY(-5px)' : 'translateY(-5px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Timeline animation
+        const timelineObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(30px)';
+            item.style.transition = 'all 0.6s ease-out';
+            timelineObserver.observe(item);
+        });
+
+        // Add loading animation to images
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('load', function() {
+                this.style.opacity = '1';
+                this.style.transform = 'scale(1)';
+            });
+
+            // Initial state
+            img.style.opacity = '0';
+            img.style.transform = 'scale(0.95)';
+            img.style.transition = 'all 0.3s ease-out';
+        });
+    </script>
+</body>
+</html>
