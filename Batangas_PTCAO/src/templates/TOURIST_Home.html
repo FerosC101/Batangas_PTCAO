@@ -843,7 +843,7 @@
                 <section class="section-container about-section-sidebar" id="about">
                     <h2 class="section-title">About Batangas</h2>
                     <div class="about-image-container mb-3">
-                        <img src="/static/uploads/events/about_batangas.jpg" alt="About Batangas" class="about-image-small" onerror="this.src='/static/images/default-about.jpg'">
+                        <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="About Batangas" class="about-image-small" onerror="this.src='/static/images/default-about.jpg'">
                     </div>
                     <p class="lead">Batangas is a first-class province in the Philippines located in the CALABARZON region of Luzon. Known as the "Industrial Port City of CALABARZON," it serves as a major gateway to the southern islands.</p>
                     <p>The province is famous for its stunning beaches, world-class diving spots, rich coffee heritage, and well-preserved Spanish colonial architecture. From the iconic Taal Volcano to the pristine waters of Anilao, Batangas offers diverse attractions for all types of travelers.</p>
