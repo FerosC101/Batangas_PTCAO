@@ -219,6 +219,35 @@
             outline: none;
         }
 
+        /* Tabs for Properties and Destinations */
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .nav-tabs .nav-link {
+            border: 2px solid #e9ecef;
+            color: #666;
+            background: white;
+            border-radius: 25px;
+            margin: 0 0.5rem;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--gradient-accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            background: rgba(255, 126, 0, 0.1);
+            border-color: var(--accent);
+        }
+
         /* Destination Cards */
         .destinations-grid {
             display: grid;
@@ -294,7 +323,7 @@
             opacity: 1;
         }
 
-        .difficulty-badge {
+        .type-badge {
             position: absolute;
             top: 15px;
             right: 15px;
@@ -306,33 +335,8 @@
             letter-spacing: 0.5px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .difficulty-easy {
-            background: rgba(40, 167, 69, 0.9);
-            color: white;
-        }
-
-        .difficulty-moderate {
-            background: rgba(255, 193, 7, 0.9);
-            color: #212529;
-        }
-
-        .difficulty-challenging {
-            background: rgba(220, 53, 69, 0.9);
-            color: white;
-        }
-
-        .rating-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
             background: rgba(0,0,0,0.7);
             color: white;
-            padding: 0.3rem 0.6rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            backdrop-filter: blur(5px);
         }
 
         .card-body {
@@ -626,8 +630,24 @@
     <section class="hero-section">
         <div class="hero-content">
             <h1 class="hero-title">Discover Amazing Destinations</h1>
-            <p class="hero-subtitle">From pristine beaches to majestic mountains, explore the diverse wonders of Batangas Province</p>
+            <p class="hero-subtitle">From pristine accommodations to breathtaking natural destinations, explore the diverse wonders of Batangas Province</p>
         </div>
+    </section>
+
+    <!-- Tabs Section -->
+    <section class="container mt-4">
+        <ul class="nav nav-tabs" id="destinationTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="properties-tab" data-bs-toggle="tab" data-bs-target="#properties" type="button" role="tab" aria-controls="properties" aria-selected="true">
+                    <i class="fas fa-hotel me-2"></i>Accommodations
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="destinations-tab" data-bs-toggle="tab" data-bs-target="#destinations" type="button" role="tab" aria-controls="destinations" aria-selected="false">
+                    <i class="fas fa-mountain me-2"></i>Tourist Destinations
+                </button>
+            </li>
+        </ul>
     </section>
 
     <!-- Filter Section -->
@@ -635,14 +655,14 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8 mb-3 mb-lg-0">
-                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start">
-                        <button class="filter-btn active" data-filter="all">All Destinations</button>
-                        <button class="filter-btn" data-filter="beach">Beaches</button>
-                        <button class="filter-btn" data-filter="mountain">Mountains</button>
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start" id="filterButtons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="resort">Resort</button>
+                        <button class="filter-btn" data-filter="hotel">Hotel</button>
+                        <button class="filter-btn" data-filter="beach">Beach</button>
+                        <button class="filter-btn" data-filter="mountain">Mountain</button>
                         <button class="filter-btn" data-filter="heritage">Heritage</button>
-                        <button class="filter-btn" data-filter="adventure">Adventure</button>
-                        <button class="filter-btn" data-filter="diving">Diving</button>
-                        <button class="filter-btn" data-filter="island">Islands</button>
+                        <button class="filter-btn" data-filter="island">Island</button>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -652,10 +672,22 @@
         </div>
     </section>
 
-    <!-- Destinations Grid -->
+    <!-- Content Tabs -->
     <div class="container my-5">
-        <div class="destinations-grid" id="destinationsGrid">
-            <!-- Destination cards will be populated by JavaScript -->
+        <div class="tab-content" id="destinationTabContent">
+            <!-- Properties Tab -->
+            <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
+                <div class="destinations-grid" id="propertiesGrid">
+                    <!-- Property cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Destinations Tab -->
+            <div class="tab-pane fade" id="destinations" role="tabpanel" aria-labelledby="destinations-tab">
+                <div class="destinations-grid" id="destinationsGrid">
+                    <!-- Destination cards will be populated by JavaScript -->
+                </div>
+            </div>
         </div>
 
         <div class="loading" id="loading">
@@ -664,12 +696,12 @@
         </div>
     </div>
 
-    <!-- Destination Detail Modal -->
+    <!-- Detail Modal -->
     <div class="modal fade" id="destinationModal" tabindex="-1" aria-labelledby="destinationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="destinationModalLabel">Destination Details</h5>
+                    <h5 class="modal-title" id="destinationModalLabel">Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalBody">
@@ -681,250 +713,101 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Destination data
-        const destinations = [
-            {
-                id: 1,
-                name: "Taal Volcano",
-                location: "Talisay, Batangas",
-                category: ["mountain", "adventure"],
-                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "One of the most iconic landmarks in the Philippines and the world's smallest active volcano situated on an island within Taal Lake.",
-                longDescription: "Taal Volcano is a complex volcano located on the island of Luzon in the Philippines. It is the second most active volcano in the Philippines with 35 recorded historical eruptions. The volcano and the surrounding lake are located within the Taal Caldera, which was formed by very large eruptions between 500,000 and 100,000 years ago.",
-                difficulty: "moderate",
-                rating: 4.8,
-                price: "₱500 - ₱1,500",
-                duration: "4-6 hours",
-                bestTime: "November to April",
-                features: ["Hiking", "Boat Ride", "Scenic Views", "Photography"],
-                activities: ["Volcano Trekking", "Boat Tours", "Horseback Riding", "Photography"],
-                tips: "Bring comfortable hiking shoes, plenty of water, and sun protection. Check volcanic activity status before visiting."
-            },
-            {
-                id: 2,
-                name: "Anilao Beach",
-                location: "Mabini, Batangas",
-                category: ["beach", "diving"],
-                image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "World-renowned diving capital of the Philippines, famous for its incredible marine biodiversity and pristine coral reefs.",
-                longDescription: "Anilao is considered the birthplace of scuba diving in the Philippines and is famous for its rich marine biodiversity. The area boasts over 60 dive sites with pristine coral reefs, colorful fish, and unique macro marine life including nudibranchs, seahorses, and frogfish.",
-                difficulty: "easy",
-                rating: 4.9,
-                price: "₱2,000 - ₱5,000",
-                duration: "Full day",
-                bestTime: "November to May",
-                features: ["Diving", "Snorkeling", "Beach Resort", "Marine Life"],
-                activities: ["Scuba Diving", "Snorkeling", "Underwater Photography", "Beach Relaxation"],
-                tips: "Book diving packages in advance. PADI certification courses available for beginners. Bring underwater camera for amazing shots."
-            },
-            {
-                id: 3,
-                name: "Fortune Island",
-                location: "Nasugbu, Batangas",
-                category: ["island", "beach"],
-                image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Instagram-famous island featuring stunning Grecian-inspired ruins and crystal-clear turquoise waters perfect for swimming.",
-                longDescription: "Fortune Island is a small, uninhabited island known for its pristine white sand beaches and the famous Greek-inspired ruins that create a Mediterranean atmosphere in the tropics. The island offers crystal-clear waters perfect for swimming and snorkeling.",
-                difficulty: "easy",
-                rating: 4.7,
-                price: "₱1,500 - ₱3,000",
-                duration: "6-8 hours",
-                bestTime: "March to June",
-                features: ["White Sand Beach", "Ruins", "Swimming", "Photography"],
-                activities: ["Island Hopping", "Swimming", "Photography", "Snorkeling"],
-                tips: "Day trips only - no overnight stays allowed. Bring food and water as there are no facilities on the island. Book boat transfers in advance."
-            },
-            {
-                id: 4,
-                name: "Basilica of St. Martin of Tours",
-                location: "Taal, Batangas",
-                category: ["heritage"],
-                image: "https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "The largest Catholic church in Asia, showcasing beautiful Spanish colonial architecture and rich religious heritage.",
-                longDescription: "The Basilica of St. Martin of Tours in Taal, Batangas is considered one of the largest Catholic churches in Asia. Built in the 1850s, it features stunning Baroque architecture and houses numerous religious artifacts and historical treasures.",
-                difficulty: "easy",
-                rating: 4.6,
-                price: "Free",
-                duration: "1-2 hours",
-                bestTime: "Year-round",
-                features: ["Architecture", "History", "Religion", "Culture"],
-                activities: ["Church Tours", "Photography", "Historical Learning", "Prayer"],
-                tips: "Dress modestly when visiting the church. Mass schedules available. Guided tours can be arranged for groups."
-            },
-            {
-                id: 5,
-                name: "Mount Batulao",
-                location: "Nasugbu, Batangas",
-                category: ["mountain", "adventure"],
-                image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Popular hiking destination known for its rolling hills, scenic ridges, and breathtaking views of Batangas landscape.",
-                longDescription: "Mount Batulao is one of the most popular hiking destinations near Metro Manila, standing at 811 meters above sea level. The mountain is famous for its distinctive rolling hills and scenic ridges that offer panoramic views of Batangas and nearby provinces.",
-                difficulty: "moderate",
-                rating: 4.7,
-                price: "₱200 - ₱800",
-                duration: "4-6 hours",
-                bestTime: "October to March",
-                features: ["Hiking", "Scenic Views", "Rolling Hills", "Sunrise/Sunset"],
-                activities: ["Mountain Hiking", "Photography", "Camping", "Nature Watching"],
-                tips: "Start early to avoid crowds and heat. Bring plenty of water and snacks. Weather can change quickly, so pack accordingly."
-            },
-            {
-                id: 6,
-                name: "Calatagan Beach",
-                location: "Calatagan, Batangas",
-                category: ["beach"],
-                image: "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Pristine white sand beach perfect for relaxation, water sports, and stunning sunset views along the South China Sea.",
-                longDescription: "Calatagan Beach boasts fine white sand and clear blue waters along the South China Sea. It's known for its beautiful sunsets, peaceful atmosphere, and various beach resorts that cater to different budgets and preferences.",
-                difficulty: "easy",
-                rating: 4.5,
-                price: "₱500 - ₱2,000",
-                duration: "Full day",
-                bestTime: "November to April",
-                features: ["White Sand", "Sunset Views", "Water Sports", "Beach Resorts"],
-                activities: ["Swimming", "Beach Volleyball", "Jet Skiing", "Sunset Watching"],
-                tips: "Best visited during dry season. Many resorts offer day use packages. Don't miss the spectacular sunset views."
-            },
-            {
-                id: 7,
-                name: "Sombrero Island",
-                location: "Anilao, Mabini",
-                category: ["island", "diving"],
-                image: "https://images.unsplash.com/photo-1570298935743-7449d75b2c85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Small uninhabited island perfect for diving and snorkeling, known for its vibrant coral gardens and diverse marine life.",
-                longDescription: "Sombrero Island gets its name from its hat-like shape when viewed from a distance. This small island is a popular diving and snorkeling spot with excellent visibility and abundant marine life including colorful corals, tropical fish, and occasional sea turtles.",
-                difficulty: "easy",
-                rating: 4.6,
-                price: "₱1,000 - ₱2,500",
-                duration: "Half day",
-                bestTime: "November to May",
-                features: ["Diving", "Snorkeling", "Marine Life", "Clear Waters"],
-                activities: ["Snorkeling", "Diving", "Swimming", "Marine Photography"],
-                tips: "Accessible by boat from Anilao. Great for beginners. Bring underwater camera to capture the vibrant marine life."
-            },
-            {
-                id: 8,
-                name: "Masasa Beach",
-                location: "Tingloy Island, Batangas",
-                category: ["beach", "island"],
-                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Hidden gem with powdery white sand beach, crystal clear waters, and a peaceful island atmosphere away from crowds.",
-                longDescription: "Masasa Beach on Tingloy Island is one of Batangas' best-kept secrets, featuring pristine white sand beaches and crystal-clear turquoise waters. The beach offers a peaceful retreat with minimal development and stunning natural beauty.",
-                difficulty: "easy",
-                rating: 4.8,
-                price: "₱800 - ₱2,000",
-                duration: "Full day or overnight",
-                bestTime: "March to June",
-                features: ["White Sand", "Clear Waters", "Island Life", "Peaceful"],
-                activities: ["Beach Relaxation", "Swimming", "Island Hopping", "Photography"],
-                tips: "Take a boat from Anilao Port to reach Tingloy Island. Limited facilities, so bring essentials. Perfect for weekend getaways."
-            },
-            {
-                id: 9,
-                name: "Mount Maculot",
-                location: "Cuenca, Batangas",
-                category: ["mountain", "adventure"],
-                image: "https://images.unsplash.com/photo-1464822759844-d150baec4a5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Popular hiking destination featuring the famous Rockies summit with panoramic views of Taal Lake and surrounding mountains.",
-                longDescription: "Mount Maculot stands 930 meters above sea level and is famous for its 'Rockies' - a series of limestone formations at the summit that offer breathtaking 360-degree views of Taal Lake, Tagaytay Ridge, and the surrounding landscape.",
-                difficulty: "moderate",
-                rating: 4.7,
-                price: "₱300 - ₱1,000",
-                duration: "5-7 hours",
-                bestTime: "October to March",
-                features: ["Hiking", "Rock Formations", "Lake Views", "Summit"],
-                activities: ["Mountain Hiking", "Rock Climbing", "Photography", "Camping"],
-                tips: "The Rockies summit requires technical climbing skills. Hire local guides for safety. Weather can be unpredictable."
-            },
-            {
-                id: 10,
-                name: "Laiya Beach",
-                location: "San Juan, Batangas",
-                category: ["beach"],
-                image: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Long stretch of white sand beach with numerous resorts, perfect for family vacations and beach activities.",
-                longDescription: "Laiya Beach is a 6-kilometer stretch of white sand beach lined with coconut trees and various beach resorts. It's one of the most accessible and developed beach destinations in Batangas, offering excellent facilities and activities for all ages.",
-                difficulty: "easy",
-                rating: 4.4,
-                price: "₱1,000 - ₱3,000",
-                duration: "Full day or overnight",
-                bestTime: "November to April",
-                features: ["White Sand", "Beach Resorts", "Family-Friendly", "Water Activities"],
-                activities: ["Swimming", "Beach Sports", "Kayaking", "Resort Activities"],
-                tips: "Many resort options available. Book in advance during peak season. Great for families with children."
-            },
-            {
-                id: 11,
-                name: "Caleruega Church",
-                location: "Nasugbu, Batangas",
-                category: ["heritage"],
-                image: "https://images.unsplash.com/photo-1520637836862-4d197d17c91a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Tranquil hilltop chapel with stunning architecture and panoramic views, popular for weddings and retreats.",
-                longDescription: "Caleruega Church, officially known as the Transfiguration Chapel, is a beautiful hilltop church run by Dominican friars. The chapel features modern architecture with traditional elements and offers breathtaking views of the surrounding mountains and valleys.",
-                difficulty: "easy",
-                rating: 4.5,
-                price: "Free (donations welcome)",
-                duration: "1-2 hours",
-                bestTime: "Year-round",
-                features: ["Architecture", "Mountain Views", "Peaceful", "Spiritual"],
-                activities: ["Chapel Visits", "Photography", "Meditation", "Wedding Ceremonies"],
-                tips: "Dress code required for entry. Popular wedding venue - check schedule. Beautiful at sunset."
-            },
-            {
-                id: 12,
-                name: "Pico de Loro",
-                location: "Maragondon, Cavite / Nasugbu, Batangas",
-                category: ["mountain", "adventure"],
-                image: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                description: "Challenging mountain hike featuring the famous monolith at the summit and spectacular coastal views.",
-                longDescription: "Pico de Loro, also known as Mount Palay-Palay, stands at 664 meters and is famous for its distinctive monolith rock formation at the summit. The mountain straddles the border between Cavite and Batangas and offers stunning views of Manila Bay and the surrounding coastline.",
-                difficulty: "challenging",
-                rating: 4.6,
-                price: "₱500 - ₱1,200",
-                duration: "6-8 hours",
-                bestTime: "November to April",
-                features: ["Monolith", "Coastal Views", "Challenging Hike", "Rock Formation"],
-                activities: ["Mountain Hiking", "Rock Scrambling", "Photography", "Camping"],
-                tips: "The monolith climb is optional but challenging. Bring gloves for better grip. Start very early to avoid afternoon heat."
-            }
-        ];
+        // Global variables
+        let currentData = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let activeTab = 'properties';
 
         // DOM elements
+        const propertiesGrid = document.getElementById('propertiesGrid');
         const destinationsGrid = document.getElementById('destinationsGrid');
         const filterButtons = document.querySelectorAll('.filter-btn');
         const searchInput = document.getElementById('searchInput');
         const loading = document.getElementById('loading');
         const destinationModal = new bootstrap.Modal(document.getElementById('destinationModal'));
 
-        // Current filter and search state
-        let currentFilter = 'all';
-        let currentSearch = '';
-
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            renderDestinations();
+            loadProperties();
+            loadDestinations();
             setupEventListeners();
         });
 
+        // Load properties from API
+        async function loadProperties() {
+            try {
+                showLoading(true);
+                const response = await fetch('/api/tourist/properties');
+                const data = await response.json();
+
+                if (data.success) {
+                    window.propertiesData = data.properties || [];
+                    if (activeTab === 'properties') {
+                        currentData = window.propertiesData;
+                        renderItems();
+                    }
+                } else {
+                    console.error('Failed to load properties:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading properties:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Load destinations from API
+        async function loadDestinations() {
+            try {
+                const response = await fetch('/api/tourist/destinations');
+                const data = await response.json();
+
+                if (data.success) {
+                    window.destinationsData = data.destinations || [];
+                    if (activeTab === 'destinations') {
+                        currentData = window.destinationsData;
+                        renderItems();
+                    }
+                } else {
+                    console.error('Failed to load destinations:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading destinations:', error);
+            }
+        }
+
         // Setup event listeners
         function setupEventListeners() {
+            // Tab change events
+            document.getElementById('properties-tab').addEventListener('click', function() {
+                activeTab = 'properties';
+                currentData = window.propertiesData || [];
+                updateFilterButtons();
+                renderItems();
+            });
+
+            document.getElementById('destinations-tab').addEventListener('click', function() {
+                activeTab = 'destinations';
+                currentData = window.destinationsData || [];
+                updateFilterButtons();
+                renderItems();
+            });
+
             // Filter buttons
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Update active button
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-
-                    // Update filter and re-render
                     currentFilter = this.dataset.filter;
-                    renderDestinations();
+                    renderItems();
                 });
             });
 
             // Search input
             searchInput.addEventListener('input', function() {
                 currentSearch = this.value.toLowerCase();
-                renderDestinations();
+                renderItems();
             });
 
             // Navbar scroll effect
@@ -938,81 +821,178 @@
             });
         }
 
-        // Filter destinations based on current filter and search
-        function getFilteredDestinations() {
-            return destinations.filter(destination => {
-                // Filter by category
-                const matchesFilter = currentFilter === 'all' ||
-                    destination.category.includes(currentFilter);
+        // Update filter buttons based on active tab
+        function updateFilterButtons() {
+            const filterContainer = document.getElementById('filterButtons');
+
+            if (activeTab === 'properties') {
+                filterContainer.innerHTML = `
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="Resort">Resort</button>
+                    <button class="filter-btn" data-filter="Hotel">Hotel</button>
+                    <button class="filter-btn" data-filter="Inn">Inn</button>
+                    <button class="filter-btn" data-filter="Lodge">Lodge</button>
+                    <button class="filter-btn" data-filter="Pension House">Pension House</button>
+                `;
+            } else {
+                filterContainer.innerHTML = `
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="Beach">Beach</button>
+                    <button class="filter-btn" data-filter="Mountain">Mountain</button>
+                    <button class="filter-btn" data-filter="Heritage">Heritage</button>
+                    <button class="filter-btn" data-filter="Island">Island</button>
+                    <button class="filter-btn" data-filter="Other">Other</button>
+                `;
+            }
+
+            // Reattach event listeners to new buttons
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderItems();
+                });
+            });
+
+            currentFilter = 'all';
+        }
+
+        // Filter items based on current filter and search
+        function getFilteredItems() {
+            return currentData.filter(item => {
+                // Filter by category/type
+                let matchesFilter = currentFilter === 'all';
+
+                if (activeTab === 'properties') {
+                    matchesFilter = currentFilter === 'all' ||
+                                  (item.accommodation_type && item.accommodation_type.toLowerCase().includes(currentFilter.toLowerCase()));
+                } else {
+                    matchesFilter = currentFilter === 'all' ||
+                                  (item.destination_type && item.destination_type === currentFilter);
+                }
 
                 // Filter by search
                 const matchesSearch = currentSearch === '' ||
-                    destination.name.toLowerCase().includes(currentSearch) ||
-                    destination.location.toLowerCase().includes(currentSearch) ||
-                    destination.description.toLowerCase().includes(currentSearch);
+                    (item.property_name && item.property_name.toLowerCase().includes(currentSearch)) ||
+                    (item.name && item.name.toLowerCase().includes(currentSearch)) ||
+                    (item.municipality && item.municipality.toLowerCase().includes(currentSearch)) ||
+                    (item.barangay && item.barangay.toLowerCase().includes(currentSearch)) ||
+                    (item.description && item.description.toLowerCase().includes(currentSearch));
 
                 return matchesFilter && matchesSearch;
             });
         }
 
-        // Render destinations
-        function renderDestinations() {
-            const filteredDestinations = getFilteredDestinations();
+        // Render items
+        function renderItems() {
+            const filteredItems = getFilteredItems();
+            const targetGrid = activeTab === 'properties' ? propertiesGrid : destinationsGrid;
 
-            if (filteredDestinations.length === 0) {
-                destinationsGrid.innerHTML = `
+            if (filteredItems.length === 0) {
+                targetGrid.innerHTML = `
                     <div class="col-12 text-center py-5">
                         <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                        <h4 class="text-muted">No destinations found</h4>
+                        <h4 class="text-muted">No ${activeTab} found</h4>
                         <p class="text-muted">Try adjusting your filters or search terms</p>
                     </div>
                 `;
                 return;
             }
 
-            destinationsGrid.innerHTML = filteredDestinations.map(destination => `
-                <div class="destination-card" onclick="openDestinationModal(${destination.id})">
-                    <div class="card-image-container">
-                        <img src="${destination.image}" alt="${destination.name}" class="card-img-top">
-                        <div class="card-overlay"></div>
-                        <div class="difficulty-badge difficulty-${destination.difficulty}">
-                            ${destination.difficulty}
-                        </div>
-                        <div class="rating-badge">
-                            <i class="fas fa-star"></i> ${destination.rating}
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${destination.location}</span>
-                        </div>
-                        <h5 class="card-title">${destination.name}</h5>
-                        <p class="card-text">${destination.description}</p>
-
-                        <div class="card-features">
-                            <div class="feature-list">
-                                ${destination.features.slice(0, 4).map(feature => `
-                                    <span class="feature-item">
-                                        <i class="fas fa-check"></i>
-                                        ${feature}
-                                    </span>
-                                `).join('')}
+            if (activeTab === 'properties') {
+                targetGrid.innerHTML = filteredItems.map(property => `
+                    <div class="destination-card" onclick="openModal('${activeTab}', ${property.property_id})">
+                        <div class="card-image-container">
+                            <img src="${property.main_image || '/static/images/default-property.jpg'}" alt="${property.property_name}" class="card-img-top">
+                            <div class="card-overlay"></div>
+                            <div class="type-badge">
+                                ${property.accommodation_type || 'Property'}
                             </div>
                         </div>
+                        <div class="card-body">
+                            <div class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${property.barangay}, ${property.municipality}</span>
+                            </div>
+                            <h5 class="card-title">${property.property_name}</h5>
+                            <p class="card-text">${property.description ? property.description.substring(0, 120) + '...' : 'Discover this amazing property in Batangas.'}</p>
 
-                        <div class="mb-3">
-                            ${destination.category.map(cat => `
-                                <span class="badge-custom">${cat}</span>
-                            `).join('')}
+                            <div class="card-features">
+                                <div class="feature-list">
+                                    ${property.amenities ? property.amenities.slice(0, 4).map(amenity => `
+                                        <span class="feature-item">
+                                            <i class="fas fa-check"></i>
+                                            ${amenity.amenity}
+                                        </span>
+                                    `).join('') : ''}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="badge-custom">${property.accommodation_type || 'Property'}</span>
+                                ${property.status === 'ACTIVE' ? '<span class="badge-custom">Available</span>' : '<span class="badge-custom">Maintenance</span>'}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-info">
+                                ${property.price_range || 'Contact for pricing'}
+                            </div>
+                            <span class="btn-explore">Learn More</span>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="price-info">${destination.price}</div>
-                        <span class="btn-explore">Learn More</span>
+                `).join('');
+            } else {
+                targetGrid.innerHTML = filteredItems.map(destination => `
+                    <div class="destination-card" onclick="openModal('${activeTab}', ${destination.id})">
+                        <div class="card-image-container">
+                            <img src="${destination.image_path || '/static/images/default-destination.jpg'}" alt="${destination.name}" class="card-img-top">
+                            <div class="card-overlay"></div>
+                            <div class="type-badge">
+                                ${destination.destination_type || 'Destination'}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${destination.location_name}</span>
+                            </div>
+                            <h5 class="card-title">${destination.name}</h5>
+                            <p class="card-text">${destination.description ? destination.description.substring(0, 120) + '...' : 'Explore this amazing destination in Batangas.'}</p>
+
+                            <div class="card-features">
+                                <div class="feature-list">
+                                    <span class="feature-item">
+                                        <i class="fas fa-mountain"></i>
+                                        Natural Beauty
+                                    </span>
+                                    <span class="feature-item">
+                                        <i class="fas fa-camera"></i>
+                                        Photography
+                                    </span>
+                                    ${destination.is_featured ? `
+                                        <span class="feature-item">
+                                            <i class="fas fa-star"></i>
+                                            Featured
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="badge-custom">${destination.destination_type}</span>
+                                <span class="badge-custom">${destination.municipality}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-info">
+                                Free to visit
+                            </div>
+                            <span class="btn-explore">Learn More</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             // Add animation to cards
             setTimeout(() => {
@@ -1029,77 +1009,93 @@
             }, 50);
         }
 
-        // Open destination modal
-        function openDestinationModal(destinationId) {
-            const destination = destinations.find(d => d.id === destinationId);
-            if (!destination) return;
+        // Open modal
+        function openModal(type, id) {
+            let item;
 
+            if (type === 'properties') {
+                item = window.propertiesData.find(p => p.property_id === id);
+                if (!item) return;
+                showPropertyModal(item);
+            } else {
+                item = window.destinationsData.find(d => d.id === id);
+                if (!item) return;
+                showDestinationModal(item);
+            }
+        }
+
+        // Show property modal
+        function showPropertyModal(property) {
             const modalBody = document.getElementById('modalBody');
-            document.getElementById('destinationModalLabel').textContent = destination.name;
+            document.getElementById('destinationModalLabel').textContent = property.property_name;
 
             modalBody.innerHTML = `
-                <img src="${destination.image}" alt="${destination.name}" class="modal-image">
+                <img src="${property.main_image || '/static/images/default-property.jpg'}" alt="${property.property_name}" class="modal-image">
 
                 <div class="location mb-3">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>${destination.location}</span>
+                    <span>${property.barangay}, ${property.municipality}</span>
                 </div>
 
-                <p class="lead">${destination.longDescription}</p>
+                <p class="lead">${property.description || 'A wonderful accommodation in Batangas province.'}</p>
 
                 <div class="info-grid">
                     <div class="info-item">
-                        <i class="fas fa-clock"></i>
-                        <h6>Duration</h6>
-                        <p>${destination.duration}</p>
+                        <i class="fas fa-bed"></i>
+                        <h6>Accommodation Type</h6>
+                        <p>${property.accommodation_type || 'Property'}</p>
                     </div>
                     <div class="info-item">
-                        <i class="fas fa-calendar"></i>
-                        <h6>Best Time</h6>
-                        <p>${destination.bestTime}</p>
+                        <i class="fas fa-users"></i>
+                        <h6>Total Rooms</h6>
+                        <p>${property.total_rooms || 'Contact for details'}</p>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-tag"></i>
-                        <h6>Price Range</h6>
-                        <p>${destination.price}</p>
+                        <h6>Status</h6>
+                        <p>${property.status === 'ACTIVE' ? 'Available' : 'Maintenance'}</p>
                     </div>
                     <div class="info-item">
-                        <i class="fas fa-star"></i>
-                        <h6>Rating</h6>
-                        <p>${destination.rating}/5.0</p>
+                        <i class="fas fa-map"></i>
+                        <h6>Location</h6>
+                        <p>${property.municipality}</p>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6">
-                        <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>Activities</h5>
+                        <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>Amenities</h5>
                         <ul class="list-unstyled">
-                            ${destination.activities.map(activity => `
+                            ${property.amenities ? property.amenities.map(amenity => `
                                 <li class="mb-2">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>
-                                    ${activity}
+                                    ${amenity.amenity}
                                 </li>
-                            `).join('')}
+                            `).join('') : '<li class="text-muted">Contact property for amenity details</li>'}
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Tips</h5>
-                        <p class="text-muted">${destination.tips}</p>
-
-                        <div class="mt-4">
-                            <h6>Categories:</h6>
-                            ${destination.category.map(cat => `
-                                <span class="badge-custom me-1">${cat}</span>
-                            `).join('')}
-                        </div>
+                        <h5 class="mb-3"><i class="fas fa-bed me-2"></i>Room Information</h5>
+                        ${property.rooms && property.rooms.length > 0 ? `
+                            <div class="room-types">
+                                ${property.rooms.map(room => `
+                                    <div class="mb-3 p-3 border rounded">
+                                        <h6>${room.room_type}</h6>
+                                        <p class="mb-1">Capacity: ${room.capacity} guests</p>
+                                        ${room.day_price ? `<p class="mb-1">Day use: ₱${room.day_price}</p>` : ''}
+                                        ${room.overnight_price ? `<p class="mb-0">Overnight: ₱${room.overnight_price}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p class="text-muted">Contact property for room details and pricing</p>'}
                     </div>
                 </div>
 
                 <div class="text-center mt-4">
-                    <button class="btn-explore me-3" onclick="bookDestination(${destination.id})">
-                        <i class="fas fa-calendar-plus me-2"></i>Book Now
+                    <button class="btn-explore me-3" onclick="contactProperty('${property.property_name}')">
+                        <i class="fas fa-phone me-2"></i>Contact Property
                     </button>
-                    <button class="btn btn-outline-secondary" onclick="shareDestination(${destination.id})">
+                    <button class="btn btn-outline-secondary" onclick="shareItem('${property.property_name}')">
                         <i class="fas fa-share me-2"></i>Share
                     </button>
                 </div>
@@ -1108,28 +1104,104 @@
             destinationModal.show();
         }
 
-        // Book destination function
-        function bookDestination(destinationId) {
-            const destination = destinations.find(d => d.id === destinationId);
-            alert(`Booking feature coming soon for ${destination.name}! Please contact our tourism office for now.`);
+        // Show destination modal
+        function showDestinationModal(destination) {
+            const modalBody = document.getElementById('modalBody');
+            document.getElementById('destinationModalLabel').textContent = destination.name;
+
+            modalBody.innerHTML = `
+                <img src="${destination.image_path || '/static/images/default-destination.jpg'}" alt="${destination.name}" class="modal-image">
+
+                <div class="location mb-3">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${destination.location_name}</span>
+                </div>
+
+                <p class="lead">${destination.description}</p>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-mountain"></i>
+                        <h6>Type</h6>
+                        <p>${destination.destination_type}</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h6>Municipality</h6>
+                        <p>${destination.municipality}</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map"></i>
+                        <h6>Barangay</h6>
+                        <p>${destination.barangay}</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-star"></i>
+                        <h6>Featured</h6>
+                        <p>${destination.is_featured ? 'Yes' : 'No'}</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>About</h5>
+                        <p>${destination.description}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Visit Information</h5>
+                        <p class="text-muted">This ${destination.destination_type.toLowerCase()} is located in ${destination.barangay}, ${destination.municipality}. Perfect for nature lovers and adventure seekers.</p>
+
+                        <div class="mt-4">
+                            <h6>Category:</h6>
+                            <span class="badge-custom">${destination.destination_type}</span>
+                            ${destination.is_featured ? '<span class="badge-custom">Featured</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn-explore me-3" onclick="getDirections(${destination.latitude}, ${destination.longitude})">
+                        <i class="fas fa-directions me-2"></i>Get Directions
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="shareItem('${destination.name}')">
+                        <i class="fas fa-share me-2"></i>Share
+                    </button>
+                </div>
+            `;
+
+            destinationModal.show();
         }
 
-        // Share destination function
-        function shareDestination(destinationId) {
-            const destination = destinations.find(d => d.id === destinationId);
+        // Contact property function
+        function contactProperty(propertyName) {
+            alert(`Contact information for ${propertyName} will be available soon! Please contact the Batangas Tourism Office for more details.`);
+        }
+
+        // Get directions function
+        function getDirections(lat, lng) {
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+            window.open(url, '_blank');
+        }
+
+        // Share item function
+        function shareItem(name) {
             if (navigator.share) {
                 navigator.share({
-                    title: `${destination.name} - Batangas Explorer`,
-                    text: destination.description,
+                    title: `${name} - Batangas Explorer`,
+                    text: `Check out ${name} in Batangas!`,
                     url: window.location.href
                 });
             } else {
-                // Fallback for browsers that don't support Web Share API
                 const url = window.location.href;
                 navigator.clipboard.writeText(url).then(() => {
                     alert('Link copied to clipboard!');
                 });
             }
+        }
+
+        // Show/hide loading
+        function showLoading(show) {
+            loading.style.display = show ? 'block' : 'none';
         }
 
         // Smooth scrolling for anchor links
@@ -1143,32 +1215,6 @@
                         block: 'start'
                     });
                 }
-            });
-        });
-
-        // Add some interactive effects
-        document.addEventListener('mousemove', function(e) {
-            const cards = document.querySelectorAll('.destination-card');
-            cards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = (y - centerY) / 20;
-                    const rotateY = (centerX - x) / 20;
-
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
-                }
-            });
-        });
-
-        document.addEventListener('mouseleave', function() {
-            const cards = document.querySelectorAll('.destination-card');
-            cards.forEach(card => {
-                card.style.transform = '';
             });
         });
     </script>

@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixing backend for tourist page">
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Destination.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Destination.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Destination.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Home.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Home.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -249,15 +251,9 @@
       <workItem from="1754372074589" duration="28000" />
       <workItem from="1754373389328" duration="1900000" />
       <workItem from="1754395073640" duration="7819000" />
-      <workItem from="1754452040782" duration="2583000" />
-    </task>
-    <task id="LOCAL-00039" summary="updated dashboard">
-      <option name="closed" value="true" />
-      <created>1746463814833</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1746463814833</updated>
+      <workItem from="1754452040782" duration="3193000" />
+      <workItem from="1754473246232" duration="3303000" />
+      <workItem from="1754486611583" duration="3020000" />
     </task>
     <task id="LOCAL-00040" summary="added reports frontend">
       <option name="closed" value="true" />
@@ -643,7 +639,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754410183137</updated>
     </task>
-    <option name="localTasksCounter" value="88" />
+    <task id="LOCAL-00088" summary="fixing backend for tourist page">
+      <option name="closed" value="true" />
+      <created>1754456313508</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1754456313510</updated>
+    </task>
+    <option name="localTasksCounter" value="89" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -690,7 +694,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1754452656794" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1754496736135" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
     <SUITE FILE_PATH="coverage/DjangoProject$checkIFExist.coverage" NAME="checkIFExist Coverage Results" MODIFIED="1753360082611" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
     <SUITE FILE_PATH="coverage/DjangoProject$model.coverage" NAME="model Coverage Results" MODIFIED="1746352563953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />

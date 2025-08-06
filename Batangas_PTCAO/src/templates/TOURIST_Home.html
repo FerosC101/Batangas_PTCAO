@@ -34,15 +34,15 @@
 
         /* Navigation */
         .navbar {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #003366 0%, #004080 100%);
             padding: 1rem 0;
-            box-shadow: var(--shadow-medium);
-            transition: var(--transition);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .navbar.scrolled {
             padding: 0.7rem 0;
-            backdrop-filter: blur(10px);
         }
 
         .navbar-brand {
@@ -50,10 +50,12 @@
             font-size: 1.5rem;
             color: white !important;
             transition: transform 0.3s ease;
+            text-decoration: none;
         }
 
         .navbar-brand:hover {
             transform: translateY(-1px);
+            color: white !important;
         }
 
         .navbar-brand img {
@@ -65,8 +67,9 @@
             font-weight: 500;
             padding: 0.5rem 1rem;
             position: relative;
-            transition: var(--transition);
-            border-radius: 5px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            text-decoration: none;
         }
 
         .nav-link::after {
@@ -76,9 +79,10 @@
             left: 50%;
             width: 0;
             height: 2px;
-            background-color: var(--accent);
-            transition: var(--transition);
+            background: linear-gradient(135deg, #ff7e00 0%, #ff9500 100%);
+            transition: all 0.3s ease;
             transform: translateX(-50%);
+            border-radius: 2px;
         }
 
         .nav-link:hover::after,
@@ -86,9 +90,16 @@
             width: 70%;
         }
 
-        .nav-link:hover {
+        .nav-link:hover,
+        .nav-link:focus {
             background-color: rgba(255, 255, 255, 0.1);
             transform: translateY(-1px);
+            color: white !important;
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 126, 0, 0.1);
+            color: white !important;
         }
 
         /* Hero Section */
@@ -675,6 +686,39 @@
             }
         }
 
+        @media (max-width: 991px) {
+            .navbar-nav {
+                padding-top: 1rem;
+            }
+
+            .nav-link {
+                text-align: center;
+                margin: 0.2rem 0;
+            }
+
+            .nav-link::after {
+                display: none;
+            }
+
+            .nav-link.active {
+                background-color: rgba(255, 126, 0, 0.2);
+                border-radius: 8px;
+            }
+
+            .navbar-toggler {
+                border: none;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: none;
+            }
+
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+        }
+
         @media (max-width: 576px) {
             .hero-content {
                 padding: 0 1rem;
@@ -712,19 +756,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
+                        <a class="nav-link active" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#destinations">Destinations</a>
+                        <a class="nav-link" href="/destinations" id="nav-destinations">Destinations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#map">Map</a>
+                        <a class="nav-link" href="/map">Map</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#events">Events</a>
+                        <a class="nav-link" href="/events">Events</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
+                        <a class="nav-link" href="/about">About</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact</a>
@@ -1170,6 +1214,64 @@
             loadFeaturedDestinations();
             loadUpcomingEvents();
             loadRecentAnnouncements();
+
+            const currentPath = window.location.pathname;
+            const pathToNavId = {
+                '/': 'nav-home',
+                '/home': 'nav-home',
+                '/destinations': 'nav-destinations',
+                '/map': 'nav-map',
+                '/events': 'nav-events',
+                '/about': 'nav-about',
+                '/contact': 'nav-contact'
+            };
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            const currentNavId = pathToNavId[currentPath];
+            if (currentNavId) {
+                if (currentNavLink) {
+                    currentNavLink.classList.add('active');
+                }
+            }
+
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+
+                    // If it's a hash link and we're on the same page, handle smooth scrolling
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+
+                            // Update active state
+                            document.querySelectorAll('.nav-link').forEach(navLink => {
+                                navLink.classList.remove('active');
+                            });
+                            this.classList.add('active');
+                        }
+                    }
+                    // For external links, let them navigate normally
+                });
+            });
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', function() {
+                const navbar = document.getElementById('navbar');
+                if (window.scrollY > 100) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
 
             // Counter animation for stats
             function animateCounters() {
