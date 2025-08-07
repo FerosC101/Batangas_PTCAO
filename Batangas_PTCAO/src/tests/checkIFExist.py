@@ -1,10 +1,12 @@
-# In your Python shell or a temporary route, run:
-from Batangas_PTCAO.src.model import TouristReport, Property
+# In Python shell with app context
+from sqlalchemy import desc
 
-# Check if any TouristReport records exist for your municipality
-reports = TouristReport.query.join(Property).filter(Property.municipality == "YourMunicipalityName").all()
-print(f"Found {len(reports)} TouristReport records")
+from Batangas_PTCAO.src.model import Destination, Property
 
-# Check if any properties exist for your municipality
-properties = Property.query.filter_by(municipality="YourMunicipalityName").all()
-print(f"Found {len(properties)} Properties")
+# Test destination query
+destinations = Destination.query.order_by(desc(Destination.is_featured), Destination.name).all()
+print([d.name for d in destinations])
+
+# Test property query
+properties = Property.query.filter(Property.status == 'ACTIVE').all()
+print([p.property_name for p in properties])

@@ -725,10 +725,18 @@
         const filterButtons = document.querySelectorAll('.filter-btn');
         const searchInput = document.getElementById('searchInput');
         const loading = document.getElementById('loading');
-        const destinationModal = new bootstrap.Modal(document.getElementById('destinationModal'));
+        let destinationModal;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - initializing page');
+
+            // Initialize Bootstrap modal
+            const modalElement = document.getElementById('destinationModal');
+            if (modalElement) {
+                destinationModal = new bootstrap.Modal(modalElement);
+            }
+
             // Set active nav item based on current path
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
@@ -740,101 +748,168 @@
                 }
             });
 
+            // Load initial data
             loadProperties();
             loadDestinations();
             setupEventListeners();
         });
 
-        // Load properties from API
+        // Load properties from API with better error handling
         async function loadProperties() {
+            console.log('Loading properties...');
             try {
                 showLoading(true);
-                const response = await fetch('/api/tourist/properties');
-                const data = await response.json();
 
-                if (data.success) {
-                    window.propertiesData = data.properties || [];
+                // Use the correct API endpoint
+                const response = await fetch('/tourist/api/properties');
+                console.log('Properties API response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Properties data received:', data);
+
+                if (data.success && data.properties) {
+                    window.propertiesData = data.properties;
+                    console.log(`Loaded ${data.properties.length} properties`);
+
                     if (activeTab === 'properties') {
                         currentData = window.propertiesData;
                         renderItems();
                     }
                 } else {
-                    console.error('Failed to load properties:', data.message);
+                    console.error('Failed to load properties:', data.message || 'Unknown error');
+                    showError('propertiesGrid', data.message || 'Failed to load properties');
                 }
             } catch (error) {
                 console.error('Error loading properties:', error);
+                showError('propertiesGrid', `Error loading properties: ${error.message}`);
             } finally {
                 showLoading(false);
             }
         }
 
-        // Load destinations from API
+        // Load destinations from API with better error handling
         async function loadDestinations() {
+            console.log('Loading destinations...');
             try {
-                const response = await fetch('/api/tourist/destinations');
-                const data = await response.json();
+                showLoading(true);
 
-                if (data.success) {
-                    window.destinationsData = data.destinations || [];
+                // Use the correct API endpoint
+                const response = await fetch('/tourist/api/destinations');
+                console.log('Destinations API response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Destinations data received:', data);
+
+                if (data.success && data.destinations) {
+                    window.destinationsData = data.destinations;
+                    console.log(`Loaded ${data.destinations.length} destinations`);
+
                     if (activeTab === 'destinations') {
                         currentData = window.destinationsData;
                         renderItems();
                     }
                 } else {
-                    console.error('Failed to load destinations:', data.message);
+                    console.error('Failed to load destinations:', data.message || 'Unknown error');
+                    showError('destinationsGrid', data.message || 'Failed to load destinations');
                 }
             } catch (error) {
                 console.error('Error loading destinations:', error);
+                showError('destinationsGrid', `Error loading destinations: ${error.message}`);
+            } finally {
+                showLoading(false);
             }
         }
 
-        // Setup event listeners
+        // Show error message with better formatting
+        function showError(containerId, message) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <h4 class="text-danger">Unable to Load Data</h4>
+                        <p class="text-muted">${message}</p>
+                        <button class="btn btn-outline-primary mt-3" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-2"></i>Try Again
+                        </button>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                If the problem persists, please check your internet connection or contact support.
+                            </small>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Setup event listeners with improved error handling
         function setupEventListeners() {
+            console.log('Setting up event listeners...');
+
             // Tab change events
-            document.getElementById('properties-tab').addEventListener('click', function() {
-                activeTab = 'properties';
-                currentData = window.propertiesData || [];
-                updateFilterButtons();
-                renderItems();
-            });
+            const propertiesTab = document.getElementById('properties-tab');
+            const destinationsTab = document.getElementById('destinations-tab');
 
-            document.getElementById('destinations-tab').addEventListener('click', function() {
-                activeTab = 'destinations';
-                currentData = window.destinationsData || [];
-                updateFilterButtons();
-                renderItems();
-            });
-
-            // Filter buttons
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    currentFilter = this.dataset.filter;
+            if (propertiesTab) {
+                propertiesTab.addEventListener('click', function() {
+                    console.log('Switching to properties tab');
+                    activeTab = 'properties';
+                    currentData = window.propertiesData || [];
+                    updateFilterButtons();
                     renderItems();
                 });
-            });
+            }
 
-            // Search input
-            searchInput.addEventListener('input', function() {
-                currentSearch = this.value.toLowerCase();
-                renderItems();
-            });
+            if (destinationsTab) {
+                destinationsTab.addEventListener('click', function() {
+                    console.log('Switching to destinations tab');
+                    activeTab = 'destinations';
+                    currentData = window.destinationsData || [];
+                    updateFilterButtons();
+                    renderItems();
+                });
+            }
+
+            // Search input with debouncing
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        currentSearch = this.value.toLowerCase();
+                        console.log('Search term:', currentSearch);
+                        renderItems();
+                    }, 300); // 300ms debounce
+                });
+            }
 
             // Navbar scroll effect
             window.addEventListener('scroll', function() {
                 const navbar = document.getElementById('navbar');
-                if (window.scrollY > 100) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
+                if (navbar) {
+                    if (window.scrollY > 100) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
                 }
             });
         }
 
-        // Update filter buttons based on active tab
+        // Update filter buttons based on active tab with proper event binding
         function updateFilterButtons() {
             const filterContainer = document.getElementById('filterButtons');
+            if (!filterContainer) return;
+
+            console.log('Updating filter buttons for tab:', activeTab);
 
             if (activeTab === 'properties') {
                 filterContainer.innerHTML = `
@@ -857,11 +932,14 @@
             }
 
             // Reattach event listeners to new buttons
-            document.querySelectorAll('.filter-btn').forEach(button => {
+            filterContainer.querySelectorAll('.filter-btn').forEach(button => {
                 button.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    // Remove active class from all buttons
+                    filterContainer.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
                     this.classList.add('active');
                     currentFilter = this.dataset.filter;
+                    console.log('Filter changed to:', currentFilter);
                     renderItems();
                 });
             });
@@ -869,18 +947,25 @@
             currentFilter = 'all';
         }
 
-        // Filter items based on current filter and search
+        // Filter items with improved logic
         function getFilteredItems() {
+            if (!currentData || !Array.isArray(currentData)) {
+                console.log('No valid data to filter');
+                return [];
+            }
+
             return currentData.filter(item => {
                 // Filter by category/type
                 let matchesFilter = currentFilter === 'all';
 
                 if (activeTab === 'properties') {
                     matchesFilter = currentFilter === 'all' ||
-                                  (item.accommodation_type && item.accommodation_type.toLowerCase().includes(currentFilter.toLowerCase()));
+                                  (item.accommodation_type &&
+                                   item.accommodation_type.toLowerCase().includes(currentFilter.toLowerCase()));
                 } else {
                     matchesFilter = currentFilter === 'all' ||
-                                  (item.destination_type && item.destination_type === currentFilter);
+                                  (item.destination_type &&
+                                   item.destination_type.value === currentFilter);
                 }
 
                 // Filter by search
@@ -895,10 +980,19 @@
             });
         }
 
-        // Render items
+        // Render items with improved error handling and data validation
         function renderItems() {
+            console.log('Rendering items for tab:', activeTab);
+
             const filteredItems = getFilteredItems();
             const targetGrid = activeTab === 'properties' ? propertiesGrid : destinationsGrid;
+
+            if (!targetGrid) {
+                console.error('Target grid not found');
+                return;
+            }
+
+            console.log(`Rendering ${filteredItems.length} items`);
 
             if (filteredItems.length === 0) {
                 targetGrid.innerHTML = `
@@ -906,146 +1000,228 @@
                         <i class="fas fa-search fa-3x text-muted mb-3"></i>
                         <h4 class="text-muted">No ${activeTab} found</h4>
                         <p class="text-muted">Try adjusting your filters or search terms</p>
+                        ${currentSearch || currentFilter !== 'all' ?
+                            '<button class="btn btn-outline-primary mt-2" onclick="clearFilters()">Clear Filters</button>'
+                            : ''
+                        }
                     </div>
                 `;
                 return;
             }
 
-            if (activeTab === 'properties') {
-                targetGrid.innerHTML = filteredItems.map(property => `
-                    <div class="destination-card" onclick="openModal('${activeTab}', ${property.property_id})">
-                        <div class="card-image-container">
-                            <img src="${property.main_image || '/static/images/default-property.jpg'}" alt="${property.property_name}" class="card-img-top">
-                            <div class="card-overlay"></div>
-                            <div class="type-badge">
-                                ${property.accommodation_type || 'Property'}
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${property.barangay}, ${property.municipality}</span>
-                            </div>
-                            <h5 class="card-title">${property.property_name}</h5>
-                            <p class="card-text">${property.description ? property.description.substring(0, 120) + '...' : 'Discover this amazing property in Batangas.'}</p>
-
-                            <div class="card-features">
-                                <div class="feature-list">
-                                    ${property.amenities ? property.amenities.slice(0, 4).map(amenity => `
-                                        <span class="feature-item">
-                                            <i class="fas fa-check"></i>
-                                            ${amenity.amenity}
-                                        </span>
-                                    `).join('') : ''}
+            try {
+                if (activeTab === 'properties') {
+                    targetGrid.innerHTML = filteredItems.map(property => `
+                        <div class="destination-card" onclick="openModal('${activeTab}', ${property.property_id})">
+                            <div class="card-image-container">
+                                <img src="${property.main_image || '/static/images/default-property.jpg'}"
+                                     alt="${property.property_name || 'Property'}"
+                                     class="card-img-top"
+                                     onerror="this.src='/static/images/default-property.jpg'">
+                                <div class="card-overlay"></div>
+                                <div class="type-badge">
+                                    ${property.accommodation_type || 'Property'}
                                 </div>
                             </div>
+                            <div class="card-body">
+                                <div class="location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${(property.barangay || '')}, ${property.municipality || 'Batangas'}</span>
+                                </div>
+                                <h5 class="card-title">${property.property_name || 'Unnamed Property'}</h5>
+                                <p class="card-text">${property.description ? property.description.substring(0, 120) + '...' : 'Discover this amazing property in Batangas.'}</p>
 
-                            <div class="mb-3">
-                                <span class="badge-custom">${property.accommodation_type || 'Property'}</span>
-                                ${property.status === 'ACTIVE' ? '<span class="badge-custom">Available</span>' : '<span class="badge-custom">Maintenance</span>'}
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="price-info">
-                                ${property.price_range || 'Contact for pricing'}
-                            </div>
-                            <span class="btn-explore">Learn More</span>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                targetGrid.innerHTML = filteredItems.map(destination => `
-                    <div class="destination-card" onclick="openModal('${activeTab}', ${destination.id})">
-                        <div class="card-image-container">
-                            <img src="${destination.image_path || '/static/images/default-destination.jpg'}" alt="${destination.name}" class="card-img-top">
-                            <div class="card-overlay"></div>
-                            <div class="type-badge">
-                                ${destination.destination_type || 'Destination'}
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${destination.location_name}</span>
-                            </div>
-                            <h5 class="card-title">${destination.name}</h5>
-                            <p class="card-text">${destination.description ? destination.description.substring(0, 120) + '...' : 'Explore this amazing destination in Batangas.'}</p>
+                                <div class="card-features">
+                                    <div class="feature-list">
+                                        ${property.amenities && property.amenities.length > 0 ?
+                                            property.amenities.slice(0, 4).map(amenity => `
+                                                <span class="feature-item">
+                                                    <i class="fas fa-check"></i>
+                                                    ${amenity.amenity}
+                                                </span>
+                                            `).join('') :
+                                            '<span class="feature-item"><i class="fas fa-info"></i>Contact for details</span>'
+                                        }
+                                    </div>
+                                </div>
 
-                            <div class="card-features">
-                                <div class="feature-list">
-                                    <span class="feature-item">
-                                        <i class="fas fa-mountain"></i>
-                                        Natural Beauty
-                                    </span>
-                                    <span class="feature-item">
-                                        <i class="fas fa-camera"></i>
-                                        Photography
-                                    </span>
-                                    ${destination.is_featured ? `
-                                        <span class="feature-item">
-                                            <i class="fas fa-star"></i>
-                                            Featured
-                                        </span>
-                                    ` : ''}
+                                <div class="mb-3">
+                                    <span class="badge-custom">${property.accommodation_type || 'Property'}</span>
+                                    <span class="badge-custom">${property.status === 'ACTIVE' ? 'Available' : 'Maintenance'}</span>
                                 </div>
                             </div>
-
-                            <div class="mb-3">
-                                <span class="badge-custom">${destination.destination_type}</span>
-                                <span class="badge-custom">${destination.municipality}</span>
+                            <div class="card-footer">
+                                <div class="price-info">
+                                    ${property.price_range || 'Contact for pricing'}
+                                </div>
+                                <span class="btn-explore">Learn More</span>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <div class="price-info">
-                                Free to visit
+                    `).join('');
+                } else {
+                    targetGrid.innerHTML = filteredItems.map(destination => `
+                        <div class="destination-card" onclick="openModal('${activeTab}', ${destination.id})">
+                            <div class="card-image-container">
+                                <img src="${destination.image_path || '/static/images/default-destination.jpg'}"
+                                     alt="${destination.name || 'Destination'}"
+                                     class="card-img-top"
+                                     onerror="this.src='/static/images/default-destination.jpg'">
+                                <div class="card-overlay"></div>
+                                <div class="type-badge">
+                                    ${destination.destination_type?.value || 'Destination'}
+                                </div>
                             </div>
-                            <span class="btn-explore">Learn More</span>
+                            <div class="card-body">
+                                <div class="location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${destination.location_name || destination.municipality || 'Batangas'}</span>
+                                </div>
+                                <h5 class="card-title">${destination.name || 'Unnamed Destination'}</h5>
+                                <p class="card-text">${destination.description ? destination.description.substring(0, 120) + '...' : 'Explore this amazing destination in Batangas.'}</p>
+
+                                <div class="card-features">
+                                    <div class="feature-list">
+                                        <span class="feature-item">
+                                            <i class="fas fa-mountain"></i>
+                                            Natural Beauty
+                                        </span>
+                                        <span class="feature-item">
+                                            <i class="fas fa-camera"></i>
+                                            Photography
+                                        </span>
+                                        ${destination.is_featured ? `
+                                            <span class="feature-item">
+                                                <i class="fas fa-star"></i>
+                                                Featured
+                                            </span>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <span class="badge-custom">${destination.destination_type?.value || 'Destination'}</span>
+                                    <span class="badge-custom">${destination.municipality || 'Batangas'}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="price-info">
+                                    Free to visit
+                                </div>
+                                <span class="btn-explore">Learn More</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Add animation to cards
+                setTimeout(() => {
+                    document.querySelectorAll('.destination-card').forEach((card, index) => {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(30px)';
+
+                        setTimeout(() => {
+                            card.style.transition = 'all 0.5s ease';
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    });
+                }, 50);
+
+            } catch (error) {
+                console.error('Error rendering items:', error);
+                targetGrid.innerHTML = `
+                    <div class="col-12">
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Error rendering items. Please refresh the page.
                         </div>
                     </div>
-                `).join('');
+                `;
             }
-
-            // Add animation to cards
-            setTimeout(() => {
-                document.querySelectorAll('.destination-card').forEach((card, index) => {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(30px)';
-
-                    setTimeout(() => {
-                        card.style.transition = 'all 0.5s ease';
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, index * 100);
-                });
-            }, 50);
         }
 
-        // Open modal
+        // Clear filters function
+        function clearFilters() {
+            currentSearch = '';
+            currentFilter = 'all';
+
+            // Clear search input
+            if (searchInput) {
+                searchInput.value = '';
+            }
+
+            // Reset filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === 'all') {
+                    btn.classList.add('active');
+                }
+            });
+
+            renderItems();
+        }
+
+        // Open modal with improved error handling
         function openModal(type, id) {
+            console.log(`Opening modal for ${type} with id ${id}`);
+
+            if (!destinationModal) {
+                console.error('Modal not initialized');
+                return;
+            }
+
             let item;
 
-            if (type === 'properties') {
-                item = window.propertiesData.find(p => p.property_id === id);
-                if (!item) return;
-                showPropertyModal(item);
-            } else {
-                item = window.destinationsData.find(d => d.id === id);
-                if (!item) return;
-                showDestinationModal(item);
+            try {
+                if (type === 'properties') {
+                    if (!window.propertiesData || !Array.isArray(window.propertiesData)) {
+                        console.error('Properties data not available');
+                        return;
+                    }
+                    item = window.propertiesData.find(p => p.property_id === id);
+                    if (!item) {
+                        console.error('Property not found with id:', id);
+                        return;
+                    }
+                    showPropertyModal(item);
+                } else {
+                    if (!window.destinationsData || !Array.isArray(window.destinationsData)) {
+                        console.error('Destinations data not available');
+                        return;
+                    }
+                    item = window.destinationsData.find(d => d.id === id);
+                    if (!item) {
+                        console.error('Destination not found with id:', id);
+                        return;
+                    }
+                    showDestinationModal(item);
+                }
+            } catch (error) {
+                console.error('Error opening modal:', error);
             }
         }
 
-        // Show property modal
+        // Show property modal with enhanced content
         function showPropertyModal(property) {
             const modalBody = document.getElementById('modalBody');
-            document.getElementById('destinationModalLabel').textContent = property.property_name;
+            const modalTitle = document.getElementById('destinationModalLabel');
+
+            if (!modalBody || !modalTitle) {
+                console.error('Modal elements not found');
+                return;
+            }
+
+            modalTitle.textContent = property.property_name || 'Property Details';
 
             modalBody.innerHTML = `
-                <img src="${property.main_image || '/static/images/default-property.jpg'}" alt="${property.property_name}" class="modal-image">
+                <img src="${property.main_image || '/static/images/default-property.jpg'}"
+                     alt="${property.property_name || 'Property'}"
+                     class="modal-image"
+                     onerror="this.src='/static/images/default-property.jpg'">
 
                 <div class="location mb-3">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>${property.barangay}, ${property.municipality}</span>
+                    <span>${(property.barangay || '')}, ${property.municipality || 'Batangas'}</span>
                 </div>
 
                 <p class="lead">${property.description || 'A wonderful accommodation in Batangas province.'}</p>
@@ -1069,7 +1245,7 @@
                     <div class="info-item">
                         <i class="fas fa-map"></i>
                         <h6>Location</h6>
-                        <p>${property.municipality}</p>
+                        <p>${property.municipality || 'Batangas'}</p>
                     </div>
                 </div>
 
@@ -1077,12 +1253,15 @@
                     <div class="col-md-6">
                         <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>Amenities</h5>
                         <ul class="list-unstyled">
-                            ${property.amenities ? property.amenities.map(amenity => `
-                                <li class="mb-2">
-                                    <i class="fas fa-chevron-right text-primary me-2"></i>
-                                    ${amenity.amenity}
-                                </li>
-                            `).join('') : '<li class="text-muted">Contact property for amenity details</li>'}
+                            ${property.amenities && property.amenities.length > 0 ?
+                                property.amenities.map(amenity => `
+                                    <li class="mb-2">
+                                        <i class="fas fa-chevron-right text-primary me-2"></i>
+                                        ${amenity.amenity}
+                                    </li>
+                                `).join('') :
+                                '<li class="text-muted">Contact property for amenity details</li>'
+                            }
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -1091,10 +1270,10 @@
                             <div class="room-types">
                                 ${property.rooms.map(room => `
                                     <div class="mb-3 p-3 border rounded">
-                                        <h6>${room.room_type}</h6>
-                                        <p class="mb-1">Capacity: ${room.capacity} guests</p>
-                                        ${room.day_price ? `<p class="mb-1">Day use: ₱${room.day_price}</p>` : ''}
-                                        ${room.overnight_price ? `<p class="mb-0">Overnight: ₱${room.overnight_price}</p>` : ''}
+                                        <h6>${room.room_type || 'Standard Room'}</h6>
+                                        <p class="mb-1">Capacity: ${room.capacity || 1} guests</p>
+                                        ${room.day_price ? `<p class="mb-1">Day use: ₱${room.day_price.toLocaleString()}</p>` : ''}
+                                        ${room.overnight_price ? `<p class="mb-0">Overnight: ₱${room.overnight_price.toLocaleString()}</p>` : ''}
                                     </div>
                                 `).join('')}
                             </div>
@@ -1103,10 +1282,10 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <button class="btn-explore me-3" onclick="contactProperty('${property.property_name}')">
+                    <button class="btn-explore me-3" onclick="contactProperty('${property.property_name || 'Property'}')">
                         <i class="fas fa-phone me-2"></i>Contact Property
                     </button>
-                    <button class="btn btn-outline-secondary" onclick="shareItem('${property.property_name}')">
+                    <button class="btn btn-outline-secondary" onclick="shareItem('${property.property_name || 'Property'}')">
                         <i class="fas fa-share me-2"></i>Share
                     </button>
                 </div>
@@ -1115,36 +1294,46 @@
             destinationModal.show();
         }
 
-        // Show destination modal
+        // Show destination modal with enhanced content
         function showDestinationModal(destination) {
             const modalBody = document.getElementById('modalBody');
-            document.getElementById('destinationModalLabel').textContent = destination.name;
+            const modalTitle = document.getElementById('destinationModalLabel');
+
+            if (!modalBody || !modalTitle) {
+                console.error('Modal elements not found');
+                return;
+            }
+
+            modalTitle.textContent = destination.name || 'Destination Details';
 
             modalBody.innerHTML = `
-                <img src="${destination.image_path || '/static/images/default-destination.jpg'}" alt="${destination.name}" class="modal-image">
+                <img src="${destination.image_path || '/static/images/default-destination.jpg'}"
+                     alt="${destination.name || 'Destination'}"
+                     class="modal-image"
+                     onerror="this.src='/static/images/default-destination.jpg'">
 
                 <div class="location mb-3">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>${destination.location_name}</span>
+                    <span>${destination.location_name || destination.municipality || 'Batangas'}</span>
                 </div>
 
-                <p class="lead">${destination.description}</p>
+                <p class="lead">${destination.description || 'Explore this amazing destination in Batangas.'}</p>
 
                 <div class="info-grid">
                     <div class="info-item">
                         <i class="fas fa-mountain"></i>
                         <h6>Type</h6>
-                        <p>${destination.destination_type}</p>
+                        <p>${destination.destination_type?.value || 'Destination'}</p>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <h6>Municipality</h6>
-                        <p>${destination.municipality}</p>
+                        <p>${destination.municipality || 'Batangas'}</p>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-map"></i>
                         <h6>Barangay</h6>
-                        <p>${destination.barangay}</p>
+                        <p>${destination.barangay || 'N/A'}</p>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-star"></i>
@@ -1156,25 +1345,25 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>About</h5>
-                        <p>${destination.description}</p>
+                        <p>${destination.description || 'Explore this amazing destination in Batangas.'}</p>
                     </div>
                     <div class="col-md-6">
                         <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Visit Information</h5>
-                        <p class="text-muted">This ${destination.destination_type.toLowerCase()} is located in ${destination.barangay}, ${destination.municipality}. Perfect for nature lovers and adventure seekers.</p>
+                        <p class="text-muted">This ${(destination.destination_type?.value || 'destination').toLowerCase()} is located in ${destination.barangay || 'N/A'}, ${destination.municipality || 'Batangas'}. Perfect for nature lovers and adventure seekers.</p>
 
                         <div class="mt-4">
                             <h6>Category:</h6>
-                            <span class="badge-custom">${destination.destination_type}</span>
+                            <span class="badge-custom">${destination.destination_type?.value || 'Destination'}</span>
                             ${destination.is_featured ? '<span class="badge-custom">Featured</span>' : ''}
                         </div>
                     </div>
                 </div>
 
                 <div class="text-center mt-4">
-                    <button class="btn-explore me-3" onclick="getDirections(${destination.latitude}, ${destination.longitude})">
+                    <button class="btn-explore me-3" onclick="getDirections(${destination.latitude || 0}, ${destination.longitude || 0})">
                         <i class="fas fa-directions me-2"></i>Get Directions
                     </button>
-                    <button class="btn btn-outline-secondary" onclick="shareItem('${destination.name}')">
+                    <button class="btn btn-outline-secondary" onclick="shareItem('${destination.name || 'Destination'}')">
                         <i class="fas fa-share me-2"></i>Share
                     </button>
                 </div>
@@ -1190,29 +1379,83 @@
 
         // Get directions function
         function getDirections(lat, lng) {
+            if (!lat || !lng || lat === 0 || lng === 0) {
+                alert('GPS coordinates not available for this location. Please contact the tourism office for directions.');
+                return;
+            }
+
             const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
             window.open(url, '_blank');
         }
 
         // Share item function
         function shareItem(name) {
-            if (navigator.share) {
-                navigator.share({
-                    title: `${name} - Batangas Explorer`,
-                    text: `Check out ${name} in Batangas!`,
-                    url: window.location.href
+            const shareData = {
+                title: `${name} - Batangas Explorer`,
+                text: `Check out ${name} in Batangas!`,
+                url: window.location.href
+            };
+
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData).catch(err => {
+                    console.log('Error sharing:', err);
+                    fallbackShare(name);
                 });
             } else {
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Link copied to clipboard!');
-                });
+                fallbackShare(name);
             }
+        }
+
+        // Fallback share function
+        function fallbackShare(name) {
+            const url = window.location.href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Link copied to clipboard!');
+                }).catch(() => {
+                    // Final fallback - show a prompt
+                    prompt('Copy this link to share:', url);
+                });
+            } else {
+                // Final fallback - show a prompt
+                prompt('Copy this link to share:', url);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            // Create a simple toast notification
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 5px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease-out;
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
         }
 
         // Show/hide loading
         function showLoading(show) {
-            loading.style.display = show ? 'block' : 'none';
+            if (loading) {
+                loading.style.display = show ? 'block' : 'none';
+            }
         }
 
         // Smooth scrolling for anchor links
@@ -1228,6 +1471,33 @@
                 }
             });
         });
+
+        // Add CSS for toast animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
