@@ -145,6 +145,7 @@
         .view-controls {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .view-btn {
@@ -199,6 +200,20 @@
             border-color: var(--primary);
         }
 
+        .municipality-select {
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .municipality-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(255, 126, 0, 0.25);
+        }
+
         /* Map */
         #map {
             height: 600px;
@@ -207,8 +222,8 @@
 
         /* Custom Leaflet Styles */
         .custom-marker {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             border: 3px solid white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -216,6 +231,15 @@
             cursor: pointer;
             transition: var(--transition);
             background: white;
+            position: relative;
+        }
+
+        .custom-marker.property {
+            border-color: var(--accent);
+        }
+
+        .custom-marker.destination {
+            border-color: var(--primary);
         }
 
         .custom-marker:hover {
@@ -227,6 +251,29 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .marker-type-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .marker-type-badge.property {
+            background-color: var(--accent);
+        }
+
+        .marker-type-badge.destination {
+            background-color: var(--primary);
         }
 
         /* Popup Styles */
@@ -241,7 +288,7 @@
             padding: 0;
             border-radius: 12px;
             overflow: hidden;
-            max-width: 300px;
+            max-width: 320px;
         }
 
         .popup-header {
@@ -273,6 +320,27 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
 
+        .popup-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.2rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .popup-type-badge.property {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .popup-type-badge.destination {
+            background-color: var(--primary);
+            color: white;
+        }
+
         .popup-body {
             padding: 1rem;
         }
@@ -291,6 +359,32 @@
             font-size: 0.9rem;
             line-height: 1.4;
             margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .popup-details {
+            margin-bottom: 1rem;
+        }
+
+        .popup-detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            padding: 0.2rem 0;
+        }
+
+        .popup-detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .popup-detail-value {
+            color: var(--primary);
+            font-weight: 600;
         }
 
         .popup-tags {
@@ -325,11 +419,18 @@
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
         }
 
         .popup-btn:hover {
             background: var(--accent);
             color: white;
+            text-decoration: none;
         }
 
         .popup-btn.primary {
@@ -361,6 +462,31 @@
             gap: 0.5rem;
         }
 
+        .sidebar-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #666;
+        }
+
         .destination-item {
             display: flex;
             padding: 1rem;
@@ -385,12 +511,36 @@
             overflow: hidden;
             margin-right: 1rem;
             flex-shrink: 0;
+            position: relative;
         }
 
         .destination-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .destination-type-icon {
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .destination-type-icon.property {
+            background-color: var(--accent);
+        }
+
+        .destination-type-icon.destination {
+            background-color: var(--primary);
         }
 
         .destination-info h6 {
@@ -434,6 +584,16 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Error message */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #f5c6cb;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .page-title {
@@ -460,8 +620,14 @@
             }
 
             .custom-marker {
-                width: 45px;
-                height: 45px;
+                width: 40px;
+                height: 40px;
+            }
+
+            .marker-type-badge {
+                width: 16px;
+                height: 16px;
+                font-size: 8px;
             }
         }
 
@@ -478,6 +644,17 @@
             .filter-btn {
                 font-size: 0.75rem;
                 padding: 0.3rem 0.6rem;
+            }
+
+            .sidebar-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .stat-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
         }
     </style>
@@ -523,7 +700,7 @@
         <div class="container">
             <div class="page-header-content text-center">
                 <h1 class="page-title">Interactive Map</h1>
-                <p class="page-subtitle">Explore Batangas destinations with our interactive map. Click on the pins to discover detailed information about each location.</p>
+                <p class="page-subtitle">Explore Batangas destinations and accommodations with our interactive map. Click on the pins to discover detailed information about each location.</p>
             </div>
         </div>
     </section>
@@ -544,11 +721,22 @@
                                 <i class="fas fa-globe me-1"></i>
                                 Region View
                             </button>
+                            <select class="municipality-select" id="municipalityFilter">
+                                <option value="">All Municipalities</option>
+                            </select>
                         </div>
                         <div class="filter-controls">
                             <button class="filter-btn active" data-filter="all">
                                 <i class="fas fa-globe"></i>
                                 All
+                            </button>
+                            <button class="filter-btn" data-filter="accommodation">
+                                <i class="fas fa-bed"></i>
+                                Accommodation
+                            </button>
+                            <button class="filter-btn" data-filter="destination">
+                                <i class="fas fa-map-marked-alt"></i>
+                                Destinations
                             </button>
                             <button class="filter-btn" data-filter="beach">
                                 <i class="fas fa-water"></i>
@@ -561,10 +749,6 @@
                             <button class="filter-btn" data-filter="heritage">
                                 <i class="fas fa-church"></i>
                                 Heritage
-                            </button>
-                            <button class="filter-btn" data-filter="adventure">
-                                <i class="fas fa-hiking"></i>
-                                Adventure
                             </button>
                         </div>
                     </div>
@@ -584,11 +768,26 @@
                 <div class="destinations-sidebar">
                     <h3 class="sidebar-title">
                         <i class="fas fa-map-marker-alt"></i>
-                        Featured Destinations
+                        Locations Overview
                     </h3>
-                    <div id="destinationsList">
-                        <!-- Destinations will be populated by JavaScript -->
+                    <div class="sidebar-stats" id="mapStats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalCount">0</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="propertyCount">0</span>
+                            <span class="stat-label">Properties</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="destinationCount">0</span>
+                            <span class="stat-label">Destinations</span>
+                        </div>
                     </div>
+                    <div id="locationsList">
+                        <!-- Locations will be populated by JavaScript -->
+                    </div>
+                    <div id="errorMessage" class="error-message" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -597,102 +796,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Destinations data
-        const destinations = [
-            {
-                id: 1,
-                name: "Taal Volcano",
-                location: "Talisay, Batangas",
-                lat: 14.0024,
-                lng: 120.9932,
-                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "One of the most iconic landmarks in the Philippines and the world's smallest active volcano situated on an island within Taal Lake.",
-                tags: ["hiking", "nature", "adventure"],
-                category: "mountain"
-            },
-            {
-                id: 2,
-                name: "Anilao Beach",
-                location: "Mabini, Batangas",
-                lat: 13.7627,
-                lng: 120.9236,
-                image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "World-renowned diving capital of the Philippines, famous for its incredible marine biodiversity and pristine coral reefs.",
-                tags: ["diving", "beach", "snorkeling"],
-                category: "beach"
-            },
-            {
-                id: 3,
-                name: "Fortune Island",
-                location: "Nasugbu, Batangas",
-                lat: 14.0342,
-                lng: 120.5879,
-                image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "Instagram-famous island featuring stunning Grecian-inspired ruins and crystal-clear turquoise waters perfect for swimming.",
-                tags: ["island", "swimming", "photography"],
-                category: "beach"
-            },
-            {
-                id: 4,
-                name: "Basilica of St. Martin of Tours",
-                location: "Taal, Batangas",
-                lat: 13.8837,
-                lng: 120.9223,
-                image: "https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "The largest Catholic church in Asia, showcasing beautiful Spanish colonial architecture and rich religious heritage.",
-                tags: ["heritage", "architecture", "culture"],
-                category: "heritage"
-            },
-            {
-                id: 5,
-                name: "Mount Batulao",
-                location: "Nasugbu, Batangas",
-                lat: 14.0189,
-                lng: 120.6328,
-                image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "Popular hiking destination known for its rolling hills, scenic ridges, and breathtaking views of Batangas landscape.",
-                tags: ["hiking", "adventure", "scenic views"],
-                category: "mountain"
-            },
-            {
-                id: 6,
-                name: "Calatagan Beach",
-                location: "Calatagan, Batangas",
-                lat: 13.8329,
-                lng: 120.6321,
-                image: "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "Pristine white sand beach perfect for relaxation, water sports, and stunning sunset views along the South China Sea.",
-                tags: ["beach", "relaxation", "sunset"],
-                category: "beach"
-            },
-            {
-                id: 7,
-                name: "Mount Maculot",
-                location: "Cuenca, Batangas",
-                lat: 14.0456,
-                lng: 121.0534,
-                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&alt=format&fit=crop&w=500&q=80",
-                description: "Famous hiking destination offering panoramic views of Taal Lake and the surrounding mountains.",
-                tags: ["hiking", "adventure", "scenic views"],
-                category: "mountain"
-            },
-            {
-                id: 8,
-                name: "Sombrero Island",
-                location: "Anilao, Batangas",
-                lat: 13.7455,
-                lng: 120.8976,
-                image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                description: "Hat-shaped island perfect for snorkeling and diving with vibrant coral gardens and diverse marine life.",
-                tags: ["island", "diving", "snorkeling"],
-                category: "adventure"
-            }
-        ];
+        // API Configuration
+        const API_BASE_URL = '/api/map';  // Adjust this to match your Flask app's base URL
 
-        // Map initialization
+        // Global variables
         let map;
         let markers = [];
+        let allMapData = [];
         let currentFilter = 'all';
+        let currentMunicipality = '';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            loadMunicipalities();
+            loadMapData();
+            setupEventListeners();
+        });
 
         function initMap() {
             // Initialize map centered on Batangas
@@ -703,138 +823,255 @@
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 18
             }).addTo(map);
-
-            // Add destinations to map
-            addDestinations();
-
-            // Hide loading screen
-            setTimeout(() => {
-                document.getElementById('mapLoading').style.display = 'none';
-            }, 1000);
         }
 
-        function createCustomMarker(destination) {
+        async function loadMunicipalities() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/municipalities`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('municipalityFilter');
+                    data.municipalities.forEach(municipality => {
+                        const option = document.createElement('option');
+                        option.value = municipality;
+                        option.textContent = municipality;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading municipalities:', error);
+            }
+        }
+
+        async function loadMapData() {
+            try {
+                showLoading(true);
+                const params = new URLSearchParams();
+                if (currentMunicipality) params.append('municipality', currentMunicipality);
+                if (currentFilter !== 'all') params.append('category', currentFilter);
+
+                const response = await fetch(`${API_BASE_URL}/combined?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    allMapData = data.data;
+                    displayMapData();
+                    updateStats(data.properties_count, data.destinations_count, data.total);
+                    populateLocationsList();
+                    showError(false);
+                } else {
+                    showError(true, data.message || 'Failed to load map data');
+                }
+            } catch (error) {
+                console.error('Error loading map data:', error);
+                showError(true, 'Network error while loading map data');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayMapData() {
+            // Clear existing markers
+            clearMarkers();
+
+            // Add new markers
+            allMapData.forEach(item => {
+                const marker = createMarker(item);
+                if (marker) {
+                    markers.push(marker);
+                    marker.addTo(map);
+                }
+            });
+        }
+
+        function createMarker(item) {
+            if (!item.lat || !item.lng) return null;
+
             const markerHtml = `
-                <div class="custom-marker" data-id="${destination.id}">
-                    <img src="${destination.image}" alt="${destination.name}" class="marker-image">
+                <div class="custom-marker ${item.type}" data-id="${item.id}">
+                    <img src="${item.image}" alt="${item.name}" class="marker-image"
+                         onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
+                    <div class="marker-type-badge ${item.type}">
+                        ${item.type === 'property' ? 'P' : 'D'}
+                    </div>
                 </div>
             `;
 
             const customIcon = L.divIcon({
                 html: markerHtml,
                 className: 'custom-marker-container',
-                iconSize: [60, 60],
-                iconAnchor: [30, 30],
-                popupAnchor: [0, -30]
+                iconSize: [50, 50],
+                iconAnchor: [25, 25],
+                popupAnchor: [0, -25]
             });
 
-            return customIcon;
+            const marker = L.marker([item.lat, item.lng], { icon: customIcon });
+            const popupContent = createPopupContent(item);
+
+            marker.bindPopup(popupContent, {
+                maxWidth: 320,
+                className: 'custom-popup'
+            });
+
+            marker.mapData = item;
+            return marker;
         }
 
-        function createPopupContent(destination) {
-            const tagsHtml = destination.tags.map(tag =>
+        function createPopupContent(item) {
+            const typeLabel = item.type === 'property' ? 'Property' : 'Destination';
+            const typeClass = item.type;
+
+            let detailsHtml = '';
+            if (item.type === 'property') {
+                detailsHtml = `
+                    <div class="popup-details">
+                        <div class="popup-detail-item">
+                            <span class="popup-detail-label">Type:</span>
+                            <span class="popup-detail-value">${item.accommodation_type || 'N/A'}</span>
+                        </div>
+                        ${item.min_price ? `
+                            <div class="popup-detail-item">
+                                <span class="popup-detail-label">Featured:</span>
+                                <span class="popup-detail-value">✓ Yes</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            const tagsHtml = (item.tags || []).slice(0, 3).map(tag =>
                 `<span class="popup-tag">${tag}</span>`
             ).join('');
 
             return `
-                <div class="popup-header" style="background-image: url('${destination.image}')">
-                    <div class="popup-title">${destination.name}</div>
+                <div class="popup-header" style="background-image: url('${item.image}')">
+                    <div class="popup-type-badge ${typeClass}">${typeLabel}</div>
+                    <div class="popup-title">${item.name}</div>
                 </div>
                 <div class="popup-body">
                     <div class="popup-location">
                         <i class="fas fa-map-marker-alt"></i>
-                        ${destination.location}
+                        ${item.location || `${item.barangay}, ${item.municipality}`}
                     </div>
-                    <div class="popup-description">${destination.description}</div>
-                    <div class="popup-tags">${tagsHtml}</div>
+                    <div class="popup-description">${item.description || 'No description available.'}</div>
+                    ${detailsHtml}
+                    ${tagsHtml ? `<div class="popup-tags">${tagsHtml}</div>` : ''}
                     <div class="popup-actions">
-                        <button class="popup-btn" onclick="getDirections(${destination.lat}, ${destination.lng})">
+                        <a href="#" class="popup-btn" onclick="getDirections(${item.lat}, ${item.lng})">
                             <i class="fas fa-directions"></i> Directions
-                        </button>
-                        <button class="popup-btn primary" onclick="exploreDestination(${destination.id})">
-                            <i class="fas fa-info-circle"></i> Learn More
-                        </button>
+                        </a>
+                        <a href="#" class="popup-btn primary" onclick="viewDetails('${item.id}', '${item.type}')">
+                            <i class="fas fa-info-circle"></i> Details
+                        </a>
                     </div>
                 </div>
             `;
         }
 
-        function addDestinations() {
-            destinations.forEach(destination => {
-                const marker = L.marker([destination.lat, destination.lng], {
-                    icon: createCustomMarker(destination)
-                });
-
-                const popupContent = createPopupContent(destination);
-                marker.bindPopup(popupContent, {
-                    maxWidth: 300,
-                    className: 'custom-popup'
-                });
-
-                marker.destination = destination;
-                markers.push(marker);
-                marker.addTo(map);
-            });
-
-            // Populate sidebar
-            populateDestinationsList();
-        }
-
-        function populateDestinationsList() {
-            const container = document.getElementById('destinationsList');
+        function populateLocationsList() {
+            const container = document.getElementById('locationsList');
             container.innerHTML = '';
 
-            const filteredDestinations = currentFilter === 'all'
-                ? destinations
-                : destinations.filter(d => d.category === currentFilter || d.tags.includes(currentFilter));
+            if (allMapData.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">No locations found</p>';
+                return;
+            }
 
-            filteredDestinations.forEach(destination => {
-                const item = document.createElement('div');
-                item.className = 'destination-item';
-                item.dataset.id = destination.id;
-                item.innerHTML = `
+            allMapData.forEach(item => {
+                const locationItem = document.createElement('div');
+                locationItem.className = 'destination-item';
+                locationItem.dataset.id = item.id;
+                locationItem.dataset.type = item.type;
+
+                locationItem.innerHTML = `
                     <div class="destination-thumb">
-                        <img src="${destination.image}" alt="${destination.name}">
+                        <img src="${item.image}" alt="${item.name}"
+                             onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
+                        <div class="destination-type-icon ${item.type}">
+                            ${item.type === 'property' ? 'P' : 'D'}
+                        </div>
                     </div>
                     <div class="destination-info">
-                        <h6>${destination.name}</h6>
-                        <small><i class="fas fa-map-marker-alt me-1"></i>${destination.location}</small>
+                        <h6>${item.name}</h6>
+                        <small>
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            ${item.location || `${item.barangay}, ${item.municipality}`}
+                        </small>
+                        ${item.type === 'property' && item.min_price ?
+                            `<small class="d-block text-success">From ₱${item.min_price}</small>` : ''}
                     </div>
                 `;
 
-                item.addEventListener('click', () => {
-                    const marker = markers.find(m => m.destination.id === destination.id);
+                locationItem.addEventListener('click', () => {
+                    const marker = markers.find(m => m.mapData.id === item.id);
                     if (marker) {
-                        map.setView([destination.lat, destination.lng], 14);
+                        map.setView([item.lat, item.lng], 15);
                         marker.openPopup();
 
                         // Update active state
                         document.querySelectorAll('.destination-item').forEach(el => el.classList.remove('active'));
-                        item.classList.add('active');
+                        locationItem.classList.add('active');
                     }
                 });
 
-                container.appendChild(item);
+                container.appendChild(locationItem);
             });
         }
 
-        function filterDestinations(category) {
-            currentFilter = category;
-
+        function clearMarkers() {
             markers.forEach(marker => {
-                const destination = marker.destination;
-                const shouldShow = category === 'all' ||
-                                 destination.category === category ||
-                                 destination.tags.includes(category);
+                map.removeLayer(marker);
+            });
+            markers = [];
+        }
 
-                if (shouldShow) {
-                    marker.addTo(map);
-                } else {
-                    map.removeLayer(marker);
-                }
+        function updateStats(propertiesCount, destinationsCount, total) {
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('propertyCount').textContent = propertiesCount;
+            document.getElementById('destinationCount').textContent = destinationsCount;
+        }
+
+        function showLoading(show) {
+            const loadingElement = document.getElementById('mapLoading');
+            loadingElement.style.display = show ? 'block' : 'none';
+        }
+
+        function showError(show, message = '') {
+            const errorElement = document.getElementById('errorMessage');
+            if (show) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.style.display = 'none';
+            }
+        }
+
+        function setupEventListeners() {
+            // View controls
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    changeMapView(this.dataset.view);
+                });
             });
 
-            populateDestinationsList();
+            // Filter controls
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    loadMapData();
+                });
+            });
+
+            // Municipality filter
+            document.getElementById('municipalityFilter').addEventListener('change', function() {
+                currentMunicipality = this.value;
+                loadMapData();
+            });
         }
 
         function changeMapView(view) {
@@ -850,33 +1087,143 @@
             window.open(url, '_blank');
         }
 
-        function exploreDestination(id) {
-            // This would typically navigate to a detailed destination page
-            alert(`Exploring destination ${id}. This would navigate to a detailed page.`);
+        async function viewDetails(id, type) {
+            try {
+                const itemId = id.replace(`${type}_`, '');
+                const endpoint = type === 'property' ?
+                    `${API_BASE_URL}/property/${itemId}` :
+                    `${API_BASE_URL}/destination/${itemId}`;
+
+                const response = await fetch(endpoint);
+                const data = await response.json();
+
+                if (data.success) {
+                    showDetailsModal(data[type], type);
+                } else {
+                    alert('Failed to load details: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error loading details:', error);
+                alert('Network error while loading details');
+            }
         }
 
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            initMap();
+        function showDetailsModal(details, type) {
+            // Create a simple modal for displaying details
+            const modalHtml = `
+                <div class="modal fade" id="detailsModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">${details.name}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${createDetailsContent(details, type)}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="getDirections(${details.lat}, ${details.lng})">
+                                    <i class="fas fa-directions"></i> Get Directions
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-            // View controls
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    changeMapView(this.dataset.view);
-                });
-            });
+            // Remove existing modal if any
+            const existingModal = document.getElementById('detailsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
 
-            // Filter controls
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    filterDestinations(this.dataset.filter);
-                });
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+            modal.show();
+
+            // Clean up when modal is hidden
+            document.getElementById('detailsModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
             });
-        });
+        }
+
+        function createDetailsContent(details, type) {
+            if (type === 'property') {
+                const roomsHtml = details.rooms ? details.rooms.map(room => `
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">${room.room_type}</h6>
+                                <p class="card-text">
+                                    <small class="text-muted">Capacity: ${room.capacity || 'N/A'}</small><br>
+                                    ${room.day_price ? `Day Rate: ₱${room.day_price}<br>` : ''}
+                                    ${room.overnight_price ? `Overnight Rate: ₱${room.overnight_price}` : ''}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') : '<p>No room information available</p>';
+
+                const amenitiesHtml = details.amenities && details.amenities.length > 0 ?
+                    details.amenities.map(amenity => `<span class="badge bg-secondary me-1 mb-1">${amenity}</span>`).join('') :
+                    '<span class="text-muted">No amenities listed</span>';
+
+                return `
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <h6>Description</h6>
+                            <p>${details.description || 'No description available'}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>Location</h6>
+                            <p><i class="fas fa-map-marker-alt text-primary"></i> ${details.location}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>Accommodation Type</h6>
+                            <p>${details.accommodation_type}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <h6>Amenities</h6>
+                            <div>${amenitiesHtml}</div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <h6>Rooms</h6>
+                            <div class="row">
+                                ${roomsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <h6>Description</h6>
+                            <p>${details.description || 'No description available'}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>Location</h6>
+                            <p><i class="fas fa-map-marker-alt text-primary"></i> ${details.location}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>Destination Type</h6>
+                            <p>${details.destination_type}</p>
+                        </div>
+                        ${details.is_featured ? `
+                            <div class="col-12 mb-3">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-star"></i> Featured Destination
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
 
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
@@ -894,8 +1241,8 @@
         document.addEventListener('click', function(e) {
             if (e.target.closest('.custom-marker')) {
                 const markerId = e.target.closest('.custom-marker').dataset.id;
-                const destination = destinations.find(d => d.id == markerId);
-                if (destination) {
+                const mapItem = allMapData.find(d => d.id === markerId);
+                if (mapItem) {
                     // Add pulse effect
                     e.target.closest('.custom-marker').style.animation = 'pulse 0.6s ease-out';
                     setTimeout(() => {
@@ -912,7 +1259,7 @@
         style.textContent = `
             @keyframes pulse {
                 0% { transform: scale(1); }
-                50% { transform: scale(1.2); }
+                50% { transform: scale(1.15); }
                 100% { transform: scale(1); }
             }
 
@@ -933,6 +1280,48 @@
 
             .leaflet-popup-close-button:hover {
                 color: var(--accent) !important;
+            }
+
+            .leaflet-popup-content-wrapper {
+                border-radius: 12px;
+            }
+
+            .leaflet-popup-tip {
+                border-radius: 0 0 12px 12px;
+            }
+
+            /* Enhance modal styling */
+            .modal-content {
+                border-radius: 15px;
+                border: none;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+
+            .modal-header {
+                border-bottom: 1px solid #e9ecef;
+                border-radius: 15px 15px 0 0;
+                background: var(--light-bg);
+            }
+
+            .modal-footer {
+                border-top: 1px solid #e9ecef;
+                border-radius: 0 0 15px 15px;
+            }
+
+            .card {
+                border: 1px solid #e9ecef;
+                border-radius: 8px;
+                transition: var(--transition);
+            }
+
+            .card:hover {
+                box-shadow: var(--shadow-light);
+                transform: translateY(-2px);
+            }
+
+            .badge {
+                font-size: 0.75rem;
+                padding: 0.35em 0.65em;
             }
         `;
         document.head.appendChild(style);

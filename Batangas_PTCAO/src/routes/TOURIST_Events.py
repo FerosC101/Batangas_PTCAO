@@ -6,31 +6,40 @@ from sqlalchemy import or_, and_
 
 
 def init_tourist_events_routes(app):
+    """Initialize tourist events routes"""
+
     @app.route('/events')
     def events_page():
+        """Render the events page"""
         return render_template('TOURIST_Event.html')
 
     @app.route('/api/events')
     def get_events():
         try:
+            # Get query parameters
             category = request.args.get('category', 'all')
             search = request.args.get('search', '').strip()
             municipality = request.args.get('municipality', '')
             upcoming_only = request.args.get('upcoming_only', 'false').lower() == 'true'
             featured_only = request.args.get('featured_only', 'false').lower() == 'true'
 
+            # Base query
             query = Event.query
 
+            # Filter by category
             if category and category != 'all':
                 query = query.filter(Event.category.ilike(f'%{category}%'))
 
+            # Filter by municipality
             if municipality:
                 query = query.filter(Event.municipality.ilike(f'%{municipality}%'))
 
+            # Filter upcoming events only
             if upcoming_only:
                 today = date.today()
                 query = query.filter(Event.end_date >= today)
 
+            # Search functionality
             if search:
                 search_filter = or_(
                     Event.event_title.ilike(f'%{search}%'),
@@ -41,20 +50,26 @@ def init_tourist_events_routes(app):
                 )
                 query = query.filter(search_filter)
 
+            # Order by start date (upcoming events first)
             query = query.order_by(Event.start_date.asc())
 
+            # Get all events
             events = query.all()
 
+            # Convert to JSON format
             events_data = []
             for event in events:
+                # Determine if event is ongoing or upcoming
                 today = date.today()
                 is_ongoing = event.start_date <= today <= event.end_date
                 is_upcoming = event.start_date > today
                 is_past = event.end_date < today
 
+                # Format dates
                 start_date_str = event.start_date.strftime('%B %d, %Y')
                 end_date_str = event.end_date.strftime('%B %d, %Y')
 
+                # Create date display string
                 if event.start_date == event.end_date:
                     date_display = start_date_str
                 else:
@@ -63,14 +78,17 @@ def init_tourist_events_routes(app):
                     else:
                         date_display = f"{start_date_str} - {end_date_str}"
 
+                # Determine status
                 status = 'past'
                 if is_ongoing:
                     status = 'ongoing'
                 elif is_upcoming:
                     status = 'upcoming'
 
+                # Set default image if none provided
                 image_url = event.event_image or '/static/images/default-event.jpg'
 
+                # Determine if this is a featured event (you can customize this logic)
                 is_featured = (category == 'festival' and 'festival' in (event.category or '').lower()) or featured_only
 
                 event_data = {
@@ -93,6 +111,7 @@ def init_tourist_events_routes(app):
 
                 events_data.append(event_data)
 
+            # If featured_only is requested, return only featured events
             if featured_only:
                 events_data = [event for event in events_data if event['is_featured']]
 
@@ -122,6 +141,7 @@ def init_tourist_events_routes(app):
         try:
             event = Event.query.get_or_404(event_id)
 
+            # Determine status
             today = date.today()
             is_ongoing = event.start_date <= today <= event.end_date
             is_upcoming = event.start_date > today
@@ -133,6 +153,7 @@ def init_tourist_events_routes(app):
             elif is_upcoming:
                 status = 'upcoming'
 
+            # Format dates
             start_date_str = event.start_date.strftime('%B %d, %Y')
             end_date_str = event.end_date.strftime('%B %d, %Y')
 
@@ -171,6 +192,7 @@ def init_tourist_events_routes(app):
 
     @app.route('/api/events/categories')
     def get_event_categories():
+        """Get all unique event categories"""
         try:
             categories = db.session.query(Event.category).distinct().filter(Event.category.isnot(None)).all()
             category_list = [cat[0] for cat in categories if cat[0]]
@@ -189,6 +211,7 @@ def init_tourist_events_routes(app):
 
     @app.route('/api/events/municipalities')
     def get_event_municipalities():
+        """Get all municipalities that have events"""
         try:
             municipalities = db.session.query(Event.municipality).distinct().filter(
                 Event.municipality.isnot(None)).all()

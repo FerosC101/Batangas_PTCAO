@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixing backend for tourist page">
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Map.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Events.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Events.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Event.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Event.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Map.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Map.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -252,15 +255,8 @@
       <workItem from="1754395073640" duration="7819000" />
       <workItem from="1754452040782" duration="3193000" />
       <workItem from="1754473246232" duration="3303000" />
-      <workItem from="1754486611583" duration="5358000" />
-    </task>
-    <task id="LOCAL-00041" summary="added reports redirection">
-      <option name="closed" value="true" />
-      <created>1747904410725</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1747904410725</updated>
+      <workItem from="1754486611583" duration="5480000" />
+      <workItem from="1754537053947" duration="2232000" />
     </task>
     <task id="LOCAL-00042" summary="added reports redirection">
       <option name="closed" value="true" />
@@ -646,7 +642,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754497908888</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="fixing backend for tourist page">
+      <option name="closed" value="true" />
+      <created>1754499921896</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1754499921896</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

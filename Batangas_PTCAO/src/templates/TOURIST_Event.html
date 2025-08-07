@@ -270,6 +270,14 @@
             box-shadow: 0 2px 8px rgba(255, 126, 0, 0.3);
         }
 
+        .event-date-badge.ongoing {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .event-date-badge.past {
+            background: linear-gradient(135deg, #6c757d 0%, #8b949e 100%);
+        }
+
         .event-date-badge i {
             margin-right: 0.5rem;
         }
@@ -300,6 +308,10 @@
             color: #666;
             margin-bottom: 1.2rem;
             line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .event-tags {
@@ -327,14 +339,27 @@
             border-top: 1px solid #f0f0f0;
         }
 
-        .event-price {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
+        .event-status {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
         }
 
-        .event-price.free {
+        .event-status.upcoming {
+            background: rgba(40, 167, 69, 0.1);
             color: #28a745;
+        }
+
+        .event-status.ongoing {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .event-status.past {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
         }
 
         .btn-event {
@@ -435,6 +460,63 @@
             font-size: 1.2rem;
         }
 
+        /* Loading States */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            color: var(--primary);
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .skeleton-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            height: 450px;
+        }
+
+        .skeleton-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        .skeleton-content {
+            padding: 1.8rem;
+        }
+
+        .skeleton-line {
+            height: 1rem;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 0.8rem;
+        }
+
+        .skeleton-line.short { width: 60%; }
+        .skeleton-line.medium { width: 80%; }
+        .skeleton-line.long { width: 100%; }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         /* No Results */
         .no-results {
             text-align: center;
@@ -453,7 +535,39 @@
             margin-bottom: 1rem;
         }
 
-        /* Calendar View Toggle */
+        /* Error State */
+        .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #dc3545;
+        }
+
+        .error-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-state h3 {
+            margin-bottom: 1rem;
+        }
+
+        .retry-btn {
+            background: var(--gradient-accent);
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 126, 0, 0.4);
+        }
+
+        /* View Toggle */
         .view-toggle {
             display: flex;
             background: white;
@@ -475,27 +589,6 @@
         .view-btn.active {
             background: var(--gradient-primary);
             color: white;
-        }
-
-        /* Loading Animation */
-        .loading-container {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         /* Responsive Design */
@@ -557,6 +650,74 @@
                 padding: 1.5rem;
             }
         }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--primary);
+            padding: 3rem 0 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 3rem;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            padding-left: 8px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: white;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -576,19 +737,19 @@
                         <a class="nav-link" href="TOURIST_Home.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="TOURIST_Destination.html">Destinations</a>
+                        <a class="nav-link" href="#destinations">Destinations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="TOURIST_Map.html">Map</a>
+                        <a class="nav-link" href="#map">Map</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="TOURIST_Event.html">Events</a>
+                        <a class="nav-link active" href="#">Events</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="TOURIST_About.html">About</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="TOURIST_Contact.html">Contact</a>
+                        <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -608,7 +769,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <div class="filter-controls">
+                    <div class="filter-controls" id="filterControls">
                         <button class="filter-btn active" data-filter="all">All Events</button>
                         <button class="filter-btn" data-filter="festival">Festivals</button>
                         <button class="filter-btn" data-filter="cultural">Cultural</button>
@@ -635,16 +796,30 @@
 
     <!-- Main Content -->
     <div class="container my-5">
-        <!-- Featured Event Section (will be populated by JavaScript) -->
-        <div id="featuredEventContainer"></div>
+        <!-- Featured Event Section -->
+        <div id="featuredEventSection">
+            <!-- Featured event will be loaded here -->
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <span class="ms-3">Loading events...</span>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-state" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Unable to Load Events</h3>
+            <p>There was an error loading the events. Please check your connection and try again.</p>
+            <button class="retry-btn" onclick="loadEvents()">
+                <i class="fas fa-refresh me-2"></i>Try Again
+            </button>
+        </div>
 
         <!-- Events Grid -->
-        <div class="events-grid" id="eventsGrid"></div>
-
-        <!-- Loading Indicator -->
-        <div class="loading-container" id="loadingIndicator">
-            <div class="loading-spinner"></div>
-            <p>Loading events...</p>
+        <div class="events-grid" id="eventsGrid">
+            <!-- Events will be loaded here dynamically -->
         </div>
 
         <!-- No Results Message -->
@@ -652,6 +827,9 @@
             <i class="fas fa-search"></i>
             <h3>No Events Found</h3>
             <p>Try adjusting your search criteria or browse all events to discover exciting activities in Batangas.</p>
+            <button class="btn-event" onclick="clearFilters()">
+                <i class="fas fa-refresh me-2"></i>Show All Events
+            </button>
         </div>
     </div>
 
@@ -680,12 +858,12 @@
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h5 class="footer-title">Popular Destinations</h5>
                     <ul class="footer-links">
-                        <li><a href="TOURIST_Destination.html">Taal Volcano Island</a></li>
-                        <li><a href="TOURIST_Destination.html">Anilao Diving Sites</a></li>
-                        <li><a href="TOURIST_Destination.html">Fortune Island</a></li>
-                        <li><a href="TOURIST_Destination.html">Mount Batulao</a></li>
-                        <li><a href="TOURIST_Destination.html">Calatagan Beaches</a></li>
-                        <li><a href="TOURIST_Destination.html">Taal Heritage Town</a></li>
+                        <li><a href="#">Taal Volcano Island</a></li>
+                        <li><a href="#">Anilao Diving Sites</a></li>
+                        <li><a href="#">Fortune Island</a></li>
+                        <li><a href="#">Mount Batulao</a></li>
+                        <li><a href="#">Calatagan Beaches</a></li>
+                        <li><a href="#">Taal Heritage Town</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
@@ -723,189 +901,28 @@
     <script>
         // Global variables
         let allEvents = [];
-        let filteredEvents = [];
         let currentFilter = 'all';
         let currentSearch = '';
         let currentView = 'grid';
 
         // DOM elements
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
         const eventsGrid = document.getElementById('eventsGrid');
-        const featuredEventContainer = document.getElementById('featuredEventContainer');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const viewButtons = document.querySelectorAll('.view-btn');
-        const searchInput = document.getElementById('searchInput');
         const noResults = document.getElementById('noResults');
-        const loadingIndicator = document.getElementById('loadingIndicator');
+        const searchInput = document.getElementById('searchInput');
+        const featuredEventSection = document.getElementById('featuredEventSection');
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            fetchEvents();
+            initializeNavbar();
+            loadFeaturedEvent();
+            loadEvents();
             setupEventListeners();
         });
 
-        // Fetch events from API
-        async function fetchEvents() {
-            try {
-                showLoading(true);
-
-                // Fetch both featured event and regular events
-                const [featuredResponse, eventsResponse] = await Promise.all([
-                    fetch('/api/events/featured'),
-                    fetch('/api/events')
-                ]);
-
-                const featuredData = await featuredResponse.json();
-                const eventsData = await eventsResponse.json();
-
-                if (featuredData.success && eventsData.success) {
-                    // Process featured event
-                    if (featuredData.featured_event) {
-                        renderFeaturedEvent(featuredData.featured_event);
-                    }
-
-                    // Process regular events
-                    allEvents = eventsData.events || [];
-                    filteredEvents = allEvents;
-                    renderEvents();
-                } else {
-                    console.error('Failed to load events:', featuredData.error || eventsData.error);
-                }
-            } catch (error) {
-                console.error('Error fetching events:', error);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Render featured event
-        function renderFeaturedEvent(featuredEvent) {
-            featuredEventContainer.innerHTML = `
-                <div class="featured-event" data-category="${featuredEvent.category || 'festival'}">
-                    <div class="featured-badge">
-                        <i class="fas fa-star me-1"></i>Featured Event
-                    </div>
-                    <div class="featured-content">
-                        <img src="${featuredEvent.image_url || 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}"
-                             alt="${featuredEvent.title}" class="featured-image">
-                        <div class="featured-info">
-                            <div class="featured-date">
-                                <i class="fas fa-calendar-alt me-2"></i>${featuredEvent.date_display}
-                            </div>
-                            <h2 class="featured-title">${featuredEvent.title}</h2>
-                            <p class="featured-description">${featuredEvent.description}</p>
-                            <div class="featured-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                ${featuredEvent.location}
-                            </div>
-                            <a href="#" class="btn-event" onclick="showEventDetails(${featuredEvent.event_id})">
-                                <i class="fas fa-ticket-alt me-2"></i>Get Details
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Render events grid
-        function renderEvents() {
-            if (filteredEvents.length === 0) {
-                noResults.style.display = 'block';
-                eventsGrid.style.display = 'none';
-                return;
-            }
-
-            noResults.style.display = 'none';
-            eventsGrid.style.display = 'grid';
-
-            eventsGrid.innerHTML = filteredEvents.map(event => `
-                <div class="event-card" data-category="${event.category || 'general'}">
-                    <img src="${event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}"
-                         alt="${event.title}" class="event-image">
-                    <div class="event-content">
-                        <div class="event-date-badge">
-                            <i class="fas fa-calendar-alt"></i>${event.date_display}
-                        </div>
-                        <h3 class="event-title">${event.title}</h3>
-                        <div class="event-location">
-                            <i class="fas fa-map-marker-alt"></i>${event.location}, ${event.municipality}
-                        </div>
-                        <p class="event-description">${event.description.substring(0, 150)}...</p>
-                        <div class="event-tags">
-                            <span class="event-tag">${event.category || 'Event'}</span>
-                            ${event.is_ongoing ? '<span class="event-tag">Ongoing</span>' : ''}
-                            ${event.is_upcoming ? '<span class="event-tag">Upcoming</span>' : ''}
-                        </div>
-                        <div class="event-details">
-                            <div class="event-price ${event.is_free ? 'free' : ''}">
-                                ${event.is_free ? 'FREE' : 'From ₱500'}
-                            </div>
-                            <a href="#" class="btn-event" onclick="showEventDetails(${event.event_id})">
-                                ${event.is_free ? 'Learn More' : 'Get Tickets'}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            // Animate cards
-            setTimeout(() => {
-                document.querySelectorAll('.event-card').forEach((card, index) => {
-                    setTimeout(() => {
-                        card.classList.add('visible');
-                    }, index * 100);
-                });
-            }, 50);
-        }
-
-        // Filter events based on current filter and search
-        function filterEvents() {
-            filteredEvents = allEvents.filter(event => {
-                // Filter by category
-                const matchesCategory = currentFilter === 'all' ||
-                                      (event.category && event.category.toLowerCase().includes(currentFilter.toLowerCase()));
-
-                // Filter by search
-                const matchesSearch = currentSearch === '' ||
-                                    (event.title && event.title.toLowerCase().includes(currentSearch)) ||
-                                    (event.description && event.description.toLowerCase().includes(currentSearch)) ||
-                                    (event.location && event.location.toLowerCase().includes(currentSearch)) ||
-                                    (event.municipality && event.municipality.toLowerCase().includes(currentSearch));
-
-                return matchesCategory && matchesSearch;
-            });
-
-            renderEvents();
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Filter buttons
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    currentFilter = this.dataset.filter;
-                    filterEvents();
-                });
-            });
-
-            // View toggle buttons
-            viewButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    viewButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    currentView = this.dataset.view;
-                    updateView();
-                });
-            });
-
-            // Search input
-            searchInput.addEventListener('input', function() {
-                currentSearch = this.value.toLowerCase();
-                filterEvents();
-            });
-
-            // Navbar scroll effect
+        // Navbar scroll effect
+        function initializeNavbar() {
             window.addEventListener('scroll', function() {
                 const navbar = document.getElementById('navbar');
                 if (window.scrollY > 100) {
@@ -916,8 +933,235 @@
             });
         }
 
-        // Update view (grid/list)
-        function updateView() {
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    filterAndDisplayEvents();
+                });
+            });
+
+            // Search input
+            searchInput.addEventListener('input', function() {
+                currentSearch = this.value.trim();
+                filterAndDisplayEvents();
+            });
+
+            // View toggle
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentView = this.getAttribute('data-view');
+                    toggleView();
+                });
+            });
+        }
+
+        // Load featured event
+        async function loadFeaturedEvent() {
+            try {
+                const response = await fetch('/api/events/featured');
+                const data = await response.json();
+
+                if (data.success && data.featured_event) {
+                    renderFeaturedEvent(data.featured_event);
+                }
+            } catch (error) {
+                console.error('Error loading featured event:', error);
+                // Continue without featured event
+            }
+        }
+
+        // Load events from API
+        async function loadEvents() {
+            try {
+                showLoadingState();
+
+                const params = new URLSearchParams({
+                    category: currentFilter === 'all' ? '' : currentFilter,
+                    search: currentSearch,
+                    upcoming_only: 'false' // Show all events including past ones
+                });
+
+                const response = await fetch(`/api/events?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    allEvents = data.events;
+                    renderEvents(allEvents);
+                    hideLoadingState();
+                } else {
+                    throw new Error(data.error || 'Failed to load events');
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+                showErrorState();
+            }
+        }
+
+        // Filter and display events
+        function filterAndDisplayEvents() {
+            let filteredEvents = allEvents;
+
+            // Apply category filter
+            if (currentFilter !== 'all') {
+                filteredEvents = filteredEvents.filter(event =>
+                    event.category && event.category.toLowerCase().includes(currentFilter.toLowerCase())
+                );
+            }
+
+            // Apply search filter
+            if (currentSearch) {
+                const searchLower = currentSearch.toLowerCase();
+                filteredEvents = filteredEvents.filter(event =>
+                    event.title.toLowerCase().includes(searchLower) ||
+                    event.description.toLowerCase().includes(searchLower) ||
+                    event.location.toLowerCase().includes(searchLower) ||
+                    event.municipality.toLowerCase().includes(searchLower)
+                );
+            }
+
+            renderEvents(filteredEvents);
+        }
+
+        // Render featured event
+        function renderFeaturedEvent(event) {
+            const featuredHTML = `
+                <div class="featured-event">
+                    <div class="featured-badge">
+                        <i class="fas fa-star me-1"></i>Featured Event
+                    </div>
+                    <div class="featured-content">
+                        <img src="${event.image_url}" alt="${event.title}" class="featured-image" onerror="this.src='/static/images/default-event.jpg'">
+                        <div class="featured-info">
+                            <div class="featured-date">
+                                <i class="fas fa-calendar-alt me-2"></i>${event.date_display}
+                            </div>
+                            <h2 class="featured-title">${event.title}</h2>
+                            <p class="featured-description">${event.description}</p>
+                            <div class="featured-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                ${event.location}, ${event.municipality}
+                            </div>
+                            <a href="#" class="btn-event" onclick="showEventDetails(${event.event_id})">
+                                <i class="fas fa-ticket-alt me-2"></i>Get Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            featuredEventSection.innerHTML = featuredHTML;
+        }
+
+        // Render events
+        function renderEvents(events) {
+            if (events.length === 0) {
+                eventsGrid.innerHTML = '';
+                showNoResults();
+                return;
+            }
+
+            hideNoResults();
+
+            const eventsHTML = events.map(event => createEventCard(event)).join('');
+            eventsGrid.innerHTML = eventsHTML;
+
+            // Animate cards
+            setTimeout(() => {
+                document.querySelectorAll('.event-card').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 100);
+                });
+            }, 100);
+        }
+
+        // Create event card HTML
+        function createEventCard(event) {
+            const statusClass = event.status || 'upcoming';
+            const statusText = event.is_ongoing ? 'Ongoing' :
+                              event.is_upcoming ? 'Upcoming' : 'Past';
+
+            const badgeClass = event.is_ongoing ? 'ongoing' :
+                              event.is_past ? 'past' : '';
+
+            const tags = generateEventTags(event);
+
+            return `
+                <div class="event-card" data-category="${event.category}">
+                    <img src="${event.image_url}" alt="${event.title}" class="event-image"
+                         onerror="this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'">
+                    <div class="event-content">
+                        <div class="event-date-badge ${badgeClass}">
+                            <i class="fas fa-calendar-alt"></i>
+                            ${event.date_display}
+                        </div>
+                        <h3 class="event-title">${event.title}</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${event.location}, ${event.municipality}
+                        </div>
+                        <p class="event-description">${event.description}</p>
+                        <div class="event-tags">
+                            ${tags}
+                        </div>
+                        <div class="event-details">
+                            <div class="event-status ${statusClass}">${statusText}</div>
+                            <a href="#" class="btn-event" onclick="showEventDetails(${event.event_id})">
+                                ${event.is_past ? 'View Details' : 'Learn More'}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generate event tags
+        function generateEventTags(event) {
+            const tags = [];
+
+            if (event.category) {
+                tags.push(`<span class="event-tag">${event.category}</span>`);
+            }
+
+            if (event.is_ongoing) {
+                tags.push(`<span class="event-tag">Live Now</span>`);
+            } else if (event.is_upcoming) {
+                tags.push(`<span class="event-tag">Upcoming</span>`);
+            }
+
+            // Add some default tags based on category
+            const categoryTags = {
+                'festival': ['Cultural', 'Community'],
+                'sports': ['Competition', 'Active'],
+                'food': ['Culinary', 'Tasting'],
+                'cultural': ['Heritage', 'Traditional'],
+                'nature': ['Outdoor', 'Adventure']
+            };
+
+            const additionalTags = categoryTags[event.category?.toLowerCase()] || [];
+            additionalTags.forEach(tag => {
+                if (tags.length < 3) {
+                    tags.push(`<span class="event-tag">${tag}</span>`);
+                }
+            });
+
+            return tags.join('');
+        }
+
+        // Show event details (placeholder function)
+        function showEventDetails(eventId) {
+            // This would typically open a modal or navigate to a detail page
+            alert(`Event details for event ID: ${eventId}. This would typically show more information about the event.`);
+        }
+
+        // Toggle view between grid and list
+        function toggleView() {
             if (currentView === 'list') {
                 eventsGrid.style.gridTemplateColumns = '1fr';
                 eventsGrid.style.maxWidth = '800px';
@@ -929,26 +1173,49 @@
             }
         }
 
-        // Show event details modal
-        function showEventDetails(eventId) {
-            // This would typically fetch detailed event info and show a modal
-            // For now, we'll just show an alert
-            const event = allEvents.find(e => e.event_id === eventId);
-            if (event) {
-                alert(`Event Details:\n\n${event.title}\n\n${event.description}\n\nLocation: ${event.location}, ${event.municipality}\n\nDate: ${event.date_display}`);
-            } else {
-                alert('Event details will be shown here. This would typically open a modal with more information.');
-            }
+        // Clear filters
+        function clearFilters() {
+            currentFilter = 'all';
+            currentSearch = '';
+            searchInput.value = '';
+
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+
+            filterAndDisplayEvents();
         }
 
-        // Show/hide loading indicator
-        function showLoading(show) {
-            loadingIndicator.style.display = show ? 'block' : 'none';
+        // Loading states
+        function showLoadingState() {
+            loadingState.style.display = 'flex';
+            eventsGrid.style.display = 'none';
+            errorState.style.display = 'none';
+            noResults.style.display = 'none';
+        }
+
+        function hideLoadingState() {
+            loadingState.style.display = 'none';
+            eventsGrid.style.display = 'grid';
+        }
+
+        function showErrorState() {
+            loadingState.style.display = 'none';
+            eventsGrid.style.display = 'none';
+            errorState.style.display = 'block';
+            noResults.style.display = 'none';
+        }
+
+        function showNoResults() {
+            noResults.style.display = 'block';
+        }
+
+        function hideNoResults() {
+            noResults.style.display = 'none';
         }
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
@@ -960,80 +1227,18 @@
             });
         });
 
-        // Footer styles
-        const footerStyles = `
-            footer {
-                background-color: var(--primary);
-                padding: 3rem 0 1.5rem;
-                color: rgba(255, 255, 255, 0.8);
-                margin-top: 3rem;
+        // Enhanced hover effects for event cards
+        document.addEventListener('mouseenter', function(e) {
+            if (e.target.closest('.event-card')) {
+                e.target.closest('.event-card').style.transform = 'translateY(-8px)';
             }
+        }, true);
 
-            .footer-title {
-                color: white;
-                font-weight: 600;
-                margin-bottom: 1.5rem;
-                font-size: 1.2rem;
+        document.addEventListener('mouseleave', function(e) {
+            if (e.target.closest('.event-card')) {
+                e.target.closest('.event-card').style.transform = 'translateY(0)';
             }
-
-            .footer-links {
-                list-style: none;
-                padding: 0;
-            }
-
-            .footer-links li {
-                margin-bottom: 0.8rem;
-            }
-
-            .footer-links a {
-                color: rgba(255, 255, 255, 0.8);
-                text-decoration: none;
-                transition: var(--transition);
-            }
-
-            .footer-links a:hover {
-                color: var(--accent);
-                padding-left: 8px;
-            }
-
-            .social-icons {
-                display: flex;
-                gap: 10px;
-                margin-top: 1rem;
-            }
-
-            .social-icon {
-                width: 42px;
-                height: 42px;
-                background-color: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: var(--transition);
-                color: white;
-                text-decoration: none;
-            }
-
-            .social-icon:hover {
-                background-color: var(--accent);
-                transform: translateY(-2px);
-                color: white;
-            }
-
-            .copyright {
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                padding-top: 1.5rem;
-                margin-top: 2rem;
-                text-align: center;
-                font-size: 0.9rem;
-            }
-        `;
-
-        // Add footer styles
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = footerStyles;
-        document.head.appendChild(styleSheet);
+        }, true);
     </script>
 </body>
 </html>
