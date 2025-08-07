@@ -746,7 +746,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/tourist/home">
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='5' fill='%23ff7e00'/%3E%3Ctext x='20' y='26' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' fill='white'%3EB%3C/text%3E%3C/svg%3E" alt="Batangas Explorer Logo" width="40" height="40">
                 Batangas Explorer
             </a>
@@ -756,22 +756,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/">Home</a>
+                        <a class="nav-link active" href="/tourist/home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/destinations" id="nav-destinations">Destinations</a>
+                        <a class="nav-link" href="/tourist/destinations">Destinations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/map">Map</a>
+                        <a class="nav-link" href="/tourist/map">Map</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/events">Events</a>
+                        <a class="nav-link" href="/tourist/events">Events</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/about">About</a>
+                        <a class="nav-link" href="/tourist/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
+                        <a class="nav-link" href="/tourist/contact">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -799,7 +799,7 @@
                 </div>
             </div>
             <div class="text-center mt-4">
-                <a href="/destinations" class="btn-explore">View All Destinations</a>
+                <a href="/tourist/destinations" class="btn-explore">View All Destinations</a>
             </div>
         </section>
     </div>
@@ -887,7 +887,7 @@
                 <section class="section-container about-section-sidebar" id="about">
                     <h2 class="section-title">About Batangas</h2>
                     <div class="about-image-container mb-3">
-                        <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="About Batangas" class="about-image-small" onerror="this.src='/static/images/default-about.jpg'">
+                        <img src="/static/img/Batangas_Logo.png" alt="About Batangas" class="about-image-small" onerror="this.src='/static/images/default-about.jpg'">
                     </div>
                     <p class="lead">Batangas is a first-class province in the Philippines located in the CALABARZON region of Luzon. Known as the "Industrial Port City of CALABARZON," it serves as a major gateway to the southern islands.</p>
                     <p>The province is famous for its stunning beaches, world-class diving spots, rich coffee heritage, and well-preserved Spanish colonial architecture. From the iconic Taal Volcano to the pristine waters of Anilao, Batangas offers diverse attractions for all types of travelers.</p>
@@ -920,7 +920,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="/about" class="btn-explore mt-3">Learn More</a>
+                    <a href="/tourist/about" class="btn-explore mt-3">Learn More</a>
                 </section>
             </div>
         </div>
@@ -986,7 +986,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
@@ -998,17 +997,39 @@
             }
         });
 
+        // Set active nav item based on current path
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Load content
+            loadFeaturedDestinations();
+            loadUpcomingEvents();
+            loadRecentAnnouncements();
+        });
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+            anchor.addEventListener('click', function(e) {
+                // Only prevent default for # links
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }
+                // For other links, let them navigate normally
             });
         });
 
@@ -1076,7 +1097,7 @@
                                     <span class="badge-custom">${dest.type}</span>
                                     ${dest.barangay ? `<span class="badge-custom">${dest.barangay}</span>` : ''}
                                 </div>
-                                <a href="/destination/${dest.id}" class="btn btn-outline-primary">Explore</a>
+                                <a href="/tourist/destination/${dest.id}" class="btn btn-outline-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -1085,7 +1106,7 @@
                 // Update popular destinations in footer
                 if (popularContainer) {
                     popularContainer.innerHTML = data.slice(0, 6).map(dest => `
-                        <li><a href="/destination/${dest.id}">${dest.name}</a></li>
+                        <li><a href="/tourist/destination/${dest.id}">${dest.name}</a></li>
                     `).join('');
                 }
             } catch (error) {
@@ -1141,7 +1162,7 @@
                                     ${event.location}, ${event.municipality}
                                 </p>
                                 <p>${event.description}</p>
-                                <a href="/event/${event.id}" class="btn btn-sm btn-outline-primary">More Info</a>
+                                <a href="/tourist/event/${event.id}" class="btn btn-sm btn-outline-primary">More Info</a>
                             </div>
                         </div>
                     </div>
@@ -1209,152 +1230,87 @@
             }
         }
 
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            loadFeaturedDestinations();
-            loadUpcomingEvents();
-            loadRecentAnnouncements();
+        // Counter animation for stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number, .stat-number-compact');
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent.replace(/\D/g, ''));
+                const suffix = counter.textContent.replace(/[0-9]/g, '');
+                let current = 0;
+                const increment = target / 50;
 
-            const currentPath = window.location.pathname;
-            const pathToNavId = {
-                '/': 'nav-home',
-                '/home': 'nav-home',
-                '/destinations': 'nav-destinations',
-                '/map': 'nav-map',
-                '/events': 'nav-events',
-                '/about': 'nav-about',
-                '/contact': 'nav-contact'
-            };
-
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            const currentNavId = pathToNavId[currentPath];
-            if (currentNavId) {
-                if (currentNavLink) {
-                    currentNavLink.classList.add('active');
-                }
-            }
-
-
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    const href = this.getAttribute('href');
-
-                    // If it's a hash link and we're on the same page, handle smooth scrolling
-                    if (href.startsWith('#')) {
-                        e.preventDefault();
-                        const targetElement = document.querySelector(href);
-                        if (targetElement) {
-                            targetElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-
-                            // Update active state
-                            document.querySelectorAll('.nav-link').forEach(navLink => {
-                                navLink.classList.remove('active');
-                            });
-                            this.classList.add('active');
-                        }
-                    }
-                    // For external links, let them navigate normally
-                });
-            });
-
-            // Navbar scroll effect
-            window.addEventListener('scroll', function() {
-                const navbar = document.getElementById('navbar');
-                if (window.scrollY > 100) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
-
-            // Counter animation for stats
-            function animateCounters() {
-                const counters = document.querySelectorAll('.stat-number, .stat-number-compact');
-                counters.forEach(counter => {
-                    const target = parseInt(counter.textContent.replace(/\D/g, ''));
-                    const suffix = counter.textContent.replace(/[0-9]/g, '');
-                    let current = 0;
-                    const increment = target / 50;
-
-                    const timer = setInterval(() => {
-                        current += increment;
-                        if (current >= target) {
-                            counter.textContent = target + suffix;
-                            clearInterval(timer);
-                        } else {
-                            counter.textContent = Math.floor(current) + suffix;
-                        }
-                    }, 40);
-                });
-            }
-
-            // Trigger counter animation when stats section is visible
-            const statsObserver = new IntersectionObserver(function(entries) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateCounters();
-                        statsObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            const statsContainer = document.querySelector('.stats-container-compact');
-            if (statsContainer) {
-                statsObserver.observe(statsContainer);
-            }
-
-            // Add parallax effect to hero section
-            window.addEventListener('scroll', function() {
-                const scrolled = window.pageYOffset;
-                const heroSection = document.querySelector('.hero-section');
-                if (heroSection && scrolled < heroSection.offsetHeight) {
-                    heroSection.style.backgroundPositionY = `${scrolled * 0.5}px`;
-                }
-            });
-
-            // Enhanced hover effects for interactive elements
-            document.querySelectorAll('.destination-card, .event-card, .announcement-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    if (this.classList.contains('destination-card')) {
-                        this.style.transform = 'translateY(-8px)';
-                    } else if (this.classList.contains('event-card')) {
-                        this.style.transform = 'translateX(5px)';
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target + suffix;
+                        clearInterval(timer);
                     } else {
-                        this.style.transform = 'translateX(3px)';
+                        counter.textContent = Math.floor(current) + suffix;
                     }
-                });
-
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = '';
-                });
+                }, 40);
             });
+        }
 
-            // Button hover effects
-            document.querySelectorAll('.btn, .btn-explore, .btn-outline-primary').forEach(button => {
-                button.addEventListener('mouseenter', function () {
-                    this.style.transform = 'translateY(-2px)';
-                });
-
-                button.addEventListener('mouseleave', function () {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-
-            // Image lazy loading effect
-            document.querySelectorAll('img').forEach(img => {
-                img.addEventListener('load', function() {
-                    this.style.opacity = '1';
-                });
-                if (img.complete) {
-                    img.style.opacity = '1';
+        // Trigger counter animation when stats section is visible
+        const statsObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    statsObserver.unobserve(entry.target);
                 }
             });
+        }, { threshold: 0.5 });
+
+        const statsContainer = document.querySelector('.stats-container-compact');
+        if (statsContainer) {
+            statsObserver.observe(statsContainer);
+        }
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection && scrolled < heroSection.offsetHeight) {
+                heroSection.style.backgroundPositionY = `${scrolled * 0.5}px`;
+            }
+        });
+
+        // Enhanced hover effects for interactive elements
+        document.querySelectorAll('.destination-card, .event-card, .announcement-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (this.classList.contains('destination-card')) {
+                    this.style.transform = 'translateY(-8px)';
+                } else if (this.classList.contains('event-card')) {
+                    this.style.transform = 'translateX(5px)';
+                } else {
+                    this.style.transform = 'translateX(3px)';
+                }
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Button hover effects
+        document.querySelectorAll('.btn, .btn-explore, .btn-outline-primary').forEach(button => {
+            button.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-2px)';
+            });
+
+            button.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Image lazy loading effect
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('load', function() {
+                this.style.opacity = '1';
+            });
+            if (img.complete) {
+                img.style.opacity = '1';
+            }
         });
     </script>
 </body>

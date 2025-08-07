@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, render_template
 from datetime import datetime, timedelta
 from Batangas_PTCAO.src.model import Property, TouristReport, PropertyImage, Event, Announcement
 from sqlalchemy import func, desc, or_
@@ -97,3 +97,11 @@ def get_recent_announcements():
         } for a in announcements])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@tourist_home_bp.route('/home')
+def tourist_home():
+    return render_template('TOURIST_Home.html')
+
+@tourist_home_bp.route('/destinations')
+def tourist_destinations():
+    return render_template('TOURIST_Destination.html')
