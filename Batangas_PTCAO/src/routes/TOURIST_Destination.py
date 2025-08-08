@@ -31,7 +31,7 @@ def get_tourist_properties():
                 image_filename = property.images[0].image_path
                 # Ensure proper path formatting
                 if not image_filename.startswith('/'):
-                    main_image = f"/static/uploads/properties/{image_filename}"
+                    main_image = f"/static/uploads/events/{image_filename}"
                 else:
                     main_image = image_filename
             else:

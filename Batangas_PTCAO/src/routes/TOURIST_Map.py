@@ -47,7 +47,7 @@ def init_tourist_map_routes(app):
                 # Get the first image
                 image_url = None
                 if prop.images:
-                    image_url = f"/static/uploads/properties/{prop.images[0].image_path}"
+                    image_url = f"/static/uploads/events/{prop.images[0].image_path}"
                 else:
                     # Default image based on accommodation type
                     default_images = {

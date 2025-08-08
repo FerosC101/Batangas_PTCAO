@@ -105,3 +105,15 @@ def tourist_home():
 @tourist_home_bp.route('/destinations')
 def tourist_destinations():
     return render_template('TOURIST_Destination.html')
+
+@tourist_home_bp.route('/map')
+def tourist_map():
+    return render_template('TOURIST_Map.html')
+
+@tourist_home_bp.route('/events')
+def tourist_events():
+    return render_template('TOURIST_Event.html')
+
+@tourist_home_bp.route('/about')
+def tourist_about():
+    return render_template('TOURIST_About.html')
