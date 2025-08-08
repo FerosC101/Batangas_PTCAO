@@ -233,7 +233,7 @@
 
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -339,7 +339,7 @@
         /* Geography Grid */
         .geography-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
             margin: 2rem 0;
         }
@@ -374,7 +374,7 @@
         /* Culture Grid */
         .culture-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             margin: 2rem 0;
         }
@@ -394,7 +394,7 @@
 
         .culture-item img {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
@@ -410,6 +410,74 @@
         .culture-item h5 {
             color: var(--primary);
             margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .feature-item h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Transportation Grid */
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .transport-item {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+
+        .transport-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .transport-item i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .transport-item h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
             font-weight: 600;
         }
 
@@ -503,6 +571,16 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1200px) {
+            .culture-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .transport-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.2rem;
@@ -543,6 +621,13 @@
                 gap: 1rem;
             }
 
+            .geography-grid,
+            .feature-grid,
+            .culture-grid,
+            .transport-grid {
+                grid-template-columns: 1fr;
+            }
+
             .content-card {
                 padding: 1.5rem;
             }
@@ -550,11 +635,6 @@
 
         @media (max-width: 576px) {
             .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .geography-grid,
-            .culture-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -620,7 +700,7 @@
                         <p>The province is strategically positioned south of Manila, bordered by Cavite and Laguna to the north, Quezon to the east, and surrounded by the South China Sea and Batangas Bay. This unique location has shaped Batangas into a diverse province that seamlessly blends industrial progress with tourism excellence.</p>
                     </div>
                     <div class="col-lg-6">
-                        <img src="https://images.unsplash.com/photo-1502780402662-acc01917271e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Batangas Landscape" class="img-fluid rounded">
+                        <img src="https://images.unsplash.com/photo-1598965675045-d738450df2f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Beautiful Batangas landscape with mountains and coast" class="img-fluid rounded">
                     </div>
                 </div>
             </div>
@@ -670,28 +750,28 @@
                         <i class="fas fa-mountain"></i>
                     </div>
                     <h4>Topography</h4>
-                    <p>Batangas features diverse terrain including coastal plains, rolling hills, and volcanic mountains. The province is home to the famous Taal Volcano, one of the world's smallest active volcanoes.</p>
+                    <p>Batangas features diverse terrain including coastal plains, rolling hills, and volcanic mountains. The province is home to the famous Taal Volcano, one of the world's smallest active volcanoes located within a lake.</p>
                 </div>
                 <div class="geography-item">
                     <div class="geography-icon">
                         <i class="fas fa-water"></i>
                     </div>
                     <h4>Coastline</h4>
-                    <p>With over 200 kilometers of coastline along the South China Sea and Batangas Bay, the province boasts numerous pristine beaches, diving spots, and marine sanctuaries.</p>
+                    <p>With over 200 kilometers of pristine coastline along the South China Sea and Batangas Bay, the province boasts numerous beautiful beaches, world-class diving spots, and protected marine sanctuaries.</p>
                 </div>
                 <div class="geography-item">
                     <div class="geography-icon">
                         <i class="fas fa-thermometer-half"></i>
                     </div>
                     <h4>Climate</h4>
-                    <p>Tropical climate with two distinct seasons: dry season (November-April) and wet season (May-October). Average temperature ranges from 23°C to 32°C year-round.</p>
+                    <p>Tropical climate with two distinct seasons: dry season (November-April) and wet season (May-October). Average temperature ranges from 23°C to 32°C year-round, perfect for tourism activities.</p>
                 </div>
                 <div class="geography-item">
                     <div class="geography-icon">
                         <i class="fas fa-seedling"></i>
                     </div>
                     <h4>Natural Resources</h4>
-                    <p>Rich in marine resources, agricultural products, and minerals. Famous for coffee production, particularly the renowned Barako coffee and Kapeng Alamid.</p>
+                    <p>Rich in marine resources, agricultural products, and minerals. World-famous for coffee production, particularly the renowned Barako coffee and the exclusive Kapeng Alamid (civet coffee).</p>
                 </div>
             </div>
         </section>
@@ -705,7 +785,7 @@
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h4>Pre-Colonial Era</h4>
-                        <p>Indigenous communities including the Tagalogs thrived in the region, establishing settlements along rivers and coasts. The area was known for its skilled seafarers and traders.</p>
+                        <p>Indigenous communities including the Tagalogs thrived in the region, establishing flourishing settlements along rivers and coasts. The area was renowned for its skilled seafarers, traders, and craftsmen.</p>
                     </div>
                     <div class="timeline-date">Pre-1500s</div>
                 </div>
@@ -721,7 +801,7 @@
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h4>Philippine Revolution</h4>
-                        <p>Batangas played a crucial role in the Philippine Revolution against Spain. Many Batangueños joined the Katipunan and fought for independence under leaders like Miguel Malvar.</p>
+                        <p>Batangas played a crucial role in the Philippine Revolution against Spain. Many brave Batangueños joined the Katipunan and fought valiantly for independence under leaders like Miguel Malvar.</p>
                     </div>
                     <div class="timeline-date">1896-1898</div>
                 </div>
@@ -729,7 +809,7 @@
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h4>American Period</h4>
-                        <p>During the Philippine-American War, Batangas was a stronghold of resistance. General Miguel Malvar led guerrilla warfare against American forces from his base in the province.</p>
+                        <p>During the Philippine-American War, Batangas became a stronghold of resistance. General Miguel Malvar led effective guerrilla warfare against American forces from his base in the province.</p>
                     </div>
                     <div class="timeline-date">1899-1946</div>
                 </div>
@@ -737,7 +817,7 @@
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h4>World War II</h4>
-                        <p>Batangas experienced Japanese occupation and became a center of guerrilla resistance. The province suffered significant damage but emerged with strengthened community bonds.</p>
+                        <p>Batangas experienced Japanese occupation and became a center of guerrilla resistance. Despite suffering significant damage, the province emerged with strengthened community bonds and resilience.</p>
                     </div>
                     <div class="timeline-date">1942-1945</div>
                 </div>
@@ -745,7 +825,7 @@
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h4>Modern Development</h4>
-                        <p>Post-independence Batangas transformed into an industrial powerhouse while developing its tourism sector. Today, it balances economic growth with environmental conservation and cultural preservation.</p>
+                        <p>Post-independence Batangas transformed into an industrial powerhouse while developing its tourism sector. Today, it successfully balances economic growth with environmental conservation and cultural preservation.</p>
                     </div>
                     <div class="timeline-date">1946-Present</div>
                 </div>
@@ -759,42 +839,42 @@
 
             <div class="culture-grid">
                 <div class="culture-item">
-                    <img src="https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Taal Basilica">
+                    <img src="https://images.unsplash.com/photo-1571501679680-de32f1e7aad4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Taal Basilica - Spanish colonial architecture">
                     <div class="culture-content">
                         <h5>Spanish Colonial Architecture</h5>
                         <p>Magnificent churches and ancestral houses showcase centuries of Spanish influence, with Taal's Basilica of St. Martin of Tours being the largest Catholic church in Asia.</p>
                     </div>
                 </div>
                 <div class="culture-item">
-                    <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Barako Coffee">
+                    <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Famous Barako coffee beans">
                     <div class="culture-content">
                         <h5>Coffee Heritage</h5>
-                        <p>Home to the world-famous Barako coffee and the rare Kapeng Alamid. Coffee culture runs deep in Batangueño tradition, passed down through generations.</p>
+                        <p>Home to the world-famous Barako coffee and the rare Kapeng Alamid. Coffee culture runs deep in Batangueño tradition, passed down through generations of skilled farmers.</p>
                     </div>
                 </div>
                 <div class="culture-item">
-                    <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Local Cuisine">
+                    <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Traditional Filipino cuisine and local dishes">
                     <div class="culture-content">
                         <h5>Culinary Traditions</h5>
-                        <p>Famous for Lomi, Bulalo, Goto, and other hearty dishes. Local cuisine reflects the province's agricultural abundance and coastal location.</p>
+                        <p>Famous for Lomi, Bulalo, Goto, and other hearty dishes. Local cuisine reflects the province's agricultural abundance and coastal location with fresh ingredients.</p>
                     </div>
                 </div>
                 <div class="culture-item">
-                    <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Local Festival">
+                    <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Colorful local festival celebration">
                     <div class="culture-content">
                         <h5>Festivals & Celebrations</h5>
                         <p>Vibrant festivals like the Sublian Festival celebrate local traditions, while town fiestas honor patron saints with colorful parades and cultural performances.</p>
                     </div>
                 </div>
                 <div class="culture-item">
-                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Traditional Crafts">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Traditional Filipino handicrafts and weaving">
                     <div class="culture-content">
                         <h5>Traditional Crafts</h5>
-                        <p>Skilled artisans create beautiful embroidered barongs, handwoven textiles, and intricate wood carvings that preserve centuries-old techniques.</p>
+                        <p>Skilled artisans create beautiful embroidered barongs, handwoven textiles, and intricate wood carvings that preserve centuries-old techniques and cultural heritage.</p>
                     </div>
                 </div>
                 <div class="culture-item">
-                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Local Language">
+                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Filipino literature and traditional writing">
                     <div class="culture-content">
                         <h5>Language & Literature</h5>
                         <p>The Batangueño dialect of Tagalog is known for its distinctive accent and expressions. The province has produced notable writers and poets who celebrate local culture.</p>
@@ -806,32 +886,44 @@
         <!-- Economy and Industry -->
         <section class="section-container">
             <div class="content-card">
-                <div class="row">
+                <div class="row align-items-center">
                     <div class="col-lg-8">
                         <h2 class="section-title">Economy & Industry</h2>
                         <p class="lead">Batangas stands as one of the Philippines' most economically dynamic provinces, successfully balancing industrial development with sustainable tourism and agriculture.</p>
 
-                        <div class="row mt-4">
-                            <div class="col-md-6 mb-4">
-                                <h4><i class="fas fa-industry text-primary me-3"></i>Industrial Hub</h4>
+                        <div class="feature-grid mt-4">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-industry"></i>
+                                </div>
+                                <h4>Industrial Hub</h4>
                                 <p>Home to major industrial complexes including the Batangas Bay Industrial Complex and numerous manufacturing facilities. The province hosts petrochemical plants, power generation facilities, and automotive assembly plants.</p>
                             </div>
-                            <div class="col-md-6 mb-4">
-                                <h4><i class="fas fa-ship text-primary me-3"></i>Maritime Gateway</h4>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-ship"></i>
+                                </div>
+                                <h4>Maritime Gateway</h4>
                                 <p>Batangas Port serves as the primary gateway to the southern Philippine islands, handling millions of passengers and tons of cargo annually. It's a crucial link for inter-island commerce and tourism.</p>
                             </div>
-                            <div class="col-md-6 mb-4">
-                                <h4><i class="fas fa-seedling text-primary me-3"></i>Agriculture</h4>
-                                <p>Major producer of coffee, sugarcane, coconut, and various fruits. The province is famous for its high-quality Barako coffee and sustainable farming practices.</p>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <h4>Agriculture</h4>
+                                <p>Major producer of coffee, sugarcane, coconut, and various tropical fruits. The province is famous for its high-quality Barako coffee and sustainable farming practices.</p>
                             </div>
-                            <div class="col-md-6 mb-4">
-                                <h4><i class="fas fa-umbrella-beach text-primary me-3"></i>Tourism Industry</h4>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-umbrella-beach"></i>
+                                </div>
+                                <h4>Tourism Industry</h4>
                                 <p>Tourism contributes significantly to the local economy, with world-class diving destinations, beach resorts, historical sites, and adventure tourism attracting millions of visitors annually.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Batangas Industry" class="img-fluid rounded mb-3">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Modern industrial facilities and port in Batangas" class="img-fluid rounded mb-3">
                         <div class="bg-light p-3 rounded">
                             <h5 class="text-primary">Economic Indicators</h5>
                             <ul class="list-unstyled">
@@ -850,45 +942,45 @@
         <!-- Government and Administration -->
         <section class="section-container">
             <h2 class="section-title">Government & Administration</h2>
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="content-card">
-                        <h3 class="section-subtitle">Provincial Government</h3>
-                        <p>Batangas is governed by a provincial government headed by a Governor, with a Provincial Board (Sangguniang Panlalawigan) serving as the legislative body. The province is divided into four congressional districts represented in the national legislature.</p>
-
-                        <h4 class="mt-4">Key Government Services</h4>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Provincial Health Office</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Social Services and Development Office</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Tourism and Cultural Affairs Office</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Environment and Natural Resources Office</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Agriculture and Fisheries Office</li>
-                        </ul>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-landmark"></i>
                     </div>
+                    <h3 class="section-subtitle">Provincial Government</h3>
+                    <p>Batangas is governed by a provincial government headed by a Governor, with a Provincial Board (Sangguniang Panlalawigan) serving as the legislative body. The province is divided into four congressional districts represented in the national legislature.</p>
+
+                    <h4 class="mt-3">Key Government Services</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Provincial Health Office</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Social Services and Development Office</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Tourism and Cultural Affairs Office</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Environment and Natural Resources Office</li>
+                    </ul>
                 </div>
-                <div class="col-lg-6">
-                    <div class="content-card">
-                        <h3 class="section-subtitle">Cities and Municipalities</h3>
-                        <p>The province comprises 4 cities and 30 municipalities, each with its own local government unit providing essential services to residents and visitors.</p>
-
-                        <h4 class="mt-4">Component Cities</h4>
-                        <div class="row">
-                            <div class="col-6">
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-city text-primary me-2"></i> Batangas City</li>
-                                    <li><i class="fas fa-city text-primary me-2"></i> Lipa City</li>
-                                </ul>
-                            </div>
-                            <div class="col-6">
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-city text-primary me-2"></i> Santo Tomas</li>
-                                    <li><i class="fas fa-city text-primary me-2"></i> Tanauan City</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <p class="mt-3"><strong>30 municipalities</strong> including popular tourist destinations like Nasugbu, Mabini, Taal, and Calatagan.</p>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-city"></i>
                     </div>
+                    <h3 class="section-subtitle">Cities and Municipalities</h3>
+                    <p>The province comprises 4 cities and 30 municipalities, each with its own local government unit providing essential services to residents and visitors.</p>
+
+                    <h4 class="mt-3">Component Cities</h4>
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-building text-primary me-2"></i> Batangas City</li>
+                                <li><i class="fas fa-building text-primary me-2"></i> Lipa City</li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-building text-primary me-2"></i> Santo Tomas</li>
+                                <li><i class="fas fa-building text-primary me-2"></i> Tanauan City</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="mt-3"><strong>30 municipalities</strong> including popular tourist destinations like Nasugbu, Mabini, Taal, and Calatagan.</p>
                 </div>
             </div>
         </section>
@@ -896,44 +988,44 @@
         <!-- Education and Healthcare -->
         <section class="section-container">
             <h2 class="section-title">Education & Healthcare</h2>
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="content-card">
-                        <h3 class="section-subtitle"><i class="fas fa-graduation-cap text-primary me-3"></i>Education</h3>
-                        <p>Batangas is home to several prestigious educational institutions, making it a center for learning in the CALABARZON region.</p>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="section-subtitle">Education Excellence</h3>
+                    <p>Batangas is home to several prestigious educational institutions, making it a center for learning in the CALABARZON region.</p>
 
-                        <h4>Major Universities & Colleges</h4>
-                        <ul>
-                            <li><strong>Batangas State University</strong> - The premier state university with multiple campuses</li>
-                            <li><strong>De La Salle Lipa</strong> - Private Catholic university known for excellence</li>
-                            <li><strong>University of Batangas</strong> - Leading private institution</li>
-                            <li><strong>Lyceum of the Philippines University Batangas</strong></li>
-                            <li><strong>Immaculate Conception Seminary</strong> - Theological studies</li>
-                        </ul>
+                    <h4>Major Universities & Colleges</h4>
+                    <ul>
+                        <li><strong>Batangas State University</strong> - The premier state university with multiple campuses</li>
+                        <li><strong>De La Salle Lipa</strong> - Private Catholic university known for excellence</li>
+                        <li><strong>University of Batangas</strong> - Leading private institution</li>
+                        <li><strong>Lyceum of the Philippines University Batangas</strong></li>
+                    </ul>
 
-                        <div class="bg-light p-3 rounded mt-3">
-                            <p class="mb-0"><strong>Literacy Rate:</strong> 97.8% (Above national average)</p>
-                        </div>
+                    <div class="bg-light p-3 rounded mt-3">
+                        <p class="mb-0"><strong>Literacy Rate:</strong> 97.8% (Above national average)</p>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="content-card">
-                        <h3 class="section-subtitle"><i class="fas fa-hospital text-primary me-3"></i>Healthcare</h3>
-                        <p>The province maintains a robust healthcare system with modern medical facilities and specialized services.</p>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h3 class="section-subtitle">Healthcare System</h3>
+                    <p>The province maintains a robust healthcare system with modern medical facilities and specialized services serving the entire region.</p>
 
-                        <h4>Major Healthcare Facilities</h4>
-                        <ul>
-                            <li><strong>Batangas Medical Center</strong> - Regional medical hub</li>
-                            <li><strong>Mary Mediatrix Medical Center</strong> - Private tertiary hospital</li>
-                            <li><strong>Metro Lipa Medical Center</strong> - Advanced medical services</li>
-                            <li><strong>Sorosoro Ibaba District Hospital</strong></li>
-                            <li><strong>Various Rural Health Units</strong> - Primary care in municipalities</li>
-                        </ul>
+                    <h4>Major Healthcare Facilities</h4>
+                    <ul>
+                        <li><strong>Batangas Medical Center</strong> - Regional medical hub</li>
+                        <li><strong>Mary Mediatrix Medical Center</strong> - Private tertiary hospital</li>
+                        <li><strong>Metro Lipa Medical Center</strong> - Advanced medical services</li>
+                        <li><strong>Various Rural Health Units</strong> - Primary care coverage</li>
+                    </ul>
 
-                        <div class="bg-light p-3 rounded mt-3">
-                            <p class="mb-1"><strong>Hospital Bed Capacity:</strong> 2,500+ beds</p>
-                            <p class="mb-0"><strong>Healthcare Coverage:</strong> Universal healthcare access</p>
-                        </div>
+                    <div class="bg-light p-3 rounded mt-3">
+                        <p class="mb-1"><strong>Hospital Bed Capacity:</strong> 2,500+ beds</p>
+                        <p class="mb-0"><strong>Healthcare Coverage:</strong> Universal healthcare access</p>
                     </div>
                 </div>
             </div>
@@ -945,34 +1037,26 @@
                 <h2 class="section-title">Transportation & Connectivity</h2>
                 <p class="lead">Batangas enjoys excellent connectivity with Manila and other regions, making it easily accessible for tourists and business travelers.</p>
 
-                <div class="row mt-4">
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="text-center p-3 bg-light rounded">
-                            <i class="fas fa-car fa-3x text-primary mb-3"></i>
-                            <h5>By Road</h5>
-                            <p>STAR Tollway and SLEX provide direct highway access from Manila. Travel time: 1.5-2 hours</p>
-                        </div>
+                <div class="transport-grid">
+                    <div class="transport-item">
+                        <i class="fas fa-car"></i>
+                        <h5>By Road</h5>
+                        <p>STAR Tollway and SLEX provide direct highway access from Manila. Travel time: 1.5-2 hours</p>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="text-center p-3 bg-light rounded">
-                            <i class="fas fa-bus fa-3x text-primary mb-3"></i>
-                            <h5>Public Transport</h5>
-                            <p>Regular bus services from Manila terminals. Provincial buses connect all municipalities</p>
-                        </div>
+                    <div class="transport-item">
+                        <i class="fas fa-bus"></i>
+                        <h5>Public Transport</h5>
+                        <p>Regular bus services from Manila terminals. Provincial buses connect all municipalities</p>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="text-center p-3 bg-light rounded">
-                            <i class="fas fa-ship fa-3x text-primary mb-3"></i>
-                            <h5>Sea Transport</h5>
-                            <p>Batangas Port serves ferries to Mindoro, Romblon, and other southern islands</p>
-                        </div>
+                    <div class="transport-item">
+                        <i class="fas fa-ship"></i>
+                        <h5>Sea Transport</h5>
+                        <p>Batangas Port serves ferries to Mindoro, Romblon, and other southern islands</p>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="text-center p-3 bg-light rounded">
-                            <i class="fas fa-plane fa-3x text-primary mb-3"></i>
-                            <h5>Air Access</h5>
-                            <p>Nearest airports: NAIA (2 hours) and Clark (3 hours). Private airstrip in Nasugbu</p>
-                        </div>
+                    <div class="transport-item">
+                        <i class="fas fa-plane"></i>
+                        <h5>Air Access</h5>
+                        <p>Nearest airports: NAIA (2 hours) and Clark (3 hours). Private airstrip in Nasugbu</p>
                     </div>
                 </div>
             </div>
@@ -1146,9 +1230,9 @@
         });
 
         // Enhanced hover effects for cards
-        document.querySelectorAll('.content-card, .culture-item, .geography-item, .stat-item').forEach(card => {
+        document.querySelectorAll('.content-card, .culture-item, .geography-item, .stat-item, .feature-item, .transport-item').forEach(card => {
             card.addEventListener('mouseenter', function() {
-                this.style.transform = this.classList.contains('stat-item') ? 'translateY(-5px)' : 'translateY(-5px)';
+                this.style.transform = 'translateY(-5px)';
             });
 
             card.addEventListener('mouseleave', function() {
@@ -1184,6 +1268,32 @@
             img.style.opacity = '0';
             img.style.transform = 'scale(0.95)';
             img.style.transition = 'all 0.3s ease-out';
+        });
+
+        // Staggered animation for grid items
+        const gridObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const items = entry.target.querySelectorAll('.culture-item, .geography-item, .feature-item, .transport-item');
+                    items.forEach((item, index) => {
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    });
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.culture-grid, .geography-grid, .feature-grid, .transport-grid').forEach(grid => {
+            gridObserver.observe(grid);
+
+            // Set initial state for grid items
+            grid.querySelectorAll('.culture-item, .geography-item, .feature-item, .transport-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'all 0.6s ease-out';
+            });
         });
     </script>
 </body>

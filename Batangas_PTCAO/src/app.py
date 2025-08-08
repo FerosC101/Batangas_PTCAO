@@ -14,6 +14,7 @@ from Batangas_PTCAO.src.routes.PTCAO_Property import init_ptcao_property_routes
 from Batangas_PTCAO.src.routes.TOURIST_Destination import init_tourist_api_routes
 from Batangas_PTCAO.src.routes.TOURIST_Home import init_tourist_home_routes
 from Batangas_PTCAO.src.routes.TOURIST_Events import init_tourist_events_routes
+from Batangas_PTCAO.src.routes.TOURIST_Map import init_tourist_map_routes
 # Import route initializers
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
 from Batangas_PTCAO.src.routes.MTO import init_mto_routes
@@ -78,7 +79,7 @@ def create_app():
     init_tourist_home_routes(app)
     init_tourist_events_routes(app)
     init_tourist_api_routes(app)
-
+    init_tourist_map_routes(app)
     # Static file serving route
     @app.route('/static/<path:filename>')
     def serve_static_file(filename):

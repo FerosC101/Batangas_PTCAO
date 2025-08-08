@@ -1089,7 +1089,7 @@
 
         async function viewDetails(id, type) {
             try {
-                const itemId = id.replace(`${type}_`, '');
+                const itemId = id;
                 const endpoint = type === 'property' ?
                     `${API_BASE_URL}/property/${itemId}` :
                     `${API_BASE_URL}/destination/${itemId}`;

@@ -304,7 +304,7 @@ def init_tourist_map_routes(app):
             for dest in destinations:
                 # Determine if this destination should be included based on category filter
                 dest_category = dest.destination_type.value.lower()
-                if category_filter != 'all' and category_filter != dest_category and category_filter != 'destination':
+                if category_filter != 'all' and category_filter != dest_category and category_filter != dest_category and category_filter != 'destination':
                     continue
 
                 default_images = {
