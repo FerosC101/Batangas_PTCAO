@@ -1,15 +1,18 @@
 # [file name]: MTO_Property.py
 import uuid
-
+import os
+from math import radians, sin, cos, sqrt, atan2
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
-import os
-from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User, \
-    PropertyImage
+from datetime import datetime
+from Batangas_PTCAO.src.model import (
+    Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User,
+    PropertyImage, Destination, DestinationType, PropertyReport
+)
 from Batangas_PTCAO.src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+
 
 properties_bp = Blueprint("properties", __name__, url_prefix="/property")
 
@@ -27,10 +30,20 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def haversine(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    r = 6371
+    return c * r
+
 @properties_bp.route('/mto/property')
 @jwt_required()
 def mto_properties():
-    """Render the MTO Properties page with the list of all properties"""
+    """Render the MTO Properties page with the list of all properties and destinations"""
     try:
         current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
@@ -40,6 +53,7 @@ def mto_properties():
             return redirect(url_for('dashboard.mto_dashboard'))
 
         properties = Property.query.filter_by(municipality=user.municipality).all()
+        destinations = Destination.query.filter_by(municipality=user.municipality).all()
 
         # Define typical locations for dropdown
         typical_locations = [
@@ -50,6 +64,7 @@ def mto_properties():
         return render_template(
             'MTO_Properties.html',
             properties=properties,
+            destinations=destinations,
             user_id=current_user_id,
             municipality=user.municipality,
             typical_locations=typical_locations
@@ -57,7 +72,6 @@ def mto_properties():
     except Exception as e:
         flash(f'Failed to load properties: {str(e)}', 'error')
         return redirect(url_for('dashboard.mto_dashboard'))
-
 
 @properties_bp.route('', methods=['GET'])
 @jwt_required()
@@ -116,7 +130,6 @@ def get_properties():
             'message': str(e)
         }), 500
 
-
 @properties_bp.route('/<int:property_id>', methods=['GET'])
 @jwt_required()
 def get_property(property_id):
@@ -172,7 +185,6 @@ def get_property(property_id):
             'status': 'error',
             'message': str(e)
         }), 500
-
 
 @properties_bp.route('', methods=['POST'])
 @jwt_required()
@@ -664,5 +676,127 @@ def get_mto_properties():
     except Exception as e:
         return jsonify({
             'success': False,
+            'message': str(e)
+        }), 500
+
+
+@properties_bp.route('/<int:property_id>/nearest-destinations', methods=['GET'])
+@jwt_required()
+def get_nearest_destinations(property_id):
+    try:
+        property = Property.query.get_or_404(property_id)
+
+        if not property.coordinates:
+            return jsonify({'status': 'error', 'message': 'Property has no coordinates'}), 400
+
+        prop_coord = property.coordinates[0]
+        prop_lon = prop_coord.longitude
+        prop_lat = prop_coord.latitude
+
+        destinations = Destination.query.filter_by(municipality=property.municipality).all()
+
+        nearest = []
+        for dest in destinations:
+            distance = haversine(prop_lon, prop_lat, dest.longitude, dest.latitude)
+            if distance <= 5:  # within 5 km
+                nearest.append({
+                    'id': dest.id,
+                    'name': dest.name,
+                    'type': dest.destination_type.value,
+                    'distance': round(distance, 2)
+                })
+
+        nearest.sort(key=lambda x: x['distance'])
+
+        return jsonify({
+            'status': 'success',
+            'nearest_destinations': nearest
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@properties_bp.route('/mto/destination', methods=['POST'])
+@jwt_required()
+def create_destination():
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+
+        if not user or not user.municipality:
+            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+        data = request.form
+        files = request.files
+
+        new_destination = Destination(
+            name=data['name'],
+            description=data['description'],
+            location_name=data['location_name'],
+            longitude=float(data['longitude']),
+            latitude=float(data['latitude']),
+            barangay=data['barangay'],
+            municipality=user.municipality,
+            destination_type=DestinationType[data['destination_type']],
+            is_featured=data.get('is_featured', 'false').lower() == 'true'
+        )
+
+        db.session.add(new_destination)
+        db.session.flush()
+
+        if 'destination_image' in files:
+            file = files['destination_image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(f"{new_destination.id}_{file.filename}")
+                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                new_destination.image_path = filename
+
+        db.session.commit()
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Destination created successfully',
+            'destination_id': new_destination.id
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@properties_bp.route('/mto/destination/<int:destination_id>', methods=['DELETE'])
+@jwt_required()
+def delete_destination(destination_id):
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+
+        if not user or not user.municipality:
+            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+        destination = Destination.query.get_or_404(destination_id)
+
+        if destination.municipality != user.municipality:
+            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+        db.session.delete(destination)
+        db.session.commit()
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Destination deleted successfully'
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
             'message': str(e)
         }), 500
