@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from sqlalchemy.orm import joinedload
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import Property, Destination, LongLat, PropertyImage, Room, Amenity, DestinationType, \
@@ -6,7 +6,6 @@ from Batangas_PTCAO.src.model import Property, Destination, LongLat, PropertyIma
 
 
 def init_tourist_map_routes(app):
-    """Initialize the tourist map routes"""
 
     @app.route('/api/map/properties', methods=['GET'])
     def get_map_properties():
@@ -506,3 +505,23 @@ def init_tourist_map_routes(app):
                 'success': False,
                 'message': f'Error fetching destination details: {str(e)}'
             }), 500
+
+    @app.route('/home')
+    def events_get_home():
+        return render_template('TOURIST_Home.html')
+
+    @app.route('/destinations')
+    def events_get_destinations():
+        return render_template('TOURIST_Destination.html')
+
+    @app.route('/map')
+    def events_get_map():
+        return render_template('TOURIST_Map.html')
+
+    @app.route('/events')
+    def events_get_events():
+        return render_template('TOURIST_Event.html')
+
+    @app.route('/about')
+    def events_get_about():
+        return render_template('TOURIST_About.html')

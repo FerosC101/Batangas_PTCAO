@@ -6,12 +6,6 @@ from sqlalchemy import or_, and_
 
 
 def init_tourist_events_routes(app):
-    """Initialize tourist events routes"""
-
-    @app.route('/events')
-    def events_page():
-        """Render the events page"""
-        return render_template('TOURIST_Event.html')
 
     @app.route('/api/events')
     def get_events():
@@ -287,3 +281,20 @@ def init_tourist_events_routes(app):
                 'success': False,
                 'error': str(e)
             }), 500
+
+    @app.route('/home')
+    def get_home():
+        return render_template('TOURIST_Home.html')
+
+    @app.route('/destinations')
+    def get_destinations():
+        return render_template('TOURIST_Destination.html')
+
+    @app.route('/map')
+    def get_map():
+        return render_template('TOURIST_Map.html')
+
+
+    @app.route('/about')
+    def get_about():
+        return render_template('TOURIST_About.html')

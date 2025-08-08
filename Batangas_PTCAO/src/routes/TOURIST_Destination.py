@@ -1,6 +1,6 @@
 # Fixed TOURIST_Destination.py - API Routes for Tourist Destinations
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import Property, PropertyImage, Room, Amenity, Destination, LongLat, DestinationType
 from sqlalchemy import func, desc
@@ -488,3 +488,23 @@ def get_municipalities():
             'success': False,
             'message': f'Error fetching municipalities: {str(e)}'
         }), 500
+
+@tourist_api_bp.route('/home')
+def tourist_home():
+    return render_template('TOURIST_Home.html')
+
+@tourist_api_bp.route('/destinations')
+def tourist_destinations():
+    return render_template('TOURIST_Destination.html')
+
+@tourist_api_bp.route('/map')
+def tourist_map():
+    return render_template('TOURIST_Map.html')
+
+@tourist_api_bp.route('/events')
+def tourist_events():
+    return render_template('TOURIST_Event.html')
+
+@tourist_api_bp.route('/about')
+def tourist_about():
+    return render_template('TOURIST_About.html')
