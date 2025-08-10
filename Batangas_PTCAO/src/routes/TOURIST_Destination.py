@@ -1,10 +1,11 @@
-# Fixed TOURIST_Destination.py - API Routes for Tourist Destinations
+# Enhanced TOURIST_Destination.py - API Routes for Tourist Destinations with Municipality Filter and Nearby Destinations
 
 from flask import Blueprint, jsonify, request, render_template
 from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import Property, PropertyImage, Room, Amenity, Destination, LongLat, DestinationType
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, text
 import os
+import math
 
 # Create blueprints for better organization
 tourist_api_bp = Blueprint('tourist_api', __name__, url_prefix='/tourist/api')
@@ -13,6 +14,30 @@ tourist_api_bp = Blueprint('tourist_api', __name__, url_prefix='/tourist/api')
 def init_tourist_api_routes(app):
     """Initialize tourist API routes"""
     app.register_blueprint(tourist_api_bp)
+
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the great circle distance between two points
+    on the earth (specified in decimal degrees)
+    Returns distance in kilometers
+    """
+    if not all([lat1, lon1, lat2, lon2]):
+        return float('inf')
+
+    try:
+        # Convert decimal degrees to radians
+        lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+
+        # Haversine formula
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+        c = 2 * math.asin(math.sqrt(a))
+        r = 6371  # Radius of earth in kilometers
+        return c * r
+    except (TypeError, ValueError):
+        return float('inf')
 
 
 @tourist_api_bp.route('/properties', methods=['GET'])
@@ -31,7 +56,7 @@ def get_tourist_properties():
                 image_filename = property.images[0].image_path
                 # Ensure proper path formatting
                 if not image_filename.startswith('/'):
-                    main_image = f"/static/uploads/events/{image_filename}"
+                    main_image = f"/static/uploads/properties/{image_filename}"
                 else:
                     main_image = image_filename
             else:
@@ -181,6 +206,116 @@ def get_tourist_destinations():
         return jsonify({
             'success': False,
             'message': f'Error fetching destinations: {str(e)}'
+        }), 500
+
+
+@tourist_api_bp.route('/nearby-destinations/<int:property_id>', methods=['GET'])
+def get_nearby_destinations(property_id):
+    """Get nearby destinations for a specific property (within 10km)"""
+    try:
+        max_distance = float(request.args.get('max_distance', 10))  # Default 10km
+        limit = int(request.args.get('limit', 10))  # Default 10 destinations
+
+        # Get the property with coordinates
+        property = Property.query.get(property_id)
+
+        if not property:
+            return jsonify({
+                'success': False,
+                'message': 'Property not found'
+            }), 404
+
+        if not property.coordinates or len(property.coordinates) == 0:
+            return jsonify({
+                'success': True,
+                'nearby_destinations': [],
+                'total': 0,
+                'message': 'No coordinates available for this property'
+            })
+
+        property_coord = property.coordinates[0]
+        property_lat = float(property_coord.latitude) if property_coord.latitude else None
+        property_lng = float(property_coord.longitude) if property_coord.longitude else None
+
+        if not property_lat or not property_lng:
+            return jsonify({
+                'success': True,
+                'nearby_destinations': [],
+                'total': 0,
+                'message': 'Invalid coordinates for this property'
+            })
+
+        # Get all destinations with coordinates
+        destinations = Destination.query.filter(
+            Destination.latitude.isnot(None),
+            Destination.longitude.isnot(None)
+        ).all()
+
+        nearby_destinations = []
+
+        for destination in destinations:
+            dest_lat = float(destination.latitude) if destination.latitude else None
+            dest_lng = float(destination.longitude) if destination.longitude else None
+
+            if dest_lat and dest_lng:
+                distance = calculate_distance(property_lat, property_lng, dest_lat, dest_lng)
+
+                if distance <= max_distance:
+                    # Handle image path
+                    image_path = "/static/images/default-destination.jpg"
+                    if destination.image_path:
+                        if destination.image_path.startswith('/'):
+                            image_path = destination.image_path
+                        elif destination.image_path.startswith('http'):
+                            image_path = destination.image_path
+                        else:
+                            image_path = f"/static/uploads/destinations/{destination.image_path}"
+
+                    # Handle destination type
+                    destination_type_value = 'Other'
+                    if destination.destination_type:
+                        if hasattr(destination.destination_type, 'value'):
+                            destination_type_value = destination.destination_type.value
+                        else:
+                            destination_type_value = str(destination.destination_type)
+
+                    nearby_destinations.append({
+                        'id': destination.id,
+                        'name': destination.name or 'Unnamed Destination',
+                        'description': destination.description or 'Explore this amazing destination in Batangas.',
+                        'location_name': destination.location_name or destination.municipality,
+                        'municipality': destination.municipality or 'Batangas',
+                        'barangay': destination.barangay or '',
+                        'destination_type': {
+                            'value': destination_type_value
+                        },
+                        'image_path': image_path,
+                        'is_featured': destination.is_featured or False,
+                        'distance': round(distance, 2),
+                        'latitude': dest_lat,
+                        'longitude': dest_lng
+                    })
+
+        # Sort by distance and limit results
+        nearby_destinations.sort(key=lambda x: x['distance'])
+        nearby_destinations = nearby_destinations[:limit]
+
+        return jsonify({
+            'success': True,
+            'nearby_destinations': nearby_destinations,
+            'total': len(nearby_destinations),
+            'property_coordinates': {
+                'latitude': property_lat,
+                'longitude': property_lng
+            },
+            'max_distance_km': max_distance
+        })
+
+    except Exception as e:
+        print(f"Error in get_nearby_destinations: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching nearby destinations: {str(e)}'
         }), 500
 
 
@@ -334,11 +469,13 @@ def get_destination_details(destination_id):
 
 @tourist_api_bp.route('/search', methods=['GET'])
 def search_properties_and_destinations():
-    """Search both properties and destinations"""
+    """Search both properties and destinations with advanced filtering"""
     try:
         query = request.args.get('q', '').strip().lower()
         search_type = request.args.get('type', 'all')  # all, properties, destinations
         municipality = request.args.get('municipality', '')
+        property_type = request.args.get('property_type', '')
+        destination_type = request.args.get('destination_type', '')
 
         results = {
             'properties': [],
@@ -355,13 +492,19 @@ def search_properties_and_destinations():
                         func.lower(Property.property_name).contains(query),
                         func.lower(Property.description).contains(query),
                         func.lower(Property.municipality).contains(query),
-                        func.lower(Property.barangay).contains(query)
+                        func.lower(Property.barangay).contains(query),
+                        func.lower(Property.accommodation_type).contains(query)
                     )
                 )
 
             if municipality:
                 property_query = property_query.filter(
                     func.lower(Property.municipality) == municipality.lower()
+                )
+
+            if property_type:
+                property_query = property_query.filter(
+                    func.lower(Property.accommodation_type).contains(property_type.lower())
                 )
 
             properties = property_query.limit(20).all()
@@ -396,13 +539,19 @@ def search_properties_and_destinations():
                         func.lower(Destination.name).contains(query),
                         func.lower(Destination.description).contains(query),
                         func.lower(Destination.municipality).contains(query),
-                        func.lower(Destination.barangay).contains(query)
+                        func.lower(Destination.barangay).contains(query),
+                        func.lower(Destination.location_name).contains(query)
                     )
                 )
 
             if municipality:
                 destination_query = destination_query.filter(
                     func.lower(Destination.municipality) == municipality.lower()
+                )
+
+            if destination_type:
+                destination_query = destination_query.filter(
+                    Destination.destination_type == destination_type
                 )
 
             destinations = destination_query.limit(20).all()
@@ -441,7 +590,14 @@ def search_properties_and_destinations():
             'success': True,
             'results': results,
             'total_properties': len(results['properties']),
-            'total_destinations': len(results['destinations'])
+            'total_destinations': len(results['destinations']),
+            'search_parameters': {
+                'query': query,
+                'type': search_type,
+                'municipality': municipality,
+                'property_type': property_type,
+                'destination_type': destination_type
+            }
         })
 
     except Exception as e:
@@ -460,11 +616,13 @@ def get_municipalities():
         property_municipalities = db.session.query(Property.municipality) \
             .filter(Property.status == 'ACTIVE') \
             .filter(Property.municipality.isnot(None)) \
+            .filter(Property.municipality != '') \
             .distinct().all()
 
         # Get municipalities from destinations
         destination_municipalities = db.session.query(Destination.municipality) \
             .filter(Destination.municipality.isnot(None)) \
+            .filter(Destination.municipality != '') \
             .distinct().all()
 
         # Combine and deduplicate
@@ -477,9 +635,13 @@ def get_municipalities():
             if municipality and municipality.strip():
                 municipalities.add(municipality.strip())
 
+        # Sort municipalities alphabetically
+        sorted_municipalities = sorted(list(municipalities))
+
         return jsonify({
             'success': True,
-            'municipalities': sorted(list(municipalities))
+            'municipalities': sorted_municipalities,
+            'total': len(sorted_municipalities)
         })
 
     except Exception as e:
@@ -489,22 +651,345 @@ def get_municipalities():
             'message': f'Error fetching municipalities: {str(e)}'
         }), 500
 
+
+@tourist_api_bp.route('/accommodation-types', methods=['GET'])
+def get_accommodation_types():
+    """Get all accommodation types available"""
+    try:
+        accommodation_types = db.session.query(Property.accommodation_type) \
+            .filter(Property.status == 'ACTIVE') \
+            .filter(Property.accommodation_type.isnot(None)) \
+            .filter(Property.accommodation_type != '') \
+            .distinct().all()
+
+        types = []
+        for (acc_type,) in accommodation_types:
+            if acc_type and acc_type.strip():
+                types.append(acc_type.strip())
+
+        return jsonify({
+            'success': True,
+            'accommodation_types': sorted(types),
+            'total': len(types)
+        })
+
+    except Exception as e:
+        print(f"Error in get_accommodation_types: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching accommodation types: {str(e)}'
+        }), 500
+
+
+@tourist_api_bp.route('/destination-types', methods=['GET'])
+def get_destination_types():
+    """Get all destination types available"""
+    try:
+        destination_types = db.session.query(Destination.destination_type).distinct().all()
+
+        types = []
+        for (dest_type,) in destination_types:
+            if dest_type:
+                if hasattr(dest_type, 'value'):
+                    types.append(dest_type.value)
+                else:
+                    types.append(str(dest_type))
+
+        return jsonify({
+            'success': True,
+            'destination_types': sorted(list(set(types))),
+            'total': len(set(types))
+        })
+
+    except Exception as e:
+        print(f"Error in get_destination_types: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching destination types: {str(e)}'
+        }), 500
+
+
+# Template routes
 @tourist_api_bp.route('/home')
 def tourist_home():
     return render_template('TOURIST_Home.html')
+
 
 @tourist_api_bp.route('/destinations')
 def tourist_destinations():
     return render_template('TOURIST_Destination.html')
 
+
 @tourist_api_bp.route('/map')
 def tourist_map():
     return render_template('TOURIST_Map.html')
+
 
 @tourist_api_bp.route('/events')
 def tourist_events():
     return render_template('TOURIST_Event.html')
 
+
 @tourist_api_bp.route('/about')
 def tourist_about():
     return render_template('TOURIST_About.html')
+
+
+@tourist_api_bp.route('/contact')
+def tourist_contact():
+    return render_template('TOURIST_Contact.html')
+
+
+# Additional utility routes for enhanced functionality
+@tourist_api_bp.route('/statistics', methods=['GET'])
+def get_tourism_statistics():
+    """Get basic tourism statistics for the homepage or dashboard"""
+    try:
+        # Count active properties
+        total_properties = Property.query.filter(Property.status == 'ACTIVE').count()
+
+        # Count destinations
+        total_destinations = Destination.query.count()
+
+        # Count featured destinations
+        featured_destinations = Destination.query.filter(Destination.is_featured == True).count()
+
+        # Count municipalities with properties
+        municipalities_with_properties = db.session.query(Property.municipality) \
+            .filter(Property.status == 'ACTIVE') \
+            .filter(Property.municipality.isnot(None)) \
+            .distinct().count()
+
+        # Get accommodation type breakdown
+        accommodation_breakdown = db.session.query(
+            Property.accommodation_type,
+            func.count(Property.property_id).label('count')
+        ).filter(
+            Property.status == 'ACTIVE',
+            Property.accommodation_type.isnot(None)
+        ).group_by(Property.accommodation_type).all()
+
+        accommodation_stats = {}
+        for acc_type, count in accommodation_breakdown:
+            accommodation_stats[acc_type] = count
+
+        # Get destination type breakdown
+        destination_breakdown = db.session.query(
+            Destination.destination_type,
+            func.count(Destination.id).label('count')
+        ).filter(
+            Destination.destination_type.isnot(None)
+        ).group_by(Destination.destination_type).all()
+
+        destination_stats = {}
+        for dest_type, count in destination_breakdown:
+            type_value = dest_type.value if hasattr(dest_type, 'value') else str(dest_type)
+            destination_stats[type_value] = count
+
+        return jsonify({
+            'success': True,
+            'statistics': {
+                'total_properties': total_properties,
+                'total_destinations': total_destinations,
+                'featured_destinations': featured_destinations,
+                'municipalities_covered': municipalities_with_properties,
+                'accommodation_breakdown': accommodation_stats,
+                'destination_breakdown': destination_stats
+            }
+        })
+
+    except Exception as e:
+        print(f"Error in get_tourism_statistics: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching statistics: {str(e)}'
+        }), 500
+
+
+@tourist_api_bp.route('/featured', methods=['GET'])
+def get_featured_content():
+    """Get featured destinations and top properties"""
+    try:
+        # Get featured destinations
+        featured_destinations = Destination.query.filter(
+            Destination.is_featured == True
+        ).order_by(Destination.name).limit(6).all()
+
+        # Get top properties (you can modify this logic based on your criteria)
+        top_properties = Property.query.filter(
+            Property.status == 'ACTIVE'
+        ).order_by(Property.property_name).limit(6).all()
+
+        # Format featured destinations
+        featured_dest_data = []
+        for destination in featured_destinations:
+            image_path = "/static/images/default-destination.jpg"
+            if destination.image_path:
+                if destination.image_path.startswith('/'):
+                    image_path = destination.image_path
+                elif destination.image_path.startswith('http'):
+                    image_path = destination.image_path
+                else:
+                    image_path = f"/static/uploads/destinations/{destination.image_path}"
+
+            destination_type_value = 'Other'
+            if destination.destination_type:
+                if hasattr(destination.destination_type, 'value'):
+                    destination_type_value = destination.destination_type.value
+                else:
+                    destination_type_value = str(destination.destination_type)
+
+            featured_dest_data.append({
+                'id': destination.id,
+                'name': destination.name or 'Unnamed Destination',
+                'description': destination.description or 'Explore this amazing destination in Batangas.',
+                'municipality': destination.municipality or 'Batangas',
+                'destination_type': destination_type_value,
+                'image_path': image_path,
+                'latitude': float(destination.latitude) if destination.latitude else 0,
+                'longitude': float(destination.longitude) if destination.longitude else 0
+            })
+
+        # Format top properties
+        top_prop_data = []
+        for property in top_properties:
+            main_image = "/static/images/default-property.jpg"
+            if property.images and len(property.images) > 0:
+                image_filename = property.images[0].image_path
+                if not image_filename.startswith('/'):
+                    main_image = f"/static/uploads/properties/{image_filename}"
+                else:
+                    main_image = image_filename
+
+            top_prop_data.append({
+                'property_id': property.property_id,
+                'property_name': property.property_name or 'Unnamed Property',
+                'municipality': property.municipality or 'Batangas',
+                'accommodation_type': property.accommodation_type or 'Property',
+                'description': property.description or f'Beautiful {property.accommodation_type or "property"}',
+                'main_image': main_image
+            })
+
+        return jsonify({
+            'success': True,
+            'featured_destinations': featured_dest_data,
+            'top_properties': top_prop_data,
+            'total_featured_destinations': len(featured_dest_data),
+            'total_top_properties': len(top_prop_data)
+        })
+
+    except Exception as e:
+        print(f"Error in get_featured_content: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching featured content: {str(e)}'
+        }), 500
+
+
+@tourist_api_bp.route('/properties/by-municipality/<municipality>', methods=['GET'])
+def get_properties_by_municipality(municipality):
+    """Get all properties in a specific municipality"""
+    try:
+        properties = Property.query.filter(
+            Property.status == 'ACTIVE',
+            func.lower(Property.municipality) == municipality.lower()
+        ).all()
+
+        properties_data = []
+        for property in properties:
+            main_image = "/static/images/default-property.jpg"
+            if property.images and len(property.images) > 0:
+                image_filename = property.images[0].image_path
+                if not image_filename.startswith('/'):
+                    main_image = f"/static/uploads/properties/{image_filename}"
+                else:
+                    main_image = image_filename
+
+            # Get coordinates
+            coordinates = None
+            if property.coordinates and len(property.coordinates) > 0:
+                coord = property.coordinates[0]
+                coordinates = {
+                    'latitude': float(coord.latitude) if coord.latitude else 0,
+                    'longitude': float(coord.longitude) if coord.longitude else 0
+                }
+
+            properties_data.append({
+                'property_id': property.property_id,
+                'property_name': property.property_name or 'Unnamed Property',
+                'barangay': property.barangay or '',
+                'municipality': property.municipality or 'Batangas',
+                'accommodation_type': property.accommodation_type or 'Property',
+                'description': property.description or f'Beautiful {property.accommodation_type or "property"}',
+                'main_image': main_image,
+                'coordinates': coordinates
+            })
+
+        return jsonify({
+            'success': True,
+            'properties': properties_data,
+            'municipality': municipality,
+            'total': len(properties_data)
+        })
+
+    except Exception as e:
+        print(f"Error in get_properties_by_municipality: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching properties for {municipality}: {str(e)}'
+        }), 500
+
+
+@tourist_api_bp.route('/destinations/by-municipality/<municipality>', methods=['GET'])
+def get_destinations_by_municipality(municipality):
+    """Get all destinations in a specific municipality"""
+    try:
+        destinations = Destination.query.filter(
+            func.lower(Destination.municipality) == municipality.lower()
+        ).order_by(desc(Destination.is_featured), Destination.name).all()
+
+        destinations_data = []
+        for destination in destinations:
+            image_path = "/static/images/default-destination.jpg"
+            if destination.image_path:
+                if destination.image_path.startswith('/'):
+                    image_path = destination.image_path
+                elif destination.image_path.startswith('http'):
+                    image_path = destination.image_path
+                else:
+                    image_path = f"/static/uploads/destinations/{destination.image_path}"
+
+            destination_type_value = 'Other'
+            if destination.destination_type:
+                if hasattr(destination.destination_type, 'value'):
+                    destination_type_value = destination.destination_type.value
+                else:
+                    destination_type_value = str(destination.destination_type)
+
+            destinations_data.append({
+                'id': destination.id,
+                'name': destination.name or 'Unnamed Destination',
+                'description': destination.description or 'Explore this amazing destination in Batangas.',
+                'location_name': destination.location_name or destination.municipality,
+                'municipality': destination.municipality or 'Batangas',
+                'barangay': destination.barangay or '',
+                'destination_type': destination_type_value,
+                'image_path': image_path,
+                'is_featured': destination.is_featured or False,
+                'latitude': float(destination.latitude) if destination.latitude else 0,
+                'longitude': float(destination.longitude) if destination.longitude else 0
+            })
+
+        return jsonify({
+            'success': True,
+            'destinations': destinations_data,
+            'municipality': municipality,
+            'total': len(destinations_data)
+        })
+
+    except Exception as e:
+        print(f"Error in get_destinations_by_municipality: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error fetching destinations for {municipality}: {str(e)}'
+        }), 500

@@ -204,7 +204,7 @@
             box-shadow: var(--shadow-light);
         }
 
-        .search-box {
+        .search-box, .municipality-select {
             border: 2px solid #e9ecef;
             border-radius: 25px;
             padding: 0.7rem 1.5rem;
@@ -213,7 +213,7 @@
             background: white;
         }
 
-        .search-box:focus {
+        .search-box:focus, .municipality-select:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 0.2rem rgba(255, 126, 0, 0.25);
             outline: none;
@@ -438,6 +438,7 @@
             text-decoration: none;
             transition: var(--transition);
             box-shadow: 0 4px 15px rgba(255, 126, 0, 0.3);
+            cursor: pointer;
         }
 
         .btn-explore:hover {
@@ -508,6 +509,81 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Nearby Destinations Section */
+        .nearby-destinations {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .nearby-destinations h5 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nearby-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid #e9ecef;
+        }
+
+        .nearby-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-light);
+            background: white;
+        }
+
+        .nearby-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .nearby-content {
+            flex-grow: 1;
+        }
+
+        .nearby-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .nearby-location {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.2rem;
+        }
+
+        .nearby-distance {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .nearby-type {
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* Loading Animation */
         .loading {
             display: none;
@@ -570,6 +646,14 @@
 
             .info-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .filter-section .row {
+                flex-direction: column;
+            }
+
+            .filter-section .col-lg-6, .filter-section .col-lg-3 {
+                margin-bottom: 1rem;
             }
         }
 
@@ -654,7 +738,7 @@
     <section class="filter-section">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-8 mb-3 mb-lg-0">
+                <div class="col-lg-6 mb-3 mb-lg-0">
                     <div class="d-flex flex-wrap justify-content-center justify-content-lg-start" id="filterButtons">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="resort">Resort</button>
@@ -665,7 +749,12 @@
                         <button class="filter-btn" data-filter="island">Island</button>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3 mb-3 mb-lg-0">
+                    <select class="form-select municipality-select" id="municipalityFilter">
+                        <option value="">All Municipalities</option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
                     <input type="text" class="form-control search-box" id="searchInput" placeholder="Search destinations...">
                 </div>
             </div>
@@ -698,7 +787,7 @@
 
     <!-- Detail Modal -->
     <div class="modal fade" id="destinationModal" tabindex="-1" aria-labelledby="destinationModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="destinationModalLabel">Details</h5>
@@ -717,13 +806,16 @@
         let currentData = [];
         let currentFilter = 'all';
         let currentSearch = '';
+        let currentMunicipality = '';
         let activeTab = 'properties';
+        let municipalities = [];
 
         // DOM elements
         const propertiesGrid = document.getElementById('propertiesGrid');
         const destinationsGrid = document.getElementById('destinationsGrid');
         const filterButtons = document.querySelectorAll('.filter-btn');
         const searchInput = document.getElementById('searchInput');
+        const municipalityFilter = document.getElementById('municipalityFilter');
         const loading = document.getElementById('loading');
         let destinationModal;
 
@@ -749,10 +841,93 @@
             });
 
             // Load initial data
+            loadMunicipalities();
             loadProperties();
             loadDestinations();
             setupEventListeners();
         });
+
+        // Load municipalities
+        async function loadMunicipalities() {
+            try {
+                const response = await fetch('/tourist/api/municipalities');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.municipalities) {
+                    municipalities = data.municipalities;
+                    populateMunicipalityFilter();
+                }
+            } catch (error) {
+                console.error('Error loading municipalities:', error);
+            }
+        }
+
+        // Populate municipality filter dropdown
+        function populateMunicipalityFilter() {
+            if (!municipalityFilter) return;
+
+            municipalityFilter.innerHTML = '<option value="">All Municipalities</option>';
+
+            municipalities.forEach(municipality => {
+                const option = document.createElement('option');
+                option.value = municipality;
+                option.textContent = municipality;
+                municipalityFilter.appendChild(option);
+            });
+        }
+
+        // Calculate distance between two coordinates using Haversine formula
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const d = R * c; // Distance in kilometers
+            return d;
+        }
+
+        // Get nearby destinations for a property
+        function getNearbyDestinations(propertyLat, propertyLng, maxDistance = 10) {
+            if (!window.destinationsData || !propertyLat || !propertyLng) {
+                return [];
+            }
+
+            const nearbyDestinations = window.destinationsData
+                .filter(destination => {
+                    if (!destination.latitude || !destination.longitude) return false;
+
+                    const distance = calculateDistance(
+                        propertyLat,
+                        propertyLng,
+                        destination.latitude,
+                        destination.longitude
+                    );
+
+                    return distance <= maxDistance;
+                })
+                .map(destination => ({
+                    ...destination,
+                    distance: calculateDistance(
+                        propertyLat,
+                        propertyLng,
+                        destination.latitude,
+                        destination.longitude
+                    )
+                }))
+                .sort((a, b) => a.distance - b.distance)
+                .slice(0, 5); // Get top 5 nearest destinations
+
+            return nearbyDestinations;
+        }
 
         // Load properties from API with better error handling
         async function loadProperties() {
@@ -878,6 +1053,15 @@
                 });
             }
 
+            // Municipality filter
+            if (municipalityFilter) {
+                municipalityFilter.addEventListener('change', function() {
+                    currentMunicipality = this.value;
+                    console.log('Municipality filter changed to:', currentMunicipality);
+                    renderItems();
+                });
+            }
+
             // Search input with debouncing
             if (searchInput) {
                 let searchTimeout;
@@ -947,7 +1131,7 @@
             currentFilter = 'all';
         }
 
-        // Filter items with improved logic
+        // Filter items with improved logic including municipality filter
         function getFilteredItems() {
             if (!currentData || !Array.isArray(currentData)) {
                 console.log('No valid data to filter');
@@ -968,6 +1152,10 @@
                                    item.destination_type.value === currentFilter);
                 }
 
+                // Filter by municipality
+                const matchesMunicipality = currentMunicipality === '' ||
+                    (item.municipality && item.municipality.toLowerCase() === currentMunicipality.toLowerCase());
+
                 // Filter by search
                 const matchesSearch = currentSearch === '' ||
                     (item.property_name && item.property_name.toLowerCase().includes(currentSearch)) ||
@@ -976,7 +1164,7 @@
                     (item.barangay && item.barangay.toLowerCase().includes(currentSearch)) ||
                     (item.description && item.description.toLowerCase().includes(currentSearch));
 
-                return matchesFilter && matchesSearch;
+                return matchesFilter && matchesMunicipality && matchesSearch;
             });
         }
 
@@ -1000,7 +1188,7 @@
                         <i class="fas fa-search fa-3x text-muted mb-3"></i>
                         <h4 class="text-muted">No ${activeTab} found</h4>
                         <p class="text-muted">Try adjusting your filters or search terms</p>
-                        ${currentSearch || currentFilter !== 'all' ?
+                        ${currentSearch || currentFilter !== 'all' || currentMunicipality ?
                             '<button class="btn btn-outline-primary mt-2" onclick="clearFilters()">Clear Filters</button>'
                             : ''
                         }
@@ -1144,10 +1332,16 @@
         function clearFilters() {
             currentSearch = '';
             currentFilter = 'all';
+            currentMunicipality = '';
 
             // Clear search input
             if (searchInput) {
                 searchInput.value = '';
+            }
+
+            // Reset municipality filter
+            if (municipalityFilter) {
+                municipalityFilter.value = '';
             }
 
             // Reset filter buttons
@@ -1201,7 +1395,7 @@
             }
         }
 
-        // Show property modal with enhanced content
+        // Show property modal with enhanced content and nearby destinations
         function showPropertyModal(property) {
             const modalBody = document.getElementById('modalBody');
             const modalTitle = document.getElementById('destinationModalLabel');
@@ -1213,71 +1407,107 @@
 
             modalTitle.textContent = property.property_name || 'Property Details';
 
+            // Get nearby destinations
+            const nearbyDestinations = property.coordinates ?
+                getNearbyDestinations(
+                    property.coordinates.latitude,
+                    property.coordinates.longitude
+                ) : [];
+
             modalBody.innerHTML = `
-                <img src="${property.main_image || '/static/images/default-property.jpg'}"
-                     alt="${property.property_name || 'Property'}"
-                     class="modal-image"
-                     onerror="this.src='/static/images/default-property.jpg'">
-
-                <div class="location mb-3">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>${(property.barangay || '')}, ${property.municipality || 'Batangas'}</span>
-                </div>
-
-                <p class="lead">${property.description || 'A wonderful accommodation in Batangas province.'}</p>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <i class="fas fa-bed"></i>
-                        <h6>Accommodation Type</h6>
-                        <p>${property.accommodation_type || 'Property'}</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-users"></i>
-                        <h6>Total Rooms</h6>
-                        <p>${property.total_rooms || 'Contact for details'}</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-tag"></i>
-                        <h6>Status</h6>
-                        <p>${property.status === 'ACTIVE' ? 'Available' : 'Maintenance'}</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-map"></i>
-                        <h6>Location</h6>
-                        <p>${property.municipality || 'Batangas'}</p>
-                    </div>
-                </div>
-
                 <div class="row">
-                    <div class="col-md-6">
-                        <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>Amenities</h5>
-                        <ul class="list-unstyled">
-                            ${property.amenities && property.amenities.length > 0 ?
-                                property.amenities.map(amenity => `
-                                    <li class="mb-2">
-                                        <i class="fas fa-chevron-right text-primary me-2"></i>
-                                        ${amenity.amenity}
-                                    </li>
-                                `).join('') :
-                                '<li class="text-muted">Contact property for amenity details</li>'
-                            }
-                        </ul>
+                    <div class="col-lg-8">
+                        <img src="${property.main_image || '/static/images/default-property.jpg'}"
+                             alt="${property.property_name || 'Property'}"
+                             class="modal-image"
+                             onerror="this.src='/static/images/default-property.jpg'">
+
+                        <div class="location mb-3">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${(property.barangay || '')}, ${property.municipality || 'Batangas'}</span>
+                        </div>
+
+                        <p class="lead">${property.description || 'A wonderful accommodation in Batangas province.'}</p>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <i class="fas fa-bed"></i>
+                                <h6>Accommodation Type</h6>
+                                <p>${property.accommodation_type || 'Property'}</p>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <h6>Total Rooms</h6>
+                                <p>${property.total_rooms || 'Contact for details'}</p>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-tag"></i>
+                                <h6>Status</h6>
+                                <p>${property.status === 'ACTIVE' ? 'Available' : 'Maintenance'}</p>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-map"></i>
+                                <h6>Location</h6>
+                                <p>${property.municipality || 'Batangas'}</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>Amenities</h5>
+                                <ul class="list-unstyled">
+                                    ${property.amenities && property.amenities.length > 0 ?
+                                        property.amenities.map(amenity => `
+                                            <li class="mb-2">
+                                                <i class="fas fa-chevron-right text-primary me-2"></i>
+                                                ${amenity.amenity}
+                                            </li>
+                                        `).join('') :
+                                        '<li class="text-muted">Contact property for amenity details</li>'
+                                    }
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-bed me-2"></i>Room Information</h5>
+                                ${property.rooms && property.rooms.length > 0 ? `
+                                    <div class="room-types">
+                                        ${property.rooms.map(room => `
+                                            <div class="mb-3 p-3 border rounded">
+                                                <h6>${room.room_type || 'Standard Room'}</h6>
+                                                <p class="mb-1">Capacity: ${room.capacity || 1} guests</p>
+                                                ${room.day_price ? `<p class="mb-1">Day use: ₱${room.day_price.toLocaleString()}</p>` : ''}
+                                                ${room.overnight_price ? `<p class="mb-0">Overnight: ₱${room.overnight_price.toLocaleString()}</p>` : ''}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : '<p class="text-muted">Contact property for room details and pricing</p>'}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h5 class="mb-3"><i class="fas fa-bed me-2"></i>Room Information</h5>
-                        ${property.rooms && property.rooms.length > 0 ? `
-                            <div class="room-types">
-                                ${property.rooms.map(room => `
-                                    <div class="mb-3 p-3 border rounded">
-                                        <h6>${room.room_type || 'Standard Room'}</h6>
-                                        <p class="mb-1">Capacity: ${room.capacity || 1} guests</p>
-                                        ${room.day_price ? `<p class="mb-1">Day use: ₱${room.day_price.toLocaleString()}</p>` : ''}
-                                        ${room.overnight_price ? `<p class="mb-0">Overnight: ₱${room.overnight_price.toLocaleString()}</p>` : ''}
+
+                    <div class="col-lg-4">
+                        ${nearbyDestinations.length > 0 ? `
+                            <div class="nearby-destinations">
+                                <h5>
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    Nearby Attractions (within 10km)
+                                </h5>
+                                ${nearbyDestinations.map(destination => `
+                                    <div class="nearby-item" onclick="showDestinationFromNearby(${destination.id})">
+                                        <img src="${destination.image_path || '/static/images/default-destination.jpg'}"
+                                             alt="${destination.name}"
+                                             class="nearby-image"
+                                             onerror="this.src='/static/images/default-destination.jpg'">
+                                        <div class="nearby-content">
+                                            <div class="nearby-name">${destination.name}</div>
+                                            <div class="nearby-location">${destination.municipality}</div>
+                                            <div class="nearby-distance">${destination.distance.toFixed(1)} km away</div>
+                                        </div>
+                                        <div class="nearby-type">${destination.destination_type?.value || 'Destination'}</div>
                                     </div>
                                 `).join('')}
                             </div>
-                        ` : '<p class="text-muted">Contact property for room details and pricing</p>'}
+                        ` : ''}
                     </div>
                 </div>
 
@@ -1285,9 +1515,14 @@
                     <button class="btn-explore me-3" onclick="contactProperty('${property.property_name || 'Property'}')">
                         <i class="fas fa-phone me-2"></i>Contact Property
                     </button>
-                    <button class="btn btn-outline-secondary" onclick="shareItem('${property.property_name || 'Property'}')">
+                    <button class="btn btn-outline-secondary me-3" onclick="shareItem('${property.property_name || 'Property'}')">
                         <i class="fas fa-share me-2"></i>Share
                     </button>
+                    ${property.coordinates && property.coordinates.latitude && property.coordinates.longitude ? `
+                        <button class="btn btn-outline-primary" onclick="getDirections(${property.coordinates.latitude}, ${property.coordinates.longitude})">
+                            <i class="fas fa-directions me-2"></i>Get Directions
+                        </button>
+                    ` : ''}
                 </div>
             `;
 
@@ -1370,6 +1605,14 @@
             `;
 
             destinationModal.show();
+        }
+
+        // Show destination details from nearby list
+        function showDestinationFromNearby(destinationId) {
+            const destination = window.destinationsData.find(d => d.id === destinationId);
+            if (destination) {
+                showDestinationModal(destination);
+            }
         }
 
         // Contact property function

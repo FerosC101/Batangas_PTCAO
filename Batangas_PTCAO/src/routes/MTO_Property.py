@@ -1,4 +1,3 @@
-# [file name]: MTO_Property.py
 import uuid
 import os
 from math import radians, sin, cos, sqrt, atan2
@@ -22,12 +21,25 @@ UPLOAD_FOLDER = 'static/uploads/events'
 
 def init_property_routes(app):
     app.register_blueprint(properties_bp)
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    # Ensure the upload folder path is consistent
+    upload_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
+    app.config['UPLOAD_FOLDER'] = upload_path
+    os.makedirs(upload_path, exist_ok=True)
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def get_upload_folder():
+    """Get the consistent upload folder path"""
+    if current_app.config.get('UPLOAD_FOLDER'):
+        return current_app.config['UPLOAD_FOLDER']
+    else:
+        # Fallback path
+        upload_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
+        os.makedirs(upload_path, exist_ok=True)
+        return upload_path
 
 
 def haversine(lon1, lat1, lon2, lat2):
@@ -115,7 +127,7 @@ def get_properties():
                 'amenities': amenities,
                 'room_price': room_price,
                 'rating': 4.5,
-                'image_url': f"/static/uploads/properties/{prop.property_image}" if prop.property_image else None
+                'image_url': f"/static/uploads/events/{prop.property_image}" if prop.property_image else None
             }
             result.append(property_data)
 
@@ -251,10 +263,12 @@ def create_property():
                 ))
 
         # Handle file uploads
+        upload_folder = get_upload_folder()
         for file in files:
             if file and allowed_file(file.filename):
                 filename = secure_filename(f"{new_property.property_id}_{file.filename}")
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
                 db.session.add(PropertyImage(
                     property_id=new_property.property_id,
                     image_path=filename
@@ -393,11 +407,12 @@ def update_property(property_id):
                     db.session.add(room)
 
         # Handle file uploads
+        upload_folder = get_upload_folder()
         for file in files:
             if file and allowed_file(file.filename):
                 ext = file.filename.rsplit('.', 1)[1].lower()
                 filename = f"{property_id}_{secure_filename(property.property_name)}_{uuid.uuid4().hex[:8]}.{ext}"
-                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file_path = os.path.join(upload_folder, filename)
                 file.save(file_path)
 
                 db.session.add(PropertyImage(
@@ -435,12 +450,13 @@ def upload_property_images(property_id):
         if not files:
             return jsonify({'status': 'error', 'message': 'No files uploaded'}), 400
 
+        upload_folder = get_upload_folder()
         uploaded_files = []
         for file in files:
             if file and allowed_file(file.filename):
                 ext = file.filename.rsplit('.', 1)[1].lower()
                 filename = f"{property_id}_{secure_filename(property.property_name)}_{uuid.uuid4().hex[:8]}.{ext}"
-                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file_path = os.path.join(upload_folder, filename)
                 file.save(file_path)
 
                 property_image = PropertyImage(
@@ -480,9 +496,10 @@ def delete_property(property_id):
             return jsonify({'status': 'error', 'message': 'Unauthorized to delete this property'}), 403
 
         # Delete associated images first
+        upload_folder = get_upload_folder()
         for image in property.images:
             try:
-                image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], image.image_path)
+                image_path = os.path.join(upload_folder, image.image_path)
                 if os.path.exists(image_path):
                     os.remove(image_path)
             except Exception as e:
@@ -751,8 +768,11 @@ def create_destination():
         if 'destination_image' in files:
             file = files['destination_image']
             if file and allowed_file(file.filename):
-                filename = secure_filename(f"{new_destination.id}_{file.filename}")
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                # Use the same upload folder as properties
+                upload_folder = get_upload_folder()
+                filename = secure_filename(f"destination_{new_destination.id}_{file.filename}")
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
                 new_destination.image_path = filename
 
         db.session.commit()
@@ -765,11 +785,11 @@ def create_destination():
 
     except Exception as e:
         db.session.rollback()
+        current_app.logger.error(f"Error creating destination: {str(e)}")
         return jsonify({
             'status': 'error',
             'message': str(e)
         }), 500
-
 
 @properties_bp.route('/mto/destination/<int:destination_id>', methods=['DELETE'])
 @jwt_required()
