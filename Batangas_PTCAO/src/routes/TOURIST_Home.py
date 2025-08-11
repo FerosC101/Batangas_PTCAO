@@ -33,15 +33,57 @@ def get_featured_destinations():
         for prop in popular_properties:
             property = Property.query.get(prop.property_id)
             if property:
-                # Get first image if available
+                # Get first image if available from static/uploads/properties
                 image_path = '/static/images/default-destination.jpg'
                 if property.images:
-                    image_path = property.images[0].image_path
+                    # Use the image path from PropertyImage model, ensuring it points to uploads folder
+                    stored_image_path = property.images[0].image_path
+                    # Check if the path already includes /static/uploads/, if not prepend it
+                    if not stored_image_path.startswith('/static/uploads/'):
+                        if stored_image_path.startswith('static/uploads/'):
+                            image_path = '/' + stored_image_path
+                        elif stored_image_path.startswith('uploads/'):
+                            image_path = '/static/' + stored_image_path
+                        else:
+                            # Assume it's just the filename and it's in properties folder
+                            image_path = '/static/uploads/events/' + stored_image_path
+                    else:
+                        image_path = stored_image_path
 
                 properties_data.append({
                     'id': property.property_id,
                     'name': property.property_name,
                     'description': property.description or f"Popular {property.accommodation_type or 'property'} in {property.municipality or 'Batangas'}",
+                    'municipality': property.municipality or "Batangas",
+                    'image_path': image_path,
+                    'type': property.accommodation_type or "Resort",
+                    'barangay': property.barangay or ""
+                })
+
+        # If no popular properties found, get some featured properties as fallback
+        if not properties_data:
+            fallback_properties = Property.query.filter(
+                Property.status == 'ACTIVE'
+            ).limit(6).all()
+
+            for property in fallback_properties:
+                image_path = '/static/images/default-destination.jpg'
+                if property.images:
+                    stored_image_path = property.images[0].image_path
+                    if not stored_image_path.startswith('/static/uploads/'):
+                        if stored_image_path.startswith('static/uploads/'):
+                            image_path = '/' + stored_image_path
+                        elif stored_image_path.startswith('uploads/'):
+                            image_path = '/static/' + stored_image_path
+                        else:
+                            image_path = '/static/uploads/properties/' + stored_image_path
+                    else:
+                        image_path = stored_image_path
+
+                properties_data.append({
+                    'id': property.property_id,
+                    'name': property.property_name,
+                    'description': property.description or f"Beautiful {property.accommodation_type or 'property'} in {property.municipality or 'Batangas'}",
                     'municipality': property.municipality or "Batangas",
                     'image_path': image_path,
                     'type': property.accommodation_type or "Resort",
@@ -63,18 +105,37 @@ def get_upcoming_events():
             Event.start_date
         ).limit(4).all()
 
-        return jsonify([{
-            'id': e.event_id,
-            'title': e.event_title,
-            'description': e.description or "Join us for this exciting event!",
-            'start_date': e.start_date.strftime('%Y-%m-%d'),
-            'end_date': e.end_date.strftime('%Y-%m-%d'),
-            'municipality': e.municipality or "Batangas",
-            'location': e.location or "Various Locations",
-            'image_path': e.event_image or '/static/images/default-event.jpg',
-            'day': e.start_date.day,
-            'month': e.start_date.strftime('%b')
-        } for e in events])
+        events_data = []
+        for e in events:
+            # Handle event image path similar to properties
+            image_path = '/static/images/default-event.jpg'
+            if e.event_image:
+                stored_image_path = e.event_image
+                if not stored_image_path.startswith('/static/uploads/'):
+                    if stored_image_path.startswith('static/uploads/'):
+                        image_path = '/' + stored_image_path
+                    elif stored_image_path.startswith('uploads/'):
+                        image_path = '/static/' + stored_image_path
+                    else:
+                        # Assume it's in events folder
+                        image_path = '/static/uploads/events/' + stored_image_path
+                else:
+                    image_path = stored_image_path
+
+            events_data.append({
+                'id': e.event_id,
+                'title': e.event_title,
+                'description': e.description or "Join us for this exciting event!",
+                'start_date': e.start_date.strftime('%Y-%m-%d'),
+                'end_date': e.end_date.strftime('%Y-%m-%d'),
+                'municipality': e.municipality or "Batangas",
+                'location': e.location or "Various Locations",
+                'image_path': image_path,
+                'day': e.start_date.day,
+                'month': e.start_date.strftime('%b')
+            })
+
+        return jsonify(events_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -98,21 +159,26 @@ def get_recent_announcements():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @tourist_home_bp.route('/home')
 def tourist_home():
     return render_template('TOURIST_Home.html')
+
 
 @tourist_home_bp.route('/destinations')
 def tourist_destinations():
     return render_template('TOURIST_Destination.html')
 
+
 @tourist_home_bp.route('/map')
 def tourist_map():
     return render_template('TOURIST_Map.html')
 
+
 @tourist_home_bp.route('/events')
 def tourist_events():
     return render_template('TOURIST_Event.html')
+
 
 @tourist_home_bp.route('/about')
 def tourist_about():

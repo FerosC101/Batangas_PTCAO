@@ -12,7 +12,6 @@ from Batangas_PTCAO.src.model import (
 from Batangas_PTCAO.src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
 
-
 properties_bp = Blueprint("properties", __name__, url_prefix="/property")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -21,10 +20,15 @@ UPLOAD_FOLDER = 'static/uploads/events'
 
 def init_property_routes(app):
     app.register_blueprint(properties_bp)
-    # Ensure the upload folder path is consistent
-    upload_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
-    app.config['UPLOAD_FOLDER'] = upload_path
-    os.makedirs(upload_path, exist_ok=True)
+    # Ensure both upload folder paths exist
+    events_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
+    destinations_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'destinations')
+
+    app.config['UPLOAD_FOLDER'] = events_path
+    app.config['DESTINATIONS_UPLOAD_FOLDER'] = destinations_path
+
+    os.makedirs(events_path, exist_ok=True)
+    os.makedirs(destinations_path, exist_ok=True)
 
 
 def allowed_file(filename):
@@ -32,12 +36,23 @@ def allowed_file(filename):
 
 
 def get_upload_folder():
-    """Get the consistent upload folder path"""
+    """Get the upload folder path for properties/events"""
     if current_app.config.get('UPLOAD_FOLDER'):
         return current_app.config['UPLOAD_FOLDER']
     else:
         # Fallback path
         upload_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'events')
+        os.makedirs(upload_path, exist_ok=True)
+        return upload_path
+
+
+def get_destinations_upload_folder():
+    """Get the upload folder path specifically for destinations"""
+    if current_app.config.get('DESTINATIONS_UPLOAD_FOLDER'):
+        return current_app.config['DESTINATIONS_UPLOAD_FOLDER']
+    else:
+        # Fallback path
+        upload_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads', 'destinations')
         os.makedirs(upload_path, exist_ok=True)
         return upload_path
 
@@ -51,6 +66,7 @@ def haversine(lon1, lat1, lon2, lat2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     r = 6371
     return c * r
+
 
 @properties_bp.route('/mto/property')
 @jwt_required()
@@ -84,6 +100,7 @@ def mto_properties():
     except Exception as e:
         flash(f'Failed to load properties: {str(e)}', 'error')
         return redirect(url_for('dashboard.mto_dashboard'))
+
 
 @properties_bp.route('', methods=['GET'])
 @jwt_required()
@@ -142,6 +159,7 @@ def get_properties():
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/<int:property_id>', methods=['GET'])
 @jwt_required()
 def get_property(property_id):
@@ -197,6 +215,7 @@ def get_property(property_id):
             'status': 'error',
             'message': str(e)
         }), 500
+
 
 @properties_bp.route('', methods=['POST'])
 @jwt_required()
@@ -668,6 +687,7 @@ def get_property_report(property_id):
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/mto/properties', methods=['GET'])
 @jwt_required()
 def get_mto_properties():
@@ -765,11 +785,12 @@ def create_destination():
         db.session.add(new_destination)
         db.session.flush()
 
+        # Handle destination image upload - use destinations folder
         if 'destination_image' in files:
             file = files['destination_image']
             if file and allowed_file(file.filename):
-                # Use the same upload folder as properties
-                upload_folder = get_upload_folder()
+                # Use the destinations upload folder
+                upload_folder = get_destinations_upload_folder()
                 filename = secure_filename(f"destination_{new_destination.id}_{file.filename}")
                 file_path = os.path.join(upload_folder, filename)
                 file.save(file_path)
@@ -791,6 +812,7 @@ def create_destination():
             'message': str(e)
         }), 500
 
+
 @properties_bp.route('/mto/destination/<int:destination_id>', methods=['DELETE'])
 @jwt_required()
 def delete_destination(destination_id):
@@ -805,6 +827,16 @@ def delete_destination(destination_id):
 
         if destination.municipality != user.municipality:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+        # Delete destination image if it exists
+        if destination.image_path:
+            try:
+                upload_folder = get_destinations_upload_folder()
+                image_path = os.path.join(upload_folder, destination.image_path)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+            except Exception as e:
+                current_app.logger.error(f"Error deleting destination image {destination.image_path}: {str(e)}")
 
         db.session.delete(destination)
         db.session.commit()

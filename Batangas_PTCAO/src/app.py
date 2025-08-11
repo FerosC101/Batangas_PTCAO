@@ -50,9 +50,25 @@ def create_app():
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_SECURE'] = False
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static/uploads/properties')
 
-    # Initialize extensions
+    # Configure upload folders - ensure they're inside static folder
+    base_path = os.path.dirname(__file__)
+    static_path = os.path.join(base_path, 'static')
+    uploads_path = os.path.join(static_path, 'uploads')
+
+    # Create upload folder structure
+    events_path = os.path.join(uploads_path, 'events')
+    destinations_path = os.path.join(uploads_path, 'destinations')
+    properties_path = os.path.join(uploads_path, 'properties')
+
+    os.makedirs(events_path, exist_ok=True)
+    os.makedirs(destinations_path, exist_ok=True)
+    os.makedirs(properties_path, exist_ok=True)
+
+    app.config['UPLOAD_FOLDER'] = events_path  # For properties/events
+    app.config['DESTINATIONS_UPLOAD_FOLDER'] = destinations_path  # For destinations
+    app.config['PROPERTIES_UPLOAD_FOLDER'] = properties_path  # For general properties
+
     jwt = JWTManager(app)
     db.init_app(app)
 
@@ -80,6 +96,7 @@ def create_app():
     init_tourist_events_routes(app)
     init_tourist_api_routes(app)
     init_tourist_map_routes(app)
+
     # Static file serving route
     @app.route('/static/<path:filename>')
     def serve_static_file(filename):
@@ -90,11 +107,10 @@ def create_app():
     return app
 
 
-
-
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 app = create_app()
 
