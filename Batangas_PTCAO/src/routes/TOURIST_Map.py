@@ -251,7 +251,7 @@ def init_tourist_map_routes(app):
                 # Get image
                 image_url = None
                 if prop.images:
-                    image_url = f"/static/uploads/properties/{prop.images[0].image_path}"
+                    image_url = f"/static/uploads/events/{prop.images[0].image_path}"
                 else:
                     default_images = {
                         'resort': 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
@@ -418,7 +418,7 @@ def init_tourist_map_routes(app):
             # Get all images
             images = []
             for img in property_obj.images:
-                images.append(f"/static/uploads/properties/{img.image_path}")
+                images.append(f"/static/uploads/events/{img.image_path}")
 
             # Get all rooms with details
             rooms = []

@@ -11,14 +11,14 @@
             --primary: #003366;
             --accent: #ff7e00;
             --light-bg: #f8f9fa;
-            --shadow-light: 0 4px 15px rgba(0,0,0,0.08);
-            --shadow-medium: 0 8px 25px rgba(0,0,0,0.12);
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.12);
             --transition: all 0.3s ease;
             --gradient-primary: linear-gradient(135deg, #003366 0%, #004080 100%);
             --gradient-accent: linear-gradient(135deg, #ff7e00 0%, #ff9500 100%);
         }
 
-        * {
+         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -247,6 +247,7 @@
             height: 250px;
             object-fit: cover;
             transition: transform 0.4s ease;
+            background-color: #f8f9fa;
         }
 
         .event-card:hover .event-image {
@@ -415,6 +416,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            background-color: #f8f9fa;
         }
 
         .featured-info {
@@ -1029,6 +1031,35 @@
             renderEvents(filteredEvents);
         }
 
+        // Handle image loading errors with proper fallback
+        function handleImageError(img) {
+            // Try different fallback options
+            if (img.src !== '/static/images/default-event.jpg') {
+                img.src = '/static/images/default-event.jpg';
+            } else if (img.src !== 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') {
+                img.src = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+            } else {
+                // Final fallback - create a placeholder
+                img.style.backgroundColor = '#f8f9fa';
+                img.style.display = 'flex';
+                img.style.alignItems = 'center';
+                img.style.justifyContent = 'center';
+                img.alt = 'Event Image';
+                img.style.color = '#6c757d';
+                img.style.fontSize = '14px';
+                img.style.textAlign = 'center';
+
+                // Create placeholder content
+                const placeholder = document.createElement('div');
+                placeholder.innerHTML = '<i class="fas fa-calendar-alt" style="font-size: 48px; margin-bottom: 10px;"></i><br>Event Image';
+                placeholder.style.textAlign = 'center';
+                placeholder.style.color = '#6c757d';
+
+                img.parentNode.appendChild(placeholder);
+                img.style.display = 'none';
+            }
+        }
+
         // Render featured event
         function renderFeaturedEvent(event) {
             const featuredHTML = `
@@ -1037,7 +1068,7 @@
                         <i class="fas fa-star me-1"></i>Featured Event
                     </div>
                     <div class="featured-content">
-                        <img src="${event.image_url}" alt="${event.title}" class="featured-image" onerror="this.src='/static/images/default-event.jpg'">
+                        <img src="${event.image_url}" alt="${event.title}" class="featured-image" onerror="handleImageError(this)">
                         <div class="featured-info">
                             <div class="featured-date">
                                 <i class="fas fa-calendar-alt me-2"></i>${event.date_display}
@@ -1095,7 +1126,7 @@
             return `
                 <div class="event-card" data-category="${event.category}">
                     <img src="${event.image_url}" alt="${event.title}" class="event-image"
-                         onerror="this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'">
+                         onerror="handleImageError(this)">
                     <div class="event-content">
                         <div class="event-date-badge ${badgeClass}">
                             <i class="fas fa-calendar-alt"></i>
@@ -1242,3 +1273,4 @@
     </script>
 </body>
 </html>
+

@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="added destination section">
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixed how image are being fetch">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Home.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Properties.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Home.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Destination.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Destination.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Events.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Events.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Map.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Destination.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Destination.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Event.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Event.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -263,15 +263,7 @@
       <workItem from="1754661288207" duration="10022000" />
       <workItem from="1754736420428" duration="649000" />
       <workItem from="1754812231781" duration="1871000" />
-      <workItem from="1754883405380" duration="2543000" />
-    </task>
-    <task id="LOCAL-00050" summary="working add property">
-      <option name="closed" value="true" />
-      <created>1751953536628</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1751953536629</updated>
+      <workItem from="1754883405380" duration="4572000" />
     </task>
     <task id="LOCAL-00051" summary="problem in popup modal">
       <option name="closed" value="true" />
@@ -657,7 +649,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754814079134</updated>
     </task>
-    <option name="localTasksCounter" value="99" />
+    <task id="LOCAL-00099" summary="fixed how image are being fetch">
+      <option name="closed" value="true" />
+      <created>1754886236806</created>
+      <option name="number" value="00099" />
+      <option name="presentableId" value="LOCAL-00099" />
+      <option name="project" value="LOCAL" />
+      <updated>1754886236807</updated>
+    </task>
+    <option name="localTasksCounter" value="100" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -675,7 +675,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="problem in popup modal" />
     <MESSAGE value="image location not working for property" />
     <MESSAGE value="fixed GIS" />
     <MESSAGE value="Connect Admin to Main System" />
@@ -700,7 +699,8 @@
     <MESSAGE value="added tourist page" />
     <MESSAGE value="fixing backend for tourist page" />
     <MESSAGE value="added destination section" />
-    <option name="LAST_COMMIT_MESSAGE" value="added destination section" />
+    <MESSAGE value="fixed how image are being fetch" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed how image are being fetch" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />

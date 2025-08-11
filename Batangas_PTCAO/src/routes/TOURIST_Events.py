@@ -3,6 +3,7 @@ from Batangas_PTCAO.src.extension import db
 from Batangas_PTCAO.src.model import Event
 from datetime import datetime, date
 from sqlalchemy import or_, and_
+import os
 
 
 def init_tourist_events_routes(app):
@@ -79,8 +80,20 @@ def init_tourist_events_routes(app):
                 elif is_upcoming:
                     status = 'upcoming'
 
-                # Set default image if none provided
-                image_url = event.event_image or '/static/images/default-event.jpg'
+                # Handle image URL - Fix the image path handling
+                if event.event_image:
+                    # If it's already a full URL, use it as is
+                    if event.event_image.startswith(('http://', 'https://')):
+                        image_url = event.event_image
+                    # If it's a file path, construct the proper static URL
+                    elif event.event_image.startswith('/static/'):
+                        image_url = event.event_image
+                    else:
+                        # If it's just a filename or relative path, add the proper prefix
+                        image_url = f'/static/uploads/events/{event.event_image.lstrip("/")}'
+                else:
+                    # Default fallback image
+                    image_url = '/static/images/default-event.jpg'
 
                 # Determine if this is a featured event (you can customize this logic)
                 is_featured = (category == 'festival' and 'festival' in (event.category or '').lower()) or featured_only
@@ -156,6 +169,21 @@ def init_tourist_events_routes(app):
             else:
                 date_display = f"{start_date_str} - {end_date_str}"
 
+            # Handle image URL - Fix the image path handling
+            if event.event_image:
+                # If it's already a full URL, use it as is
+                if event.event_image.startswith(('http://', 'https://')):
+                    image_url = event.event_image
+                # If it's a file path, construct the proper static URL
+                elif event.event_image.startswith('/static/'):
+                    image_url = event.event_image
+                else:
+                    # If it's just a filename or relative path, add the proper prefix
+                    image_url = f'/static/uploads/events/{event.event_image.lstrip("/")}'
+            else:
+                # Default fallback image
+                image_url = '/static/images/default-event.jpg'
+
             event_data = {
                 'event_id': event.event_id,
                 'title': event.event_title,
@@ -166,7 +194,7 @@ def init_tourist_events_routes(app):
                 'municipality': event.municipality or 'Batangas',
                 'location': event.location or 'To be announced',
                 'category': event.category or 'general',
-                'image_url': event.event_image or '/static/images/default-event.jpg',
+                'image_url': image_url,
                 'status': status,
                 'is_ongoing': is_ongoing,
                 'is_upcoming': is_upcoming,
@@ -260,6 +288,21 @@ def init_tourist_events_routes(app):
             else:
                 date_display = f"{start_date_str} - {end_date_str}"
 
+            # Handle image URL - Fix the image path handling
+            if featured_event.event_image:
+                # If it's already a full URL, use it as is
+                if featured_event.event_image.startswith(('http://', 'https://')):
+                    image_url = featured_event.event_image
+                # If it's a file path, construct the proper static URL
+                elif featured_event.event_image.startswith('/static/'):
+                    image_url = featured_event.event_image
+                else:
+                    # If it's just a filename or relative path, add the proper prefix
+                    image_url = f'/static/uploads/events/{featured_event.event_image.lstrip("/")}'
+            else:
+                # Default fallback image from Unsplash
+                image_url = 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+
             event_data = {
                 'event_id': featured_event.event_id,
                 'title': featured_event.event_title,
@@ -268,7 +311,7 @@ def init_tourist_events_routes(app):
                 'municipality': featured_event.municipality or 'Batangas',
                 'location': featured_event.location or 'Various Locations',
                 'category': featured_event.category or 'festival',
-                'image_url': featured_event.event_image or 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+                'image_url': image_url
             }
 
             return jsonify({
@@ -293,7 +336,6 @@ def init_tourist_events_routes(app):
     @app.route('/map')
     def get_map():
         return render_template('TOURIST_Map.html')
-
 
     @app.route('/about')
     def get_about():
