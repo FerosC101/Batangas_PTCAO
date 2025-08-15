@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixed how image are being fetch">
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_About.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_About.html" afterDir="false" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="bats info fixed">
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_About.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Home.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Home.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -259,15 +260,8 @@
       <workItem from="1754661288207" duration="10022000" />
       <workItem from="1754736420428" duration="649000" />
       <workItem from="1754812231781" duration="1871000" />
-      <workItem from="1754883405380" duration="4883000" />
-    </task>
-    <task id="LOCAL-00052" summary="problem in popup modal">
-      <option name="closed" value="true" />
-      <created>1752067624628</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1752067624628</updated>
+      <workItem from="1754883405380" duration="5829000" />
+      <workItem from="1755265486831" duration="969000" />
     </task>
     <task id="LOCAL-00053" summary="image location not working for property">
       <option name="closed" value="true" />
@@ -653,7 +647,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754888110328</updated>
     </task>
-    <option name="localTasksCounter" value="101" />
+    <task id="LOCAL-00101" summary="bats info fixed">
+      <option name="closed" value="true" />
+      <created>1754888651696</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1754888651696</updated>
+    </task>
+    <option name="localTasksCounter" value="102" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -671,7 +673,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="image location not working for property" />
     <MESSAGE value="fixed GIS" />
     <MESSAGE value="Connect Admin to Main System" />
     <MESSAGE value="working ADMIN_users.py" />
@@ -696,11 +697,12 @@
     <MESSAGE value="fixing backend for tourist page" />
     <MESSAGE value="added destination section" />
     <MESSAGE value="fixed how image are being fetch" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed how image are being fetch" />
+    <MESSAGE value="bats info fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="bats info fixed" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1754885701169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1755265656537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
     <SUITE FILE_PATH="coverage/DjangoProject$checkIFExist.coverage" NAME="checkIFExist Coverage Results" MODIFIED="1754570458827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
     <SUITE FILE_PATH="coverage/DjangoProject$model.coverage" NAME="model Coverage Results" MODIFIED="1746352563953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
