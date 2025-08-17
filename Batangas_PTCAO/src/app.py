@@ -11,6 +11,7 @@ from Batangas_PTCAO.src.routes.MTO_Announcement import init_mto_announcement_rou
 from Batangas_PTCAO.src.routes.PTCAO_Dashboard import init_ptcao_dashboard_routes
 from Batangas_PTCAO.src.routes.PTCAO_Destinations import init_ptcao_destinations_routes
 from Batangas_PTCAO.src.routes.PTCAO_Property import init_ptcao_property_routes
+from Batangas_PTCAO.src.routes.TOURIST_Contact import init_tourist_contact_routes
 from Batangas_PTCAO.src.routes.TOURIST_Destination import init_tourist_api_routes
 from Batangas_PTCAO.src.routes.TOURIST_Home import init_tourist_home_routes
 from Batangas_PTCAO.src.routes.TOURIST_Events import init_tourist_events_routes
@@ -96,6 +97,7 @@ def create_app():
     init_tourist_events_routes(app)
     init_tourist_api_routes(app)
     init_tourist_map_routes(app)
+    init_tourist_contact_routes(app)
 
     # Static file serving route
     @app.route('/static/<path:filename>')

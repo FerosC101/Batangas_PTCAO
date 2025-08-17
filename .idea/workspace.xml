@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="bats info fixed">
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="changed logo">
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Contact.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Contact.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/static/img/Batangas_Logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/static/img/Batangas_Logo.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,33 +57,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JavaScript Debug.MTO_Properties.html.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Hash_check.executor&quot;: &quot;Run&quot;,
-    &quot;Python.MTO_Property.executor&quot;: &quot;Run&quot;,
-    &quot;Python.app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.checkIFExist.executor&quot;: &quot;Run&quot;,
-    &quot;Python.model.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;C:/Users/HUAWEI/AppData/Roaming/JetBrains/PyCharm2024.3/node/versions/22.13.1/node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;inlay.hints&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "JavaScript Debug.MTO_Properties.html.executor": "Run",
+    "JavaScript Debug.MTO_Visitors.html.executor": "Run",
+    "Python.Hash_check.executor": "Run",
+    "Python.MTO_Property.executor": "Run",
+    "Python.app.executor": "Run",
+    "Python.checkIFExist.executor": "Run",
+    "Python.model.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "C:/Users/HUAWEI/AppData/Roaming/JetBrains/PyCharm2024.3/node/versions/22.13.1/node",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "inlay.hints",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\img" />
@@ -92,7 +94,7 @@
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes\static" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.MTO_Visitors.html">
+  <component name="RunManager" selected="Python.app">
     <configuration name="MTO_Visitors.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/DjangoProject/Batangas_PTCAO/src/templates/MTO_Visitors.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
@@ -144,8 +146,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JavaScript Debug.MTO_Visitors.html" />
         <item itemvalue="Python.app" />
+        <item itemvalue="JavaScript Debug.MTO_Visitors.html" />
         <item itemvalue="Python.MTO_Property" />
       </list>
     </recent_temporary>
@@ -266,15 +268,7 @@
       <workItem from="1754883405380" duration="5829000" />
       <workItem from="1755265486831" duration="1262000" />
       <workItem from="1755423507249" duration="4000" />
-      <workItem from="1755439479324" duration="309000" />
-    </task>
-    <task id="LOCAL-00054" summary="image location not working for property">
-      <option name="closed" value="true" />
-      <created>1752250670336</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1752250670336</updated>
+      <workItem from="1755439479324" duration="1173000" />
     </task>
     <task id="LOCAL-00055" summary="fixed GIS">
       <option name="closed" value="true" />
@@ -660,7 +654,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755266741626</updated>
     </task>
-    <option name="localTasksCounter" value="103" />
+    <task id="LOCAL-00103" summary="changed logo">
+      <option name="closed" value="true" />
+      <created>1755440217226</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1755440217228</updated>
+    </task>
+    <option name="localTasksCounter" value="104" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -678,7 +680,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed GIS" />
     <MESSAGE value="Connect Admin to Main System" />
     <MESSAGE value="working ADMIN_users.py" />
     <MESSAGE value="reports fixed" />
@@ -703,7 +704,8 @@
     <MESSAGE value="added destination section" />
     <MESSAGE value="fixed how image are being fetch" />
     <MESSAGE value="bats info fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="bats info fixed" />
+    <MESSAGE value="changed logo" />
+    <option name="LAST_COMMIT_MESSAGE" value="changed logo" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
