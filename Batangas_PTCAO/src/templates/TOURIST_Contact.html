@@ -3,297 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Provincial Tourism Office</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <title>Contact Us - Batangas Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #003366;
+            --accent: #ff7e00;
+            --light-bg: #f8f9fa;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+        }
+
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("{{ url_for('serve_static_file', filename='img/BackgroundImage.png') }}") no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-            position: relative;
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
         }
 
-        /* Tourist Button Styling - Clean Professional Design */
-        .tourist-button {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            z-index: 9999;
+        html {
+            scroll-behavior: smooth;
         }
 
-        .tourist-button .btn {
-            background: linear-gradient(135deg, #ff8c42, #ff6b35);
-            border: none;
-            color: white;
-            padding: 14px 28px;
-            font-weight: 600;
-            font-size: 15px;
-            border-radius: 30px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+        /* Navigation - Same as homepage */
+        .navbar {
+            background: linear-gradient(135deg, #003366 0%, #004080 100%);
+            padding: 1rem 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-            text-transform: none;
-            letter-spacing: 0.3px;
-            position: relative;
-            overflow: hidden;
-            min-width: auto;
-            justify-content: center;
-        }
-
-        .tourist-button .btn::before {
-            content: '👥';
-            font-size: 16px;
-            margin-right: 2px;
-        }
-
-        .tourist-button .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-            background: linear-gradient(135deg, #ff9a56, #ff7849);
-        }
-
-        .tourist-button .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-        }
-
-        /* Main Container */
-        .main-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .login-wrapper {
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            gap: 40px;
-            align-items: center;
-        }
-
-        /* Left Panel Styling */
-        .left-panel {
-            flex: 1;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .left-panel h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
-            line-height: 1.2;
-            background: linear-gradient(45deg, #fff, #f8f9fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .left-panel p {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            font-style: italic;
-            font-weight: 300;
-        }
-
-        /* Right Panel Styling */
-        .right-panel {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 20px;
-            padding: 3rem 2.5rem;
-            max-width: 450px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .logo {
-            margin-bottom: 1.5rem;
-            text-align: center;
+        .navbar.scrolled {
+            padding: 0.7rem 0;
         }
 
-        .logo img {
-            max-width: 80px;
-            height: auto;
-            border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            transition: transform 0.3s ease;
+            text-decoration: none;
         }
 
-        .right-panel h2 {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: #2c3e50;
-            font-size: 1.8rem;
-            font-weight: 600;
+        .navbar-brand:hover {
+            transform: translateY(-1px);
+            color: white !important;
         }
 
-        /* Form Styling */
-        .form-group {
-            margin-bottom: 1.5rem;
+        .navbar-brand img {
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
             position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #495057;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input[type="email"],
-        .form-group input[type="password"] {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 16px;
-            background-color: #f8f9fa;
             transition: all 0.3s ease;
-            color: #495057;
+            border-radius: 8px;
+            text-decoration: none;
         }
 
-        .form-group input[type="email"]:focus,
-        .form-group input[type="password"]:focus {
-            outline: none;
-            border-color: #007BFF;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-            transform: translateY(-2px);
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #ff7e00 0%, #ff9500 100%);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
         }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 70%;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #007BFF;
-            cursor: pointer;
+        .nav-link:hover,
+        .nav-link:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+            color: white !important;
         }
 
-        .checkbox-group label {
-            margin-bottom: 0;
-            font-weight: normal;
-            color: #6c757d;
-            cursor: pointer;
-            text-transform: none;
-            letter-spacing: normal;
-            font-size: 14px;
+        .nav-link.active {
+            background-color: rgba(255, 126, 0, 0.1);
+            color: white !important;
         }
 
-        /* Button Styling */
-        .form-actions {
-            text-align: center;
-            margin-top: 2rem;
-        }
-
-        .form-actions button {
-            width: 100%;
-            padding: 15px 2rem;
-            border: none;
-            background: linear-gradient(135deg, #007BFF, #0056b3);
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #004080 100%);
+            padding: 8rem 0 4rem;
+            margin-top: 76px;
             color: white;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .form-actions button::before {
+        .page-header::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
         }
 
-        .form-actions button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
-        }
-
-        .form-actions button:hover::before {
-            left: 100%;
-        }
-
-        .form-actions button:active {
-            transform: translateY(0);
-        }
-
-        .form-actions a {
-            display: block;
-            margin-top: 1rem;
-            color: #007BFF;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .form-actions a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-
-        /* Flash Messages */
-        #flash-messages {
+        .page-header-content {
             position: relative;
-            margin-bottom: 1.5rem;
+            z-index: 2;
         }
 
-        .flash-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-            animation: slideIn 0.3s ease;
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
         }
 
-        @keyframes slideIn {
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -301,279 +155,649 @@
             }
         }
 
-        .flash-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        /* Main Content */
+        .main-content {
+            padding: 4rem 0;
         }
 
-        .flash-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+        .notice-card {
+            background: white;
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            box-shadow: var(--shadow-medium);
+            text-align: center;
+            margin-bottom: 3rem;
+            border: 1px solid #e9ecef;
+            position: relative;
+            overflow: hidden;
         }
 
-        .flash-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+        .notice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff9500 100%);
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: inherit;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
+        .notice-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .notice-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .notice-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .highlight-text {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Alternative Contact Methods */
+        .contact-alternatives {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+
+        .contact-method {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            height: 100%;
+            border: 2px solid transparent;
+        }
+
+        .contact-method:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(255, 126, 0, 0.2);
+        }
+
+        .contact-method-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .contact-method h4 {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .contact-method p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .contact-link:hover {
+            color: #e06e00;
+            text-decoration: underline;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .faq-answer {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Status Badge */
+        .status-badge {
             display: inline-block;
-            width: 24px;
-            height: 24px;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #2d3436;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            animation: slideInDown 1s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer - Same as homepage */
+        footer {
+            background-color: var(--primary);
+            padding: 3rem 0 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 3rem;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            padding-left: 8px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s ease;
+            transition: var(--transition);
+            color: white;
+            text-decoration: none;
         }
 
-        .close-btn:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+        .social-icon:hover {
+            background-color: var(--accent);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
         }
 
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .login-wrapper {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .left-panel h1 {
+        @media (max-width: 768px) {
+            .page-title {
                 font-size: 2.5rem;
             }
 
-            .right-panel {
-                max-width: 500px;
-                width: 100%;
+            .notice-card {
+                padding: 2rem 1.5rem;
             }
 
-            .tourist-button {
-                top: 25px;
-                right: 25px;
-            }
-
-            .tourist-button .btn {
-                padding: 12px 24px;
-                font-size: 14px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .tourist-button {
-                top: 20px;
-                right: 20px;
-            }
-
-            .tourist-button .btn {
-                padding: 11px 22px;
-                font-size: 13px;
-            }
-
-            .main-container {
-                padding: 15px;
-            }
-
-            .left-panel {
-                padding: 1rem;
-            }
-
-            .left-panel h1 {
+            .notice-title {
                 font-size: 2rem;
             }
 
-            .left-panel p {
-                font-size: 1.2rem;
-            }
-
-            .right-panel {
+            .contact-alternatives {
                 padding: 2rem 1.5rem;
-                border-radius: 15px;
             }
 
-            .right-panel h2 {
-                font-size: 1.5rem;
-            }
-
-            .form-group input[type="email"],
-            .form-group input[type="password"] {
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-
-            .form-actions button {
-                padding: 12px 1.5rem;
-                font-size: 14px;
+            .faq-section {
+                padding: 2rem 1.5rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .tourist-button {
-                top: 15px;
-                right: 15px;
+        @media (max-width: 991px) {
+            .navbar-nav {
+                padding-top: 1rem;
             }
 
-            .tourist-button .btn {
-                padding: 10px 20px;
-                font-size: 12px;
+            .nav-link {
+                text-align: center;
+                margin: 0.2rem 0;
             }
 
-            .left-panel h1 {
-                font-size: 1.7rem;
+            .nav-link::after {
+                display: none;
             }
 
-            .right-panel {
-                padding: 1.5rem 1rem;
+            .nav-link.active {
+                background-color: rgba(255, 126, 0, 0.2);
+                border-radius: 8px;
+            }
+
+            .navbar-toggler {
+                border: none;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: none;
+            }
+
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
             }
         }
 
-        /* Loading Animation */
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-        }
+        @media (max-width: 576px) {
+            .page-header {
+                padding: 6rem 0 3rem;
+            }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #007BFF;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+            .main-content {
+                padding: 2rem 0;
+            }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            .notice-icon {
+                font-size: 3rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Tourist Button - Clean Professional Design -->
-    <div class="tourist-button">
-        <a href="{{ url_for('tourist_home') }}" class="btn">Access MTO Portal</a>
-    </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/tourist/home">
+                <img src="/static/img/Batangas_Logo.png" alt="Batangas Explorer Logo" width="50" height="50">
+                Batangas Explorer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tourist/home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tourist/destinations">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tourist/map">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tourist/events">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tourist/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/tourist/contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Loading Overlay -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-    </div>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-title">Contact Us</h1>
+                <p class="page-subtitle">Get in touch with the Batangas Explorer team for tourism inquiries and assistance</p>
+            </div>
+        </div>
+    </section>
 
     <!-- Main Content -->
-    <div class="main-container">
-        <div class="login-wrapper">
-            <!-- Left Panel -->
-            <div class="left-panel">
-                <h1>Provincial Tourism and Cultural Affairs Office</h1>
-                <p>All here, So Near</p>
+    <div class="container main-content">
+        <!-- Notice Card -->
+        <div class="notice-card">
+            <div class="status-badge">
+                <i class="fas fa-info-circle me-2"></i>
+                Page Under Development
             </div>
 
-            <!-- Right Panel -->
-            <div class="right-panel">
-                <div class="logo">
-                    <img src="{{ url_for('serve_static_file', filename='img/Batangas_Logo.png') }}" alt="Batangas Explorer Logo">
+            <div class="notice-icon">
+                <i class="fas fa-hard-hat"></i>
+            </div>
+
+            <h2 class="notice-title">Contact Page Coming Soon</h2>
+
+            <p class="notice-text">
+                We're currently working on setting up our official contact channels to better serve you.
+                This page is temporarily unavailable as we need to obtain the
+                <span class="highlight-text">official contact information</span> from the
+                Batangas Provincial Tourism Office.
+            </p>
+
+            <p class="notice-text">
+                We want to ensure that all contact details provided are accurate and up-to-date
+                to give you the best possible service for your tourism inquiries.
+            </p>
+        </div>
+
+        <!-- Alternative Contact Methods -->
+        <div class="contact-alternatives">
+            <h2 class="section-title">In the Meantime</h2>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h4>Official Website</h4>
+                        <p>Visit the official Batangas provincial website for the latest tourism information and updates.</p>
+                        <a href="#" class="contact-link">Visit Website</a>
+                    </div>
                 </div>
-                <h2>Log In to Your Account</h2>
 
-                <!-- Flash Messages -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        <div id="flash-messages">
-                            {% for category, message in messages %}
-                                <div class="flash-message flash-{{ category }}">
-                                    <span>{{ message }}</span>
-                                    <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
-                                </div>
-                            {% endfor %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <i class="fas fa-building"></i>
                         </div>
-                    {% endif %}
-                {% endwith %}
-
-                <!-- Login Form -->
-                <form action="{{ url_for('login') }}" method="POST" id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        <h4>Tourism Office</h4>
+                        <p>Contact the Provincial Tourism and Cultural Affairs Office directly for official inquiries.</p>
+                        <a href="#" class="contact-link">Find Location</a>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="remember" name="remember">
-                            <label for="remember">Remember me</label>
+                <div class="col-lg-4 col-md-6">
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <i class="fas fa-share-alt"></i>
                         </div>
+                        <h4>Social Media</h4>
+                        <p>Follow official Batangas tourism social media accounts for real-time updates and announcements.</p>
+                        <a href="#" class="contact-link">Follow Us</a>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="form-actions">
-                        <button type="submit">Login</button>
-                        <a href="#">Forgot Password?</a>
-                        <a href="{{ url_for('mto.mto_registration') }}">Need an Account? Register!</a>
-                    </div>
-                </form>
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle me-2 text-primary"></i>
+                    When will the contact page be available?
+                </div>
+                <div class="faq-answer">
+                    We're working diligently to obtain all official contact information. The contact page will be available once we have verified and received approval for all contact details from the relevant authorities.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle me-2 text-primary"></i>
+                    How can I get tourism information about Batangas?
+                </div>
+                <div class="faq-answer">
+                    You can explore our destinations, events, and about pages for comprehensive information about Batangas tourism. For specific inquiries, please visit the official tourism offices or contact them through official channels.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle me-2 text-primary"></i>
+                    Can I still plan my visit to Batangas?
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Our website contains detailed information about destinations, events, and attractions throughout Batangas. You can use our interactive map and destination guides to plan your perfect trip.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle me-2 text-primary"></i>
+                    Will I be notified when the contact page is ready?
+                </div>
+                <div class="faq-answer">
+                    Updates about new features and pages will be announced through our main website. Check back regularly or follow official Batangas tourism announcements for the latest updates.
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-title">Batangas Explorer</h5>
+                    <p>Your ultimate guide to discovering the natural wonders, cultural treasures, and culinary delights of Batangas Province. From pristine beaches to historical landmarks, we help you explore the best of what Batangas has to offer.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon" title="Follow us on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Follow us on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Subscribe to our YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Popular Destinations</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Taal Volcano</a></li>
+                        <li><a href="#">Anilao Beach</a></li>
+                        <li><a href="#">Nasugbu</a></li>
+                        <li><a href="#">Lipa City</a></li>
+                        <li><a href="#">Batangas City</a></li>
+                        <li><a href="#">Mabini</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Travel Guidelines</a></li>
+                        <li><a href="#">Transportation Guide</a></li>
+                        <li><a href="#">Weather Updates</a></li>
+                        <li><a href="#">Emergency Contacts</a></li>
+                        <li><a href="#">Tourism Offices</a></li>
+                        <li><a href="#">Hotel Bookings</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="footer-title">Visit Batangas</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Provincial Capitol Complex, Batangas City</li>
+                        <li><i class="fas fa-phone me-2"></i> Hotline: (043) 980-2020</li>
+                        <li><i class="fas fa-envelope me-2"></i> tourism@batangas.gov.ph</li>
+                        <li><i class="fas fa-clock me-2"></i> Mon-Fri: 8:00 AM - 5:00 PM</li>
+                        <li><i class="fas fa-globe me-2"></i> www.batangastourism.com</li>
+                    </ul>
+                    <div class="mt-3">
+                        <small class="text-muted">Official tourism website of Batangas Province</small>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Batangas Explorer. All rights reserved. | Provincial Tourism and Cultural Affairs Office</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Auto-hide flash messages after 5 seconds
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Set active nav item
         document.addEventListener('DOMContentLoaded', function() {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(function(message) {
-                setTimeout(function() {
-                    message.style.opacity = '0';
-                    setTimeout(function() {
-                        message.style.display = 'none';
-                    }, 300);
-                }, 5000);
-            });
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
 
-            // Form submission with loading animation
-            const loginForm = document.getElementById('loginForm');
-            const loading = document.getElementById('loading');
-
-            loginForm.addEventListener('submit', function(e) {
-                loading.style.display = 'flex';
-            });
-
-            // Hide loading on page load (in case of errors)
-            window.addEventListener('load', function() {
-                loading.style.display = 'none';
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPath ||
+                    (currentPath.includes('contact') && link.getAttribute('href').includes('contact'))) {
+                    link.classList.add('active');
+                }
             });
         });
 
-        // Enhanced input focus effects
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
+        // Add hover effects to contact methods
+        document.querySelectorAll('.contact-method').forEach(method => {
+            method.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
 
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.classList.add('focused');
+            method.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // FAQ accordion-like behavior (optional enhancement)
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const isExpanded = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+
+                // Reset all other FAQ answers
+                document.querySelectorAll('.faq-answer').forEach(ans => {
+                    ans.style.maxHeight = null;
+                    ans.style.padding = '0';
                 });
 
-                input.addEventListener('blur', function() {
-                    this.parentElement.classList.remove('focused');
-                });
+                // Expand clicked answer if it wasn't already expanded
+                if (!isExpanded) {
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                    answer.style.paddingTop = '1rem';
+                }
+
+                // Add visual feedback
+                this.style.cursor = 'pointer';
+            });
+        });
+
+        // Add animation to status badge
+        const statusBadge = document.querySelector('.status-badge');
+        if (statusBadge) {
+            setInterval(() => {
+                statusBadge.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    statusBadge.style.transform = 'scale(1)';
+                }, 200);
+            }, 3000);
+        }
+
+        // Add pulse animation to notice icon
+        const noticeIcon = document.querySelector('.notice-icon i');
+        if (noticeIcon) {
+            let pulseDirection = 1;
+            setInterval(() => {
+                const currentScale = parseFloat(noticeIcon.style.transform.replace(/[^\d.]/g, '')) || 1;
+                const newScale = currentScale + (0.02 * pulseDirection);
+
+                if (newScale >= 1.1) pulseDirection = -1;
+                if (newScale <= 0.95) pulseDirection = 1;
+
+                noticeIcon.style.transform = `scale(${newScale})`;
+            }, 100);
+        }
+
+        // Smooth hover transitions for all interactive elements
+        document.querySelectorAll('.contact-link, .footer-links a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(3px)';
+            });
+
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
             });
         });
     </script>
