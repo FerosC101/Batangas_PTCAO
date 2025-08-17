@@ -191,6 +191,87 @@
             box-shadow: 0 4px 12px rgba(255, 126, 0, 0.3);
         }
 
+        /* MTO Login Button - Bottom of Page */
+        .mto-login-section {
+            background: linear-gradient(135deg, var(--primary) 0%, #004080 100%);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mto-login-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .mto-login-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .mto-login-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .mto-login-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-mto-login {
+            background: linear-gradient(135deg, var(--accent) 0%, #ff9500 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 126, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-mto-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-mto-login:hover::before {
+            left: 100%;
+        }
+
+        .btn-mto-login:hover {
+            background: linear-gradient(135deg, #e06e00 0%, #e08500 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 126, 0, 0.4);
+            color: white;
+        }
+
+        .btn-mto-login i {
+            margin-right: 0.5rem;
+        }
+
         /* Sections */
         .section-container {
             margin-bottom: 3rem;
@@ -561,7 +642,6 @@
             background-color: var(--primary);
             padding: 3rem 0 1.5rem;
             color: rgba(255, 255, 255, 0.8);
-            margin-top: 3rem;
         }
 
         .footer-title {
@@ -684,6 +764,14 @@
             .map-section {
                 padding: 3rem 0;
             }
+
+            .mto-login-title {
+                font-size: 1.3rem;
+            }
+
+            .mto-login-subtitle {
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 991px) {
@@ -738,6 +826,10 @@
 
             .map-legend {
                 padding: 1rem;
+            }
+
+            .mto-login-section {
+                padding: 1.5rem 0;
             }
         }
     </style>
@@ -902,7 +994,7 @@
                             </div>
                             <div class="col-6">
                                 <div class="stat-item-compact">
-                                    <div class="stat-number-compact">2908494 M</div>
+                                    <div class="stat-number-compact">2.9M</div>
                                     <div class="stat-label-compact">Population</div>
                                 </div>
                             </div>
@@ -925,6 +1017,19 @@
             </div>
         </div>
     </div>
+
+    <!-- MTO Login Section - Bottom of Page -->
+    <section class="mto-login-section">
+        <div class="container">
+            <div class="mto-login-content">
+                <h3 class="mto-login-title">Municipal Tourism Officer Portal</h3>
+                <p class="mto-login-subtitle">Access your administrative dashboard to manage destinations, events, and tourism content for your municipality.</p>
+                <a href="{{ url_for('login') }}" class="btn-mto-login">
+                    <i class="fas fa-user-shield"></i> Access MTO Portal
+                </a>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer id="contact">
@@ -1294,7 +1399,7 @@
         });
 
         // Button hover effects
-        document.querySelectorAll('.btn, .btn-explore, .btn-outline-primary').forEach(button => {
+        document.querySelectorAll('.btn, .btn-explore, .btn-outline-primary, .btn-mto-login').forEach(button => {
             button.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-2px)';
             });

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, redirect, url_for
 from flask_jwt_extended import JWTManager
 from sqlalchemy import values
 
@@ -16,7 +16,7 @@ from Batangas_PTCAO.src.routes.TOURIST_Destination import init_tourist_api_route
 from Batangas_PTCAO.src.routes.TOURIST_Home import init_tourist_home_routes
 from Batangas_PTCAO.src.routes.TOURIST_Events import init_tourist_events_routes
 from Batangas_PTCAO.src.routes.TOURIST_Map import init_tourist_map_routes
-# Import route initializers
+
 from Batangas_PTCAO.src.routes.auth import init_auth_routes
 from Batangas_PTCAO.src.routes.MTO import init_mto_routes
 from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes
@@ -75,6 +75,11 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    # Root route - redirect to tourist home page
+    @app.route('/')
+    def index():
+        return redirect(url_for('tourist_home.tourist_home'))
 
     # Initialize all routes
     init_auth_routes(app)
