@@ -248,6 +248,155 @@
             border-color: var(--accent);
         }
 
+        /* NEW STYLES FOR SIDEBAR FILTER */
+        .sidebar-filter {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .filter-item:hover {
+            background: var(--light-bg);
+            border-color: #e9ecef;
+        }
+
+        .filter-item.active {
+            background: rgba(255, 126, 0, 0.1);
+            border-color: var(--accent);
+        }
+
+        .filter-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-right: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%);
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #CD7F32 0%, #8C6B46 100%);
+        }
+
+        .filter-item-content {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .filter-item-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.2rem;
+        }
+
+        .filter-item-details {
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .filter-item-price {
+            font-weight: 600;
+            color: var(--accent);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .filter-item-distance {
+            font-weight: 600;
+            color: var(--primary);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .location-access {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .location-access i {
+            color: var(--accent);
+            margin-right: 0.5rem;
+        }
+
+        .btn-location {
+            background: var(--gradient-accent);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+            cursor: pointer;
+        }
+
+        .btn-location:hover {
+            opacity: 0.9;
+        }
+
         /* Destination Cards */
         .destinations-grid {
             display: grid;
@@ -625,12 +774,25 @@
             margin: 0 auto 1rem;
         }
 
+        .spinner-sm {
+            width: 30px;
+            height: 30px;
+            border-width: 3px;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
         /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar-filter {
+                position: relative;
+                top: 0;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -758,54 +920,113 @@
         </ul>
     </section>
 
-    <!-- Filter Section -->
-    <section class="filter-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-3 mb-lg-0">
-                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start" id="filterButtons">
-                        <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="resort">Resort</button>
-                        <button class="filter-btn" data-filter="hotel">Hotel</button>
-                        <button class="filter-btn" data-filter="beach">Beach</button>
-                        <button class="filter-btn" data-filter="mountain">Mountain</button>
-                        <button class="filter-btn" data-filter="heritage">Heritage</button>
-                        <button class="filter-btn" data-filter="island">Island</button>
+    <!-- Main Content with Sidebar -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Sidebar Filter -->
+            <div class="col-lg-4">
+                <div class="sidebar-filter">
+                    <!-- Most Visited Section -->
+                    <div class="filter-section">
+                        <h4 class="filter-title">
+                            <i class="fas fa-fire"></i>
+                            Most Visited
+                        </h4>
+                        <div id="mostVisitedList">
+                            <div class="text-center py-3">
+                                <div class="spinner spinner-sm"></div>
+                                <p class="mt-2">Loading popular destinations...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Most Affordable Section -->
+                    <div class="filter-section">
+                        <h4 class="filter-title">
+                            <i class="fas fa-wallet"></i>
+                            Most Affordable
+                        </h4>
+                        <div id="mostAffordableList">
+                            <div class="text-center py-3">
+                                <div class="spinner spinner-sm"></div>
+                                <p class="mt-2">Loading affordable options...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Most Accessible Section -->
+                    <div class="filter-section">
+                        <h4 class="filter-title">
+                            <i class="fas fa-location-arrow"></i>
+                            Most Accessible
+                        </h4>
+                        <div class="location-access">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Uses your current location</span>
+                            <button class="btn-location" onclick="requestUserLocation()">
+                                Enable Location
+                            </button>
+                        </div>
+                        <div id="mostAccessibleList">
+                            <div class="text-center py-3">
+                                <p>Enable location to see nearby places</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 mb-3 mb-lg-0">
-                    <select class="form-select municipality-select" id="municipalityFilter">
-                        <option value="">All Municipalities</option>
-                    </select>
-                </div>
-                <div class="col-lg-3">
-                    <input type="text" class="form-control search-box" id="searchInput" placeholder="Search destinations...">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Content Tabs -->
-    <div class="container my-5">
-        <div class="tab-content" id="destinationTabContent">
-            <!-- Properties Tab -->
-            <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
-                <div class="destinations-grid" id="propertiesGrid">
-                    <!-- Property cards will be populated by JavaScript -->
-                </div>
             </div>
 
-            <!-- Destinations Tab -->
-            <div class="tab-pane fade" id="destinations" role="tabpanel" aria-labelledby="destinations-tab">
-                <div class="destinations-grid" id="destinationsGrid">
-                    <!-- Destination cards will be populated by JavaScript -->
+            <!-- Main Content Area -->
+            <div class="col-lg-8">
+                <!-- Filter Section -->
+                <section class="filter-section">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6 mb-3 mb-lg-0">
+                                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start" id="filterButtons">
+                                    <button class="filter-btn active" data-filter="all">All</button>
+                                    <button class="filter-btn" data-filter="resort">Resort</button>
+                                    <button class="filter-btn" data-filter="hotel">Hotel</button>
+                                    <button class="filter-btn" data-filter="beach">Beach</button>
+                                    <button class="filter-btn" data-filter="mountain">Mountain</button>
+                                    <button class="filter-btn" data-filter="heritage">Heritage</button>
+                                    <button class="filter-btn" data-filter="island">Island</button>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 mb-3 mb-lg-0">
+                                <select class="form-select municipality-select" id="municipalityFilter">
+                                    <option value="">All Municipalities</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" class="form-control search-box" id="searchInput" placeholder="Search destinations...">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Content Tabs -->
+                <div class="tab-content" id="destinationTabContent">
+                    <!-- Properties Tab -->
+                    <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
+                        <div class="destinations-grid" id="propertiesGrid">
+                            <!-- Property cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Destinations Tab -->
+                    <div class="tab-pane fade" id="destinations" role="tabpanel" aria-labelledby="destinations-tab">
+                        <div class="destinations-grid" id="destinationsGrid">
+                            <!-- Destination cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Loading more destinations...</p>
                 </div>
             </div>
-        </div>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Loading more destinations...</p>
         </div>
     </div>
 
@@ -837,6 +1058,7 @@
         let activeTab = 'properties';
         let municipalities = [];
         let modalMap = null;
+        let userLocation = null;
 
         // DOM elements
         const propertiesGrid = document.getElementById('propertiesGrid');
@@ -845,6 +1067,9 @@
         const searchInput = document.getElementById('searchInput');
         const municipalityFilter = document.getElementById('municipalityFilter');
         const loading = document.getElementById('loading');
+        const mostVisitedList = document.getElementById('mostVisitedList');
+        const mostAffordableList = document.getElementById('mostAffordableList');
+        const mostAccessibleList = document.getElementById('mostAccessibleList');
         let destinationModal;
 
         // Fixed image path function
@@ -900,7 +1125,322 @@
             loadProperties();
             loadDestinations();
             setupEventListeners();
+
+            // Load sidebar filter data
+            loadMostVisited();
+            loadMostAffordable();
+
+            // Try to get user location if permission was previously granted
+            if (localStorage.getItem('locationPermission') === 'granted') {
+                requestUserLocation();
+            }
         });
+
+        // Load most visited destinations
+        async function loadMostVisited() {
+            try {
+                // In a real application, you would fetch this from an API endpoint
+                // For now, we'll simulate with the destinations data we have
+                if (!window.destinationsData) {
+                    setTimeout(loadMostVisited, 1000);
+                    return;
+                }
+
+                // Simulate most visited by using featured destinations first, then by name
+                const mostVisited = [...window.destinationsData]
+                    .sort((a, b) => {
+                        // Featured first
+                        if (a.is_featured && !b.is_featured) return -1;
+                        if (!a.is_featured && b.is_featured) return 1;
+
+                        // Then by name (simulating popularity)
+                        return a.name.localeCompare(b.name);
+                    })
+                    .slice(0, 5);
+
+                renderMostVisited(mostVisited);
+            } catch (error) {
+                console.error('Error loading most visited:', error);
+                mostVisitedList.innerHTML = `
+                    <div class="text-center text-muted py-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Unable to load popular destinations
+                    </div>
+                `;
+            }
+        }
+
+        // Render most visited list
+        function renderMostVisited(items) {
+            if (!items || items.length === 0) {
+                mostVisitedList.innerHTML = `
+                    <div class="text-center text-muted py-2">
+                        No visit data available
+                    </div>
+                `;
+                return;
+            }
+
+            mostVisitedList.innerHTML = items.map((item, index) => `
+                <div class="filter-item" onclick="openModal('destinations', ${item.id})">
+                    <div class="filter-rank ${index < 3 ? 'rank-' + (index + 1) : ''}">${index + 1}</div>
+                    <div class="filter-item-content">
+                        <div class="filter-item-name">${item.name || 'Unnamed Destination'}</div>
+                        <div class="filter-item-details">${item.municipality || 'Batangas'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load most affordable properties
+        async function loadMostAffordable() {
+            try {
+                // In a real application, you would fetch this from an API endpoint
+                // For now, we'll calculate from the properties data we have
+                if (!window.propertiesData) {
+                    setTimeout(loadMostAffordable, 1000);
+                    return;
+                }
+
+                // Calculate average price for each property
+                const propertiesWithPrices = window.propertiesData
+                    .map(property => {
+                        let avgPrice = null;
+
+                        if (property.rooms && property.rooms.length > 0) {
+                            const validPrices = property.rooms
+                                .map(room => {
+                                    const dayPrice = room.day_price ? parseFloat(room.day_price) : null;
+                                    const overnightPrice = room.overnight_price ? parseFloat(room.overnight_price) : null;
+
+                                    if (dayPrice && overnightPrice) {
+                                        return (dayPrice + overnightPrice) / 2;
+                                    } else if (dayPrice) {
+                                        return dayPrice;
+                                    } else if (overnightPrice) {
+                                        return overnightPrice;
+                                    }
+                                    return null;
+                                })
+                                .filter(price => price !== null);
+
+                            if (validPrices.length > 0) {
+                                avgPrice = validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length;
+                            }
+                        }
+
+                        return {
+                            ...property,
+                            avgPrice: avgPrice
+                        };
+                    })
+                    .filter(property => property.avgPrice !== null)
+                    .sort((a, b) => a.avgPrice - b.avgPrice)
+                    .slice(0, 5);
+
+                renderMostAffordable(propertiesWithPrices);
+            } catch (error) {
+                console.error('Error loading most affordable:', error);
+                mostAffordableList.innerHTML = `
+                    <div class="text-center text-muted py-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Unable to load affordable options
+                    </div>
+                `;
+            }
+        }
+
+        // Render most affordable list
+        function renderMostAffordable(items) {
+            if (!items || items.length === 0) {
+                mostAffordableList.innerHTML = `
+                    <div class="text-center text-muted py-2">
+                        No pricing data available
+                    </div>
+                `;
+                return;
+            }
+
+            mostAffordableList.innerHTML = items.map((item, index) => `
+                <div class="filter-item" onclick="openModal('properties', ${item.property_id})">
+                    <div class="filter-rank ${index < 3 ? 'rank-' + (index + 1) : ''}">${index + 1}</div>
+                    <div class="filter-item-content">
+                        <div class="filter-item-name">${item.property_name || 'Unnamed Property'}</div>
+                        <div class="filter-item-details">${item.municipality || 'Batangas'}</div>
+                    </div>
+                    <div class="filter-item-price">₱${Math.round(item.avgPrice).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        // Request user location for accessibility ranking
+        function requestUserLocation() {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                return;
+            }
+
+            mostAccessibleList.innerHTML = `
+                <div class="text-center py-3">
+                    <div class="spinner spinner-sm"></div>
+                    <p class="mt-2">Detecting your location...</p>
+                </div>
+            `;
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Success callback
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Store permission for future use
+                    localStorage.setItem('locationPermission', 'granted');
+
+                    // Update UI
+                    const locationAccess = document.querySelector('.location-access');
+                    if (locationAccess) {
+                        locationAccess.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <span>Location access granted</span>
+                        `;
+                    }
+
+                    // Load accessible destinations
+                    loadMostAccessible();
+                },
+                function(error) {
+                    // Error callback
+                    console.error("Error getting location:", error);
+                    localStorage.setItem('locationPermission', 'denied');
+
+                    mostAccessibleList.innerHTML = `
+                        <div class="text-center text-muted py-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Location access denied
+                        </div>
+                    `;
+
+                    const locationAccess = document.querySelector('.location-access');
+                    if (locationAccess) {
+                        locationAccess.innerHTML = `
+                            <i class="fas fa-times-circle"></i>
+                            <span>Location access denied</span>
+                            <button class="btn-location" onclick="requestUserLocation()">
+                                Try Again
+                            </button>
+                        `;
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 600000
+                }
+            );
+        }
+
+        // Load most accessible destinations based on user location
+        async function loadMostAccessible() {
+            try {
+                if (!userLocation) {
+                    mostAccessibleList.innerHTML = `
+                        <div class="text-center text-muted py-2">
+                            Enable location to see nearby places
+                        </div>
+                    `;
+                    return;
+                }
+
+                // We need both properties and destinations data
+                if (!window.propertiesData || !window.destinationsData) {
+                    setTimeout(loadMostAccessible, 1000);
+                    return;
+                }
+
+                // Combine properties and destinations for accessibility calculation
+                const allItems = [
+                    ...window.propertiesData.map(item => ({ ...item, type: 'property' })),
+                    ...window.destinationsData.map(item => ({ ...item, type: 'destination' }))
+                ];
+
+                // Calculate distance for each item
+                const itemsWithDistance = allItems
+                    .map(item => {
+                        let itemLat, itemLng;
+
+                        if (item.type === 'property') {
+                            itemLat = item.coordinates?.latitude;
+                            itemLng = item.coordinates?.longitude;
+                        } else {
+                            itemLat = item.latitude;
+                            itemLng = item.longitude;
+                        }
+
+                        // Skip items without coordinates
+                        if (!itemLat || !itemLng || itemLat === 0 || itemLng === 0) {
+                            return null;
+                        }
+
+                        const distance = calculateDistance(
+                            userLocation.lat,
+                            userLocation.lng,
+                            itemLat,
+                            itemLng
+                        );
+
+                        return {
+                            ...item,
+                            distance: distance
+                        };
+                    })
+                    .filter(item => item !== null)
+                    .sort((a, b) => a.distance - b.distance)
+                    .slice(0, 5);
+
+                renderMostAccessible(itemsWithDistance);
+            } catch (error) {
+                console.error('Error loading most accessible:', error);
+                mostAccessibleList.innerHTML = `
+                    <div class="text-center text-muted py-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading nearby places
+                    </div>
+                `;
+            }
+        }
+
+        // Render most accessible list
+        function renderMostAccessible(items) {
+            if (!items || items.length === 0) {
+                mostAccessibleList.innerHTML = `
+                    <div class="text-center text-muted py-2">
+                        No nearby places found
+                    </div>
+                `;
+                return;
+            }
+
+            mostAccessibleList.innerHTML = items.map((item, index) => {
+                const name = item.type === 'property' ? item.property_name : item.name;
+                const type = item.type === 'property' ? item.accommodation_type : item.destination_type?.value;
+
+                return `
+                    <div class="filter-item" onclick="openModal('${item.type}s', ${item.type === 'property' ? item.property_id : item.id})">
+                        <div class="filter-rank ${index < 3 ? 'rank-' + (index + 1) : ''}">${index + 1}</div>
+                        <div class="filter-item-content">
+                            <div class="filter-item-name">${name || 'Unnamed'}</div>
+                            <div class="filter-item-details">${type || 'Location'}</div>
+                        </div>
+                        <div class="filter-item-distance">${item.distance.toFixed(1)}km</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // The rest of your JavaScript code remains unchanged...
+        // [All your existing JavaScript functions remain the same]
 
         // Load municipalities
         async function loadMunicipalities() {
