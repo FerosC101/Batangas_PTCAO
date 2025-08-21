@@ -137,13 +137,12 @@ def get_barangays():
         if not user:
             return jsonify({'success': False, 'message': 'User not found'}), 404
 
+        # Get barangays from Property table instead of VisitorRecord
         barangays = db.session.query(
-            VisitorRecord.barangay
-        ).join(
-            Property,
-            Property.property_id == VisitorRecord.property_id
+            Property.barangay
         ).filter(
-            Property.municipality == user.municipality
+            Property.municipality == user.municipality,
+            Property.barangay.isnot(None)
         ).distinct().all()
 
         barangay_list = [b[0] for b in barangays if b[0]]
@@ -183,3 +182,73 @@ def get_date_range(date_range, today):
         end_date = today
 
     return start_date, end_date
+
+
+@visitor_records_bp.route('/api/visitors/properties', methods=['GET'])
+@jwt_required()
+def get_properties():
+    """Get list of properties for the MTO's municipality"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
+        properties = Property.query.filter_by(municipality=user.municipality).all()
+
+        property_list = [{
+            'property_id': p.property_id,
+            'property_name': p.property_name
+        } for p in properties]
+
+        return jsonify({
+            'success': True,
+            'data': property_list
+        })
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@visitor_records_bp.route('/api/visitors', methods=['POST'])
+@jwt_required()
+def add_visitor_record():
+    """Add a new visitor record"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
+        data = request.get_json()
+
+        # Validate required fields
+        required_fields = ['property_id', 'date', 'visitor_type', 'stay_type', 'barangay', 'adults', 'children',
+                           'revenue']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'success': False, 'message': f'Missing required field: {field}'}), 400
+
+        # Create new visitor record
+        record = VisitorRecord(
+            property_id=data['property_id'],
+            date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+            visitor_type=data['visitor_type'],
+            stay_type=data['stay_type'],
+            barangay=data['barangay'],
+            municipality=user.municipality,
+            adults=data['adults'],
+            children=data['children'],
+            revenue=data['revenue']
+        )
+
+        db.session.add(record)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Visitor record added successfully'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500

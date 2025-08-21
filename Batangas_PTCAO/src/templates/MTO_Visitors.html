@@ -294,6 +294,12 @@
             width: 3rem;
             height: 3rem;
         }
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1100;
+        }
     </style>
 </head>
 <body>
@@ -367,7 +373,7 @@
                 <button class="btn btn-outline-primary me-2" id="exportBtn">
                     <i class="fas fa-download me-1"></i> Export Report
                 </button>
-                <button class="btn btn-primary" id="addVisitorBtn">
+                <button class="btn btn-primary" id="addVisitorBtn" data-bs-toggle="modal" data-bs-target="#addVisitorModal">
                     <i class="fas fa-plus me-1"></i> Add Visitor Record
                 </button>
             </div>
@@ -466,6 +472,100 @@
         </div>
     </div>
 
+    <!-- Add Visitor Modal -->
+    <div class="modal fade" id="addVisitorModal" tabindex="-1" aria-labelledby="addVisitorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVisitorModalLabel">Add Visitor Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="visitorForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="propertySelect" class="form-label">Property <span class="text-danger">*</span></label>
+                                <select class="form-select" id="propertySelect" required>
+                                    <option value="" selected disabled>Select Property</option>
+                                    <!-- Properties will be loaded dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="visitDate" class="form-label">Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="visitDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Visitor Type <span class="text-danger">*</span></label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="visitorType" id="visitorTypeLocal" value="Local" required>
+                                        <label class="form-check-label" for="visitorTypeLocal">Local</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="visitorType" id="visitorTypeForeign" value="Foreign">
+                                        <label class="form-check-label" for="visitorTypeForeign">Foreign</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stay Type <span class="text-danger">*</span></label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="stayType" id="stayTypeDay" value="Day Tour" required>
+                                        <label class="form-check-label" for="stayTypeDay">Day Tour</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="stayType" id="stayTypeOvernight" value="Overnight">
+                                        <label class="form-check-label" for="stayTypeOvernight">Overnight</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="barangaySelect" class="form-label">Barangay <span class="text-danger">*</span></label>
+                                <select class="form-select" id="barangaySelect" required>
+                                    <option value="" selected disabled>Select Barangay</option>
+                                    <!-- Barangays will be loaded dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="adultsCount" class="form-label">Adults <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="adultsCount" min="0" value="0" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="childrenCount" class="form-label">Children <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="childrenCount" min="0" value="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="revenueAmount" class="form-label">Revenue (₱) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" class="form-control" id="revenueAmount" min="0" value="0.00" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitVisitorBtn">Add Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container">
+        <div id="successToast" class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="successToastMessage"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        <div id="errorToast" class="toast align-items-center text-white bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="errorToastMessage"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container-fluid">
             <div class="row">
@@ -501,6 +601,21 @@
             const visitorsTableBody = document.getElementById('visitorsTableBody');
             const pagination = document.getElementById('pagination');
             const loadingSpinner = document.getElementById('loadingSpinner');
+            const submitVisitorBtn = document.getElementById('submitVisitorBtn');
+
+            // Modal elements
+            const modalPropertySelect = document.getElementById('propertySelect');
+            const modalBarangaySelect = document.getElementById('barangaySelect');
+            const visitDateInput = document.getElementById('visitDate');
+            const adultsCountInput = document.getElementById('adultsCount');
+            const childrenCountInput = document.getElementById('childrenCount');
+            const revenueAmountInput = document.getElementById('revenueAmount');
+
+            // Toast elements
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+            const successToastMessage = document.getElementById('successToastMessage');
+            const errorToastMessage = document.getElementById('errorToastMessage');
 
             // Current state
             let currentPage = 1;
@@ -520,6 +635,10 @@
                 loadBarangays();
                 loadVisitors();
                 setupEventListeners();
+
+                // Set today's date as default in the modal
+                const today = new Date().toISOString().split('T')[0];
+                visitDateInput.value = today;
             }
 
             function loadBarangays() {
@@ -535,12 +654,21 @@
                                 barangaySelect.remove(1);
                             }
 
+                            while (modalBarangaySelect.options.length > 1) {
+                                modalBarangaySelect.remove(1);
+                            }
+
                             // Add new options
                             data.data.forEach(barangay => {
                                 const option = document.createElement('option');
                                 option.value = barangay;
                                 option.textContent = barangay;
                                 barangaySelect.appendChild(option);
+
+                                const modalOption = document.createElement('option');
+                                modalOption.value = barangay;
+                                modalOption.textContent = barangay;
+                                modalBarangaySelect.appendChild(modalOption);
                             });
                         } else {
                             showError(data.message || 'Failed to load barangays');
@@ -548,6 +676,35 @@
                     })
                     .catch(error => {
                         showError('Error loading barangays: ' + error.message);
+                    });
+            }
+
+            function loadProperties() {
+                fetch('/api/visitors/properties')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Clear existing options except the first one
+                            while (modalPropertySelect.options.length > 1) {
+                                modalPropertySelect.remove(1);
+                            }
+
+                            // Add new options
+                            data.data.forEach(property => {
+                                const option = document.createElement('option');
+                                option.value = property.property_id;
+                                option.textContent = property.property_name;
+                                modalPropertySelect.appendChild(option);
+                            });
+                        } else {
+                            showError(data.message || 'Failed to load properties');
+                        }
+                    })
+                    .catch(error => {
+                        showError('Error loading properties: ' + error.message);
                     });
             }
 
@@ -693,10 +850,15 @@
                     exportVisitorData();
                 });
 
-                // Add visitor button
-                addVisitorBtn.addEventListener('click', function() {
-                    // Implement add visitor functionality
-                    alert('Add visitor functionality will be implemented here');
+                // Add visitor modal show event
+                const addVisitorModal = document.getElementById('addVisitorModal');
+                addVisitorModal.addEventListener('show.bs.modal', function() {
+                    loadProperties();
+                });
+
+                // Submit visitor button
+                submitVisitorBtn.addEventListener('click', function() {
+                    addVisitorRecord();
                 });
 
                 // View/Edit buttons (delegated events)
@@ -708,6 +870,57 @@
                         const recordId = e.target.closest('.edit-btn').dataset.id;
                         editRecord(recordId);
                     }
+                });
+            }
+
+            function addVisitorRecord() {
+                // Validate form
+                const form = document.getElementById('visitorForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // Get form data
+                const formData = {
+                    property_id: modalPropertySelect.value,
+                    date: visitDateInput.value,
+                    visitor_type: document.querySelector('input[name="visitorType"]:checked').value,
+                    stay_type: document.querySelector('input[name="stayType"]:checked').value,
+                    barangay: modalBarangaySelect.value,
+                    adults: parseInt(adultsCountInput.value),
+                    children: parseInt(childrenCountInput.value),
+                    revenue: parseFloat(revenueAmountInput.value)
+                };
+
+                // Submit data
+                fetch('/api/visitors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Close modal and show success message
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addVisitorModal'));
+                        modal.hide();
+
+                        showSuccess('Visitor record added successfully');
+
+                        // Reload visitors
+                        loadVisitors(currentPage);
+                    } else {
+                        showError(data.message || 'Failed to add visitor record');
+                    }
+                })
+                .catch(error => {
+                    showError('Error adding visitor record: ' + error.message);
                 });
             }
 
@@ -738,9 +951,14 @@
                 loadingSpinner.classList.remove('active');
             }
 
+            function showSuccess(message) {
+                successToastMessage.textContent = message;
+                successToast.show();
+            }
+
             function showError(message) {
-                // Simple error display - you could use a toast or modal
-                alert('Error: ' + message);
+                errorToastMessage.textContent = message;
+                errorToast.show();
             }
         });
     </script>

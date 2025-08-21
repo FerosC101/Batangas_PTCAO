@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixed design">
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_About.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_About.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Contact.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/TOURIST_Contact.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_VisitorsRecords.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_VisitorsRecords.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Visitors.html" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/templates/MTO_Visitors.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,38 +57,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "JavaScript Debug.MTO_Properties.html.executor": "Run",
-    "JavaScript Debug.MTO_Visitors.html.executor": "Run",
-    "Python.Hash_check.executor": "Run",
-    "Python.MTO_Property.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.checkIFExist.executor": "Run",
-    "Python.model.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "C:/Users/HUAWEI/AppData/Roaming/JetBrains/PyCharm2024.3/node/versions/22.13.1/node",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "inlay.hints",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.MTO_Properties.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.MTO_Visitors.html.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Hash_check.executor&quot;: &quot;Run&quot;,
+    &quot;Python.MTO_Property.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.checkIFExist.executor&quot;: &quot;Run&quot;,
+    &quot;Python.model.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;C:/Users/HUAWEI/AppData/Roaming/JetBrains/PyCharm2024.3/node/versions/22.13.1/node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;inlay.hints&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\img" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\uploads\events" />
+      <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\img" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\templates" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes\static" />
@@ -267,15 +268,8 @@
       <workItem from="1754883405380" duration="5829000" />
       <workItem from="1755265486831" duration="1262000" />
       <workItem from="1755423507249" duration="4000" />
-      <workItem from="1755439479324" duration="4473000" />
-    </task>
-    <task id="LOCAL-00058" summary="reports fixed">
-      <option name="closed" value="true" />
-      <created>1752941239657</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1752941239657</updated>
+      <workItem from="1755439479324" duration="8433000" />
+      <workItem from="1755783131911" duration="4034000" />
     </task>
     <task id="LOCAL-00059" summary="manual input problem">
       <option name="closed" value="true" />
@@ -661,7 +655,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755443646074</updated>
     </task>
-    <option name="localTasksCounter" value="107" />
+    <task id="LOCAL-00107" summary="fixed design">
+      <option name="closed" value="true" />
+      <created>1755443978781</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
+      <option name="project" value="LOCAL" />
+      <updated>1755443978781</updated>
+    </task>
+    <option name="localTasksCounter" value="108" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -708,7 +710,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1755443779858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1755784716400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
     <SUITE FILE_PATH="coverage/DjangoProject$checkIFExist.coverage" NAME="checkIFExist Coverage Results" MODIFIED="1754570458827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
     <SUITE FILE_PATH="coverage/DjangoProject$model.coverage" NAME="model Coverage Results" MODIFIED="1746352563953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
