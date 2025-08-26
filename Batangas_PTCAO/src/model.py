@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import CheckConstraint, Enum as SqlEnum
-from Batangas_PTCAO.src.extension import db
+from extension import db
 import bcrypt
 from enum import Enum
 
@@ -126,7 +126,7 @@ class LongLat(db.Model):
 
 from datetime import datetime
 from sqlalchemy import CheckConstraint, Enum as SqlEnum
-from Batangas_PTCAO.src.extension import db
+from extension import db
 from enum import Enum
 
 

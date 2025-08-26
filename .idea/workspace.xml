@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="changed file directory" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="changed file directory">
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,8 +85,8 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\coding\Python\Python\DjangoProject" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO" />
+      <recent name="D:\coding\Python\Python\DjangoProject" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\uploads\events" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\img" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\templates" />
@@ -266,15 +268,7 @@
       <workItem from="1755423507249" duration="4000" />
       <workItem from="1755439479324" duration="8433000" />
       <workItem from="1755783131911" duration="7283000" />
-      <workItem from="1756205527136" duration="2544000" />
-    </task>
-    <task id="LOCAL-00067" summary="Fixed Dashboard">
-      <option name="closed" value="true" />
-      <created>1753354086032</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1753354086032</updated>
+      <workItem from="1756205527136" duration="2905000" />
     </task>
     <task id="LOCAL-00068" summary="Fixed MTO Analytics">
       <option name="closed" value="true" />
@@ -660,7 +654,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756208059156</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="changed file directory">
+      <option name="closed" value="true" />
+      <created>1756208130805</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1756208130805</updated>
+    </task>
+    <option name="localTasksCounter" value="117" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -704,6 +706,16 @@
     <MESSAGE value="fixed hadnling" />
     <MESSAGE value="changed file directory" />
     <option name="LAST_COMMIT_MESSAGE" value="changed file directory" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Batangas_PTCAO/src/model.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from Batangas_PTCAO.src.app import app
+from app import app
 tourist_about_bp = Blueprint('tourist_about', __name__, url_prefix='/tourist')
 
 
