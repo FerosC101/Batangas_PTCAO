@@ -4,31 +4,31 @@ from flask_jwt_extended import JWTManager
 from sqlalchemy import values
 
 from src.extension import db
-from config import Config
+from src.config import Config
 from datetime import timedelta
 
-from routes.MTO_Announcement import init_mto_announcement_routes
-from routes.PTCAO_Dashboard import init_ptcao_dashboard_routes
-from routes.PTCAO_Destinations import init_ptcao_destinations_routes
-from routes.PTCAO_Property import init_ptcao_property_routes
-from routes.TOURIST_Contact import init_tourist_contact_routes
-from routes.TOURIST_Destination import init_tourist_api_routes
-from routes.TOURIST_Home import init_tourist_home_routes
-from routes.TOURIST_Events import init_tourist_events_routes
-from routes.TOURIST_Map import init_tourist_map_routes
+from src.routes.MTO_Announcement import init_mto_announcement_routes
+from src.routes.PTCAO_Dashboard import init_ptcao_dashboard_routes
+from src.routes.PTCAO_Destinations import init_ptcao_destinations_routes
+from src.routes.PTCAO_Property import init_ptcao_property_routes
+from src.routes.TOURIST_Contact import init_tourist_contact_routes
+from src.routes.TOURIST_Destination import init_tourist_api_routes
+from src.routes.TOURIST_Home import init_tourist_home_routes
+from src.routes.TOURIST_Events import init_tourist_events_routes
+from src.routes.TOURIST_Map import init_tourist_map_routes
 
-from routes.auth import init_auth_routes
-from routes.MTO import init_mto_routes
-from routes.MTO_Property import init_property_routes
-from routes.MTO_Dashboard import init_dashboard_routes
-from routes.MTO_Events import init_events_routes
-from routes.MTO_Analytics import init_analytics_routes
-from routes.MTO_VisitorsRecords import init_visitor_records_routes
-from routes.MTO_Destinations import init_destinations_routes
-from routes.MTO_Reports import init_reports_routes
-from routes.ADMIN_users import init_admin_users_routes  # New import
-from routes.ADMIN_dashboard import init_admin_dashboard_routes
-from routes.ADMIN_reports import init_admin_reports_routes
+from src.routes.auth import init_auth_routes
+from src.routes.MTO import init_mto_routes
+from src.routes.MTO_Property import init_property_routes
+from src.routes.MTO_Dashboard import init_dashboard_routes
+from src.routes.MTO_Events import init_events_routes
+from src.routes.MTO_Analytics import init_analytics_routes
+from src.routes.MTO_VisitorsRecords import init_visitor_records_routes
+from src.routes.MTO_Destinations import init_destinations_routes
+from src.routes.MTO_Reports import init_reports_routes
+from src.routes.ADMIN_users import init_admin_users_routes  # New import
+from src.routes.ADMIN_dashboard import init_admin_dashboard_routes
+from src.routes.ADMIN_reports import init_admin_reports_routes
 
 
 def create_app():

@@ -1,7 +1,7 @@
 from flask import render_template, request, jsonify, redirect, url_for, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from extension import db
-from model import User
+from src.extension import db
+from src.model import User
 from sqlalchemy import or_
 from datetime import datetime
 

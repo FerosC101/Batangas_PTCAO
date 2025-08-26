@@ -5,11 +5,11 @@ from flask import Blueprint, jsonify, request, render_template, url_for, redirec
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from model import (
+from src.model import (
     Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User,
     PropertyImage, Destination, DestinationType, PropertyReport
 )
-from extension import db
+from src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
 
 properties_bp = Blueprint("properties", __name__, url_prefix="/property")
@@ -244,7 +244,7 @@ def create_property():
         db.session.add(new_property)
         db.session.flush()  # Generate the ID
 
-        from model import PropertyReport
+        from src.model import PropertyReport
         property_report = PropertyReport(
             property_id=new_property.property_id,
             dot_accredited=data.get('dot_accredited', 'false').lower() == 'true',
@@ -654,7 +654,7 @@ def change_property_status(property_id):
 @jwt_required()
 def get_property_report(property_id):
     try:
-        from model import PropertyReport
+        from src.model import PropertyReport
         report = PropertyReport.query.filter_by(property_id=property_id).first()
 
         if not report:

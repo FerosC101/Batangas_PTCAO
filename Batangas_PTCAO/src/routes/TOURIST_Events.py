@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request
-from extension import db
-from model import Event
+from src.extension import db
+from src.model import Event
 from datetime import datetime, date
 from sqlalchemy import or_, and_
 import os

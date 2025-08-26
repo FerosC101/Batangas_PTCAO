@@ -4,7 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="removed src" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="removed src">
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_reports.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_reports.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_users.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/ADMIN_users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Announcement.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Announcement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Destinations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Destinations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Events.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Events.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Property.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Reports.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_Reports.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_VisitorsRecords.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/MTO_VisitorsRecords.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/PTCAO_Dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/PTCAO_Dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/PTCAO_Destinations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/PTCAO_Destinations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/PTCAO_Property.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/PTCAO_Property.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_About.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_About.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Destination.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Destination.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Events.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Events.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Home.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Home.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Map.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/TOURIST_Map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/Batangas_PTCAO/src/routes/auth.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -266,15 +289,7 @@
       <workItem from="1755423507249" duration="4000" />
       <workItem from="1755439479324" duration="8433000" />
       <workItem from="1755783131911" duration="7283000" />
-      <workItem from="1756205527136" duration="3270000" />
-    </task>
-    <task id="LOCAL-00069" summary="Fixed Admin Dashboard">
-      <option name="closed" value="true" />
-      <created>1753462613930</created>
-      <option name="number" value="00069" />
-      <option name="presentableId" value="LOCAL-00069" />
-      <option name="project" value="LOCAL" />
-      <updated>1753462613930</updated>
+      <workItem from="1756205527136" duration="4091000" />
     </task>
     <task id="LOCAL-00070" summary="Fixed Admin Dashboard">
       <option name="closed" value="true" />
@@ -660,7 +675,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756208697044</updated>
     </task>
-    <option name="localTasksCounter" value="118" />
+    <task id="LOCAL-00118" summary="removed src">
+      <option name="closed" value="true" />
+      <created>1756208983322</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1756208983322</updated>
+    </task>
+    <option name="localTasksCounter" value="119" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

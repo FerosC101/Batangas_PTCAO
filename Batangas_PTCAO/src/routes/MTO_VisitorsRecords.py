@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request, render_template
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_, func
-from extension import db
-from model import (
+from src.extension import db
+from src.model import (
     User,
     Property,
     VisitorRecord,

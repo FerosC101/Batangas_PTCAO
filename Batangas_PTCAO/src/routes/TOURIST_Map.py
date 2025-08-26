@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template
 from sqlalchemy.orm import joinedload
-from extension import db
-from model import Property, Destination, LongLat, PropertyImage, Room, Amenity, DestinationType, \
+from src.extension import db
+from src.model import Property, Destination, LongLat, PropertyImage, Room, Amenity, DestinationType, \
     PropertyStatus
 
 
