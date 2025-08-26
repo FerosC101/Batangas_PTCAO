@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, jsonify, redirect, url_for
 from flask_jwt_extended import jwt_required
-from src.model import User, Property, Event, TouristReport
-from src.extension import db
+from Batangas_PTCAO.src.model import User, Property, Event, TouristReport
+from Batangas_PTCAO.src.extension import db
 from datetime import datetime, timedelta
 from sqlalchemy import func
 

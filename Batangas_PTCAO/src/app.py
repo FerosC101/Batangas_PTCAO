@@ -3,32 +3,32 @@ from flask import Flask, send_from_directory, redirect, url_for
 from flask_jwt_extended import JWTManager
 from sqlalchemy import values
 
-from extension import db
-from config import Config
+from Batangas_PTCAO.src.extension import db
+from Batangas_PTCAO.src.config import Config
 from datetime import timedelta
 
-from src.routes.MTO_Announcement import init_mto_announcement_routes
-from src.routes.PTCAO_Dashboard import init_ptcao_dashboard_routes
-from src.routes.PTCAO_Destinations import init_ptcao_destinations_routes
-from src.routes.PTCAO_Property import init_ptcao_property_routes
-from src.routes.TOURIST_Contact import init_tourist_contact_routes
-from src.routes.TOURIST_Destination import init_tourist_api_routes
-from src.routes.TOURIST_Home import init_tourist_home_routes
-from src.routes.TOURIST_Events import init_tourist_events_routes
-from src.routes.TOURIST_Map import init_tourist_map_routes
+from Batangas_PTCAO.src.routes.MTO_Announcement import init_mto_announcement_routes
+from Batangas_PTCAO.src.routes.PTCAO_Dashboard import init_ptcao_dashboard_routes
+from Batangas_PTCAO.src.routes.PTCAO_Destinations import init_ptcao_destinations_routes
+from Batangas_PTCAO.src.routes.PTCAO_Property import init_ptcao_property_routes
+from Batangas_PTCAO.src.routes.TOURIST_Contact import init_tourist_contact_routes
+from Batangas_PTCAO.src.routes.TOURIST_Destination import init_tourist_api_routes
+from Batangas_PTCAO.src.routes.TOURIST_Home import init_tourist_home_routes
+from Batangas_PTCAO.src.routes.TOURIST_Events import init_tourist_events_routes
+from Batangas_PTCAO.src.routes.TOURIST_Map import init_tourist_map_routes
 
-from src.routes.auth import init_auth_routes
-from src.routes.MTO import init_mto_routes
-from src.routes.MTO_Property import init_property_routes
-from src.routes.MTO_Dashboard import init_dashboard_routes
-from src.routes.MTO_Events import init_events_routes
-from src.routes.MTO_Analytics import init_analytics_routes
-from src.routes.MTO_VisitorsRecords import init_visitor_records_routes
-from src.routes.MTO_Destinations import init_destinations_routes
-from src.routes.MTO_Reports import init_reports_routes
-from src.routes.ADMIN_users import init_admin_users_routes  # New import
-from src.routes.ADMIN_dashboard import init_admin_dashboard_routes
-from src.routes.ADMIN_reports import init_admin_reports_routes
+from Batangas_PTCAO.src.routes.auth import init_auth_routes
+from Batangas_PTCAO.src.routes.MTO import init_mto_routes
+from Batangas_PTCAO.src.routes.MTO_Property import init_property_routes
+from Batangas_PTCAO.src.routes.MTO_Dashboard import init_dashboard_routes
+from Batangas_PTCAO.src.routes.MTO_Events import init_events_routes
+from Batangas_PTCAO.src.routes.MTO_Analytics import init_analytics_routes
+from Batangas_PTCAO.src.routes.MTO_VisitorsRecords import init_visitor_records_routes
+from Batangas_PTCAO.src.routes.MTO_Destinations import init_destinations_routes
+from Batangas_PTCAO.src.routes.MTO_Reports import init_reports_routes
+from Batangas_PTCAO.src.routes.ADMIN_users import init_admin_users_routes  # New import
+from Batangas_PTCAO.src.routes.ADMIN_dashboard import init_admin_dashboard_routes
+from Batangas_PTCAO.src.routes.ADMIN_reports import init_admin_reports_routes
 
 
 def create_app():

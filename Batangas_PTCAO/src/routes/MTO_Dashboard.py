@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for, render_template, flash, redirect, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
-from src.extension import db
-from src.model import (
+from Batangas_PTCAO.src.extension import db
+from Batangas_PTCAO.src.model import (
     User,
     Property,
     VisitorStatistics,

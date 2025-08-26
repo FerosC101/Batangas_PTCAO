@@ -2,9 +2,9 @@
 
 from flask import Blueprint, jsonify, request, render_template, redirect, flash, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
-from src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User, \
+from Batangas_PTCAO.src.model import Property, Room, Amenity, TypicalLocation, LongLat, PropertyStatus, User, \
     PropertyImage, PropertyReport
-from src.extension import db
+from Batangas_PTCAO.src.extension import db
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 
