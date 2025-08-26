@@ -3,7 +3,7 @@ from flask import Flask, send_from_directory, redirect, url_for
 from flask_jwt_extended import JWTManager
 from sqlalchemy import values
 
-from extension import db
+from src.extension import db
 from config import Config
 from datetime import timedelta
 
