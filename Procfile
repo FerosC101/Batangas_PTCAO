@@ -1,1 +1,1 @@
-web: gunicorn Batangas_PTCAO.src.app:app
+web: gunicorn src.app:app
