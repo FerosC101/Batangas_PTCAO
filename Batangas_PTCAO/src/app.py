@@ -3,8 +3,8 @@ from flask import Flask, send_from_directory, redirect, url_for
 from flask_jwt_extended import JWTManager
 from sqlalchemy import values
 
-from src.extension import db
-from src.config import Config
+from extension import db
+from config import Config
 from datetime import timedelta
 
 from src.routes.MTO_Announcement import init_mto_announcement_routes

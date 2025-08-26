@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import CheckConstraint, Enum as SqlEnum
-from src.extension import db
+from extension import db
 import bcrypt
 from enum import Enum
 
