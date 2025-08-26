@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixed hadnling" />
+    <list default="true" id="258dbf88-02d8-4ece-ab89-f759505c2010" name="Changes" comment="fixed hadnling">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,11 +85,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\uploads\events" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\static\img" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\templates" />
       <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src" />
-      <recent name="D:\coding\Python\Python\DjangoProject\Batangas_PTCAO\src\routes\static" />
     </key>
   </component>
   <component name="RunManager" selected="Python.app">
@@ -266,15 +268,7 @@
       <workItem from="1755423507249" duration="4000" />
       <workItem from="1755439479324" duration="8433000" />
       <workItem from="1755783131911" duration="7283000" />
-      <workItem from="1756205527136" duration="805000" />
-    </task>
-    <task id="LOCAL-00062" summary="loading data report prob">
-      <option name="closed" value="true" />
-      <created>1752954915703</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1752954915703</updated>
+      <workItem from="1756205527136" duration="1124000" />
     </task>
     <task id="LOCAL-00063" summary="loading data report prob">
       <option name="closed" value="true" />
@@ -660,7 +654,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756206090460</updated>
     </task>
-    <option name="localTasksCounter" value="111" />
+    <task id="LOCAL-00111" summary="fixed hadnling">
+      <option name="closed" value="true" />
+      <created>1756206445622</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1756206445622</updated>
+    </task>
+    <option name="localTasksCounter" value="112" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -707,7 +709,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DjangoProject$Hash_check.coverage" NAME="Hash_check Coverage Results" MODIFIED="1751548652816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
-    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1755792479582" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
+    <SUITE FILE_PATH="coverage/DjangoProject$app.coverage" NAME="app Coverage Results" MODIFIED="1756206097563" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
     <SUITE FILE_PATH="coverage/DjangoProject$MTO_Property.coverage" NAME="MTO_Property Coverage Results" MODIFIED="1744469194042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/routes" />
     <SUITE FILE_PATH="coverage/DjangoProject$checkIFExist.coverage" NAME="checkIFExist Coverage Results" MODIFIED="1754570458827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src/tests" />
     <SUITE FILE_PATH="coverage/DjangoProject$model.coverage" NAME="model Coverage Results" MODIFIED="1746352563953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Batangas_PTCAO/src" />
