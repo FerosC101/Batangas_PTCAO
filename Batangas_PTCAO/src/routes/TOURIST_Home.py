@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, render_template
 from datetime import datetime, timedelta
-from Batangas_PTCAO.src.model import Property, TouristReport, PropertyImage, Event, Announcement
+from model import Property, TouristReport, PropertyImage, Event, Announcement
 from sqlalchemy import func, desc, or_
 
 tourist_home_bp = Blueprint('tourist_home', __name__, url_prefix='/tourist')

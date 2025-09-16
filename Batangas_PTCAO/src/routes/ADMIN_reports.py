@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, jsonify
 from flask_jwt_extended import jwt_required
 from datetime import datetime
-from Batangas_PTCAO.src.model import User, Property, TouristReport
-from Batangas_PTCAO.src.extension import db
+from model import User, Property, TouristReport
+from extension import db
 from sqlalchemy import func
 
 def init_admin_reports_routes(app):

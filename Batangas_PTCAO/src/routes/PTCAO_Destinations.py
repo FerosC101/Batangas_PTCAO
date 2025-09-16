@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, render_template, current_app, url_for, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
-from Batangas_PTCAO.src.extension import db
-from Batangas_PTCAO.src.model import Property, LongLat, Amenity, Room, PropertyImage
+from extension import db
+from model import Property, LongLat, Amenity, Room, PropertyImage
 from datetime import datetime
 import logging
 
